@@ -6,11 +6,7 @@ async function runSQL() {
   const sqlPath = path.join(__dirname, "../dist/queries_combinadas.sql");
   const sql = fs.readFileSync(sqlPath, "utf8");
 
-  const queries = sql.split(";").filter(q => q.trim());
-
-  for (const query of queries) {
-    await pool.query(query);
-  }
+  await pool.query(sql);
 
   console.log("SQL executado!");
 }

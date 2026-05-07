@@ -1,7 +1,10 @@
 const express = require("express");
 const pool = require("./db");
+const PORT = process.env.PORT || 3000;
 
 const app = express();
+
+app.use(express.json());
 
 app.get("/", async (req, res) => {
   try {
@@ -66,12 +69,46 @@ app.get("/ecoponto_logs", async (req, res) => {
 });
 
 app.post("/capacidade", async (req, res) => {
-  const {codigoEquipamento, codigoEcoponto, profundidade} = req.body;
-  const sql = "UPDATE ecoponto SET capacidadeAtual = ? WHERE ecoponto.codigo = ?";
-  await pool.query(sql, [profundidade, codigoEcoponto]);
+  try {
+    const { codigoEquipamento, profundidade } = req.body;
+    if (!codigoEquipamento || profundidade === undefined) {
+      return res.status(400).json({ erro: "codigoEquipamento e profundidade são obrigatórios" });
+    }
 
+    const equipamentoId = await pool.query("SELECT id FROM equipamento WHERE codigo = $1", [codigoEquipamento]);
+    if (equipamentoId.rows.length === 0) {
+      return res.status(404).json({ erro: "Equipamento não encontrado" });
+    }
+    console.log("Equipamento ID:", equipamentoId.rows[0].id);
+
+    const ecopontoIdRows = await pool.query("SELECT ecopontoId AS \"ecopontoId\" FROM ecoponto_equipamento WHERE equipamentoId = $1 AND ativo = true", [equipamentoId.rows[0].id]);
+    if (ecopontoIdRows.rows.length === 0) {
+      return res.status(404).json({ erro: "Ecoponto associado ao equipamento não encontrado ou inativo" });
+    }
+
+    const ecopontoId = ecopontoIdRows.rows[0].ecopontoId;
+    console.log("Ecoponto ID:", ecopontoId);
+
+    const capacidadeTotal = await pool.query(`
+      SELECT d.capacidadeTotal AS "capacidadeTotal"
+      FROM deposito d
+      JOIN ecoponto e ON d.id = e.depositoId
+      WHERE e.id = $1
+    `, [ecopontoId]);
+    console.log("Capacidade Total:", capacidadeTotal.rows[0].capacidadeTotal);
+    const altura = await pool.query("SELECT altura FROM deposito INNER JOIN ecoponto ON deposito.id = ecoponto.depositoId WHERE ecoponto.id = $1", [ecopontoId]);
+    const percentagem = (profundidade / altura.rows[0].altura);
+    const capacidadeAtual = (percentagem * capacidadeTotal.rows[0].capacidadeTotal).toFixed(2);
+
+    const sql = "UPDATE ecoponto SET capacidadeAtual = $1 WHERE id = $2";
+    await pool.query(sql, [capacidadeAtual, ecopontoId]);
+
+    res.json("simmmm");
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
 });
 
-app.listen(3000, () => {
+app.listen(PORT, () => {
   console.log("Servidor online");
 });

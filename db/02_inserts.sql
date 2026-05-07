@@ -7,9 +7,9 @@ INSERT INTO tipo_deposito (tipo) VALUES
 ('superficie'),
 ('subterraneo');
 
-INSERT INTO deposito (capacidadeTotal, tipoDepositoId, descricao) VALUES
-(2.5, 1, 'apenas um ecoponto regular'),
-(5.0, 2, 'subterraneo grande e tal ya');
+INSERT INTO deposito (capacidadeTotal, altura, tipoDepositoId, descricao) VALUES
+(2.5, 1.0, 1, 'apenas um ecoponto regular'),
+(5.0, 2.0, 2, 'subterraneo grande e tal ya');
 
 INSERT INTO ecoponto (codigo, tipoEcopontoId, depositoId, latitude, longitude, descricao) VALUES
 ('VX5FT', 1, 1, 40.642346, -8.649730, 'um vidrão superficial em aveiro'),
@@ -23,3 +23,8 @@ INSERT INTO equipamento (codigo) VALUES
 ('ARD001'),
 ('ARD002'),
 ('ARD003');
+
+INSERT INTO ecoponto_equipamento (equipamentoId, ecopontoId, ativo) VALUES
+(1, 1, true),
+(2, 2, false),
+(3, 3, true);
