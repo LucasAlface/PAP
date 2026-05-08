@@ -17,7 +17,7 @@ app.get("/", async (req, res) => {
   }
 });
 
-app.get("/table/:nometabela", async (req, res) => {
+app.get("/tabela/:nometabela", async (req, res) => {
   try {
     const { nometabela } = req.params;
     const result = await pool.query(`SELECT * from ${nometabela}`);
@@ -44,6 +44,50 @@ app.post("/inserir/:tabela", async (req, res) => {
     await pool.query(sql, valores);
 
     res.json("Registro criado com sucesso");
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
+
+app.post("/atualizar/:tabela/:id", async (req, res) => {
+  try {
+    const dados = req.body;
+    const { tabela, id } = req.params;
+
+    const tabelasValidas = ["ecoponto", "tipo_ecoponto", "deposito", "tipo_deposito", "equipamento", "ecoponto_equipamento", "ecoponto_logs"];
+    if (!tabelasValidas.includes(tabela)) {
+      return res.status(400).json({ erro: "Tabela inválida" });
+    }
+    const colunas = Object.keys(dados);
+    const valores = Object.values(dados);
+    const setQuery = colunas
+      .map((coluna, index) => `${coluna} = $${index + 1}`)
+      .join(", ");
+
+    const sql = `UPDATE ${tabela} SET ${setQuery} WHERE id = $${valores.length + 1}`;
+
+    console.log(sql, [...valores, id]);
+
+    await pool.query(sql, [...valores, id]);
+
+    res.json("Registro atualizado com sucesso");
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
+app.post("/apagar/:tabela/:id", async (req, res) => {
+  try {
+    const { tabela, id } = req.params;
+
+    const tabelasValidas = ["ecoponto", "tipo_ecoponto", "deposito", "tipo_deposito", "equipamento", "ecoponto_equipamento", "ecoponto_logs"];
+    if (!tabelasValidas.includes(tabela)) {
+      return res.status(400).json({ erro: "Tabela inválida" });
+    }
+    const sql = `DELETE FROM ${tabela} WHERE id = ${id}`;
+
+    await pool.query(sql);
+
+    res.json("Registro apagado com sucesso");
   } catch (err) {
     res.status(500).json({ erro: err.message });
   }
