@@ -19,10 +19,10 @@ INSERT INTO ecoponto (codigo, tipoEcopontoId, depositoId, latitude, longitude, d
 ('VX6FS', 2, 2, 40.642346, -8.649730, 'um embalão subterrâneo em aveiro'),
 ('VX7FS', 3, 2, 40.642346, -8.649730, 'um papelão subterrâneo em aveiro');
 
-INSERT INTO equipamento (codigo) VALUES
-('ARD001'),
-('ARD002'),
-('ARD003');
+INSERT INTO equipamento (codigo, ativo) VALUES
+('ARD001', true),
+('ARD002', true),
+('ARD003', true);
 
 INSERT INTO ecoponto_equipamento (equipamentoId, ecopontoId, ativo) VALUES
 (1, 1, true),

@@ -1,4 +1,6 @@
 const express = require("express");
+const path = require("path");
+require('dotenv').config({ path: path.resolve(__dirname, "../.env") });
 const pool = require("./db");
 const PORT = process.env.PORT || 3000;
 
@@ -14,55 +16,27 @@ app.get("/", async (req, res) => {
   }
 });
 
-app.get("/tipo_ecoponto", async (req, res) => {
+app.get("/table/:nometabela", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * from tipo_ecoponto");
+    const { nometabela } = req.params;
+    const result = await pool.query(`SELECT * from ${nometabela}`);
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ erro: err.message });
   }
 });
 
-app.get("/tipo_deposito", async (req, res) => {
+app.post("/ecoponto", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * from tipo_deposito");
-     res.json(result.rows);
-  } catch (err) {
-    res.status(500).json({ erro: err.message });
-  }
-});
+    const { codigo, latitude, longitude, descricao, depositoId, tipoEcopontoId } = req.body;
+    if (!codigo || latitude === undefined || longitude === undefined || !descricao || !depositoId || !tipoEcopontoId) {
+      return res.status(400).json({ erro: "codigo, latitude, longitude, descricao, depositoId e tipoEcopontoId são obrigatórios" });
+    }
 
-app.get("/deposito", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * from deposito");
-     res.json(result.rows);
-  } catch (err) {
-    res.status(500).json({ erro: err.message });
-  }
-});
+    const sql = "INSERT INTO ecoponto (codigo, latitude, longitude, descricao, depositoId, tipoEcopontoId) VALUES ($1, $2, $3, $4, $5, $6)";
+    await pool.query(sql, [codigo, latitude, longitude, descricao, depositoId, tipoEcopontoId]);
 
-app.get("/ecoponto", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * from ecoponto");
-     res.json(result.rows);
-  } catch (err) {
-    res.status(500).json({ erro: err.message });
-  }
-});
-
-app.get("/equipamento", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * from equipamento");
-     res.json(result.rows);
-  } catch (err) {
-    res.status(500).json({ erro: err.message });
-  }
-});
-
-app.get("/ecoponto_logs", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * from ecoponto_logs");
-     res.json(result.rows);
+    res.json("Ecoponto criado com sucesso");
   } catch (err) {
     res.status(500).json({ erro: err.message });
   }
@@ -71,34 +45,18 @@ app.get("/ecoponto_logs", async (req, res) => {
 app.post("/capacidade", async (req, res) => {
   try {
     const { codigoEquipamento, profundidade } = req.body;
-    if (!codigoEquipamento || profundidade === undefined) {
-      return res.status(400).json({ erro: "codigoEquipamento e profundidade são obrigatórios" });
+
+    const ecopontoData = await pool.query(`"Select * from vw_ecoponto_full where codigoEquipamento = $1"`, [codigoEquipamento]);
+    if (ecopontoData.rows.length === 0) {
+      return res.status(404).json({ erro: "Equipamento não encontrado ou sem ecoponto associado" });
     }
 
-    const equipamentoId = await pool.query("SELECT id FROM equipamento WHERE codigo = $1", [codigoEquipamento]);
-    if (equipamentoId.rows.length === 0) {
-      return res.status(404).json({ erro: "Equipamento não encontrado" });
-    }
-    console.log("Equipamento ID:", equipamentoId.rows[0].id);
+    const ecopontoId = ecopontoData.rows[0].id;
+    const capacidadeTotal = ecopontoData.rows[0].capacidadeTotal;
+    const alturaDeposito = ecopontoData.rows[0].alturaDeposito;
 
-    const ecopontoIdRows = await pool.query("SELECT ecopontoId AS \"ecopontoId\" FROM ecoponto_equipamento WHERE equipamentoId = $1 AND ativo = true", [equipamentoId.rows[0].id]);
-    if (ecopontoIdRows.rows.length === 0) {
-      return res.status(404).json({ erro: "Ecoponto associado ao equipamento não encontrado ou inativo" });
-    }
-
-    const ecopontoId = ecopontoIdRows.rows[0].ecopontoId;
-    console.log("Ecoponto ID:", ecopontoId);
-
-    const capacidadeTotal = await pool.query(`
-      SELECT d.capacidadeTotal AS "capacidadeTotal"
-      FROM deposito d
-      JOIN ecoponto e ON d.id = e.depositoId
-      WHERE e.id = $1
-    `, [ecopontoId]);
-    console.log("Capacidade Total:", capacidadeTotal.rows[0].capacidadeTotal);
-    const altura = await pool.query("SELECT altura FROM deposito INNER JOIN ecoponto ON deposito.id = ecoponto.depositoId WHERE ecoponto.id = $1", [ecopontoId]);
-    const percentagem = (profundidade / altura.rows[0].altura);
-    const capacidadeAtual = (percentagem * capacidadeTotal.rows[0].capacidadeTotal).toFixed(2);
+    const percentagem = (profundidade / alturaDeposito);
+    const capacidadeAtual = (percentagem * capacidadeTotal).toFixed(2);
 
     const sql = "UPDATE ecoponto SET capacidadeAtual = $1 WHERE id = $2";
     await pool.query(sql, [capacidadeAtual, ecopontoId]);

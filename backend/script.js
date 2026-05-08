@@ -1,6 +1,7 @@
+const path = require("path");
+require('dotenv').config({ path: path.resolve(__dirname, "../.env") });
 const pool = require("./db");
 const fs = require("fs");
-const path = require("path");
 
 async function runSQL() {
   const sqlPath = path.join(__dirname, "../dist/queries_combinadas.sql");
