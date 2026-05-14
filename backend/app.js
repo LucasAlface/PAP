@@ -9,7 +9,8 @@ const {
   deposito_router,
   ecoponto_router,
   equipamento_router,
-  ecoponto_equipamento_router
+  ecoponto_equipamento_router,
+  rotas_router
 } = require("./routes/routes");
 
 const app = express();
@@ -31,6 +32,7 @@ app.use("/deposito", deposito_router);
 app.use("/ecoponto", ecoponto_router);
 app.use("/equipamento", equipamento_router);
 app.use("/ecopontoequipamento", ecoponto_equipamento_router);
+app.use("/rotas", rotas_router);
 
 app.listen(PORT, () => {
   console.log("Servidor online");
