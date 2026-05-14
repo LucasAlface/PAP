@@ -152,19 +152,16 @@ async function inserirDados() {
     {
       equipamentoId: 1,
       ecopontoId: 1,
-      ativo: true
     },
 
     {
       equipamentoId: 2,
       ecopontoId: 2,
-      ativo: false
     },
 
     {
       equipamentoId: 3,
       ecopontoId: 3,
-      ativo: true
     }
 
   ]);

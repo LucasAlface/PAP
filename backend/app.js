@@ -4,6 +4,7 @@ require('dotenv').config({ path: path.resolve(__dirname, "../.env") });
 const { TipoEcoponto, TipoDeposito, Deposito, Ecoponto, Equipamento, EcopontoEquipamento, EcopontoLogs } = require("./models/models");
 const PORT = process.env.PORT || 3000;
 const { inserirDados } = require("./script");
+const tipo_ecoponto_router = require("./routes/tipoEcoponto")
 
 const app = express();
 
@@ -28,7 +29,7 @@ app.get("/", async (req, res) => {
   }
 });
 
-
+app.use("/tipoecoponto", tipo_ecoponto_router);
 
 app.post("/inserir/:nometabela", async (req, res) => {
   try {
