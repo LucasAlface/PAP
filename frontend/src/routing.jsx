@@ -5,7 +5,10 @@ import "leaflet-routing-machine";
 
 export default function Routing() {
   const map = useMap();
-
+  let coordinates = [
+    fetch("http://localhost:3000/rotas/coordenadas")
+  ];
+  console.log(coordinates);
   useEffect(() => {
     const routingControl = L.Routing.control({
       waypoints: [

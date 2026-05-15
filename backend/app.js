@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const path = require("path");
 require('dotenv').config({ path: path.resolve(__dirname, "../.env") });
 const PORT = process.env.PORT || 3000;
@@ -16,15 +17,17 @@ const {
 const app = express();
 
 app.use(express.json());
+app.use(cors());
+
 
 app.get("/", async (req, res) => {
   try {
-    await inserirDados();
     res.json("online");
   } catch (err) {
     res.status(500).json({ erro: err.message });
   }
 });
+
 
 app.use("/tipoecoponto", tipo_ecoponto_router);
 app.use("/tipodeposito", tipo_deposito_router);
