@@ -3,40 +3,40 @@ import { useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet-routing-machine";
 
-export default function Routing() {
+export default function Routing({ pontos = [] }) {
   const map = useMap();
-  let coordinates = [
-    fetch("http://localhost:3000/rotas/coordenadas")
-  ];
-  console.log(coordinates);
+
   useEffect(() => {
+    if (!map) return;
+
+    const waypoints = pontos
+      .map((p) => {
+        const lat = Number(p.latitude ?? p.coords?.[0]);
+        const lng = Number(p.longitude ?? p.coords?.[1]);
+        if (Number.isFinite(lat) && Number.isFinite(lng)) return L.latLng(lat, lng);
+        return null;
+      })
+      .filter(Boolean);
+
+    if (waypoints.length < 2) return;
+
     const routingControl = L.Routing.control({
-      waypoints: [
-        L.latLng(38.7223, -9.1393), // Lisboa
-        L.latLng(41.1579, -8.6291), // Porto
-      ],
-
+      waypoints,
       routeWhileDragging: true,
-
-      lineOptions: {
-        styles: [{ color: "blue", weight: 5 }],
-      },
-
-       createMarker: () => null,
-
-        show: false,
-  addWaypoints: false,
-  draggableWaypoints: false,
-  fitSelectedRoutes: true,
-  showAlternatives: false,
-
+      lineOptions: { styles: [{ color: "blue", weight: 5 }] },
+      createMarker: () => null,
+      show: false,
+      addWaypoints: false,
+      draggableWaypoints: false,
+      fitSelectedRoutes: true,
+      showAlternatives: false,
       router: L.Routing.osrmv1({
         serviceUrl: "https://router.project-osrm.org/route/v1",
       }),
     }).addTo(map);
 
     return () => map.removeControl(routingControl);
-  }, [map]);
+  }, [map, JSON.stringify(pontos)]);
 
   return null;
 }

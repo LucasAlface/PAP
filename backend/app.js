@@ -22,6 +22,7 @@ app.use(cors());
 
 app.get("/", async (req, res) => {
   try {
+    await inserirDados();
     res.json("online");
   } catch (err) {
     res.status(500).json({ erro: err.message });

@@ -66,27 +66,30 @@ async function inserirDados() {
       codigo: "VX5FT",
       tipoEcopontoId: 1,
       depositoId: 1,
-      latitude: 40.642346,
-      longitude: -8.649730,
-      descricao: "um vidrão superficial em aveiro"
+      capacidadeAtual: 2.0,
+      latitude: 41.1622468,
+      longitude: -8.6631531,
+      descricao: "um vidrão superficial no Porto"
     },
 
     {
       codigo: "VX6FT",
       tipoEcopontoId: 2,
       depositoId: 1,
-      latitude: 40.642346,
-      longitude: -8.649730,
-      descricao: "um embalão superficial em aveiro"
+      capacidadeAtual: 2.2,
+      latitude: 38.7441392,
+      longitude: -9.2009353,
+      descricao: "um embalão superficial em Lisboa"
     },
 
     {
       codigo: "VX7FT",
       tipoEcopontoId: 3,
       depositoId: 1,
-      latitude: 40.642346,
-      longitude: -8.649730,
-      descricao: "um papelão superficial em aveiro"
+      capacidadeAtual: 2.5,
+      latitude: 40.4380986,
+      longitude: -3.844343,
+      descricao: "um papelão superficial em Madrid"
     },
 
     {
