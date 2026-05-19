@@ -22,7 +22,7 @@ export default function Mapa() {
     <MapContainer
       center={[40.6, -8.6]}
       zoom={7}
-      style={{ height: "100vh", width: "100%" }}
+      style={{ height: "100%", width: "100%" }}
     >
       <TileLayer
         attribution="&copy; OpenStreetMap contributors"
