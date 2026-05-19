@@ -41,4 +41,13 @@ router.delete("/apagar/:id", async (req, res) => {
     }
 });
 
+router.get("/total", async (req, res) => {
+    try {
+        const total = await Ecoponto.count();
+        res.json({ total });
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+});
+
 module.exports = router;

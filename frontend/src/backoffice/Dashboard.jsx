@@ -1,4 +1,15 @@
+import { useEffect, useState } from "react";
+
 export default function Dashboard() {
+        const [stats, setStats] = useState([]);
+
+    useEffect(() => {
+           fetch("http://localhost:3000/ecoponto/total")
+        .then((res) => res.json())
+        .then((data) => {
+          setStats(data);
+        });
+    }, []);
   return (
     <div>
       <h2 style={{ marginTop: 0 }}>Dashboard</h2>
@@ -9,7 +20,7 @@ export default function Dashboard() {
         </div>
         <div style={{ padding: 16, background: "#fff", border: "1px solid #eee", borderRadius: 8, minWidth: 160 }}>
           <div style={{ fontSize: 12, color: "#666" }}>Ecopontos</div>
-          <div style={{ fontSize: 24, fontWeight: 700 }}>24</div>
+          <div style={{ fontSize: 24, fontWeight: 700 }}>{stats.total}</div>
         </div>
       </div>
       <section style={{ marginTop: 20 }}>
