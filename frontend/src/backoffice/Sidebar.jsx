@@ -19,8 +19,8 @@ export default function Sidebar({ page, onNavigate }) {
         <div style={itemStyle(page === "ecopontos")} onClick={() => onNavigate("ecopontos")}>
           Ecopontos
         </div>
-        <div style={itemStyle(page === "add-ecoponto")} onClick={() => onNavigate("add-ecoponto")}>
-          Add Ecoponto
+        <div style={itemStyle(page === "equipamentos")} onClick={() => onNavigate("equipamentos")}>
+          Equipamentos  
         </div>
       </div>
     </aside>

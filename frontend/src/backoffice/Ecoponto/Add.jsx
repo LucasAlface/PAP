@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function Add() {
+export default function AddEcoponto() {
   const [codigo, setCodigo] = useState("");
   const [tipoEcopontoId, setTipoEcopontoId] = useState("");
   const [depositoId, setDepositoId] = useState("");

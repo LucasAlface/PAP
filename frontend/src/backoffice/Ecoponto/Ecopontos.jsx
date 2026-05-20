@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export default function Ecopontos() {
+export default function Ecopontos({ onNavigate }) {
   const [total, setTotal] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -17,7 +17,16 @@ export default function Ecopontos() {
 
   return (
     <div>
-      <h2 style={{ marginTop: 0 }}>Ecopontos</h2>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+        <h2 style={{ marginTop: 0 }}>Ecopontos</h2>
+        <button
+          onClick={() => onNavigate("add-ecoponto")}
+          style={{ padding: "10px 16px", borderRadius: 6, border: "1px solid #3b82f6", background: "#3b82f6", color: "white", cursor: "pointer" }}
+        >
+          Add Ecoponto
+        </button>
+      </div>
+
       {loading && <p>Loading ecoponto summary...</p>}
       {error && <p style={{ color: "#b91c1c" }}>Error loading ecopontos: {error}</p>}
       {total !== null && (
@@ -26,9 +35,6 @@ export default function Ecopontos() {
           <div style={{ fontSize: 28, fontWeight: 700 }}>{total}</div>
         </div>
       )}
-      <p style={{ marginTop: 20, maxWidth: 640 }}>
-        Use the Add Ecoponto page to create new ecopontos. Existing details are not listed here because the backend currently exposes only the total count.
-      </p>
     </div>
   );
 }
