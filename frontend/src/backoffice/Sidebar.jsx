@@ -20,7 +20,19 @@ export default function Sidebar({ page, onNavigate }) {
           Ecopontos
         </div>
         <div style={itemStyle(page === "equipamentos")} onClick={() => onNavigate("equipamentos")}>
-          Equipamentos  
+          Equipamentos
+        </div>
+        <div style={itemStyle(page === "depositos")} onClick={() => onNavigate("depositos")}>
+          Depósitos
+        </div>
+        <div style={itemStyle(page === "tipoecopontos")} onClick={() => onNavigate("tipoecopontos")}>
+          Tipo Ecopontos
+        </div>
+        <div style={itemStyle(page === "tipodepositos")} onClick={() => onNavigate("tipodepositos")}>
+          Tipo Depósitos
+        </div>
+        <div style={itemStyle(page === "ecopontoequipamentos")} onClick={() => onNavigate("ecopontoequipamentos")}>
+          Ecoponto Equipamentos
         </div>
       </div>
     </aside>

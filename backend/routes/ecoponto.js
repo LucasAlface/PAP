@@ -41,10 +41,34 @@ router.delete("/apagar/:id", async (req, res) => {
     }
 });
 
+router.get("/listar", async (req, res) => {
+    try {
+        const ecopontos = await Ecoponto.findAll({ order: [["id", "ASC"]] });
+        res.json(ecopontos);
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+});
+
 router.get("/total", async (req, res) => {
     try {
         const total = await Ecoponto.count();
         res.json({ total });
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+});
+
+router.get("/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const ecoponto = await Ecoponto.findOne({ where: { id: id } });
+
+        if (!ecoponto) {
+            return res.status(404).json({ erro: "Registro não encontrado" });
+        }
+
+        res.json(ecoponto);
     } catch (err) {
         res.status(500).json({ erro: err.message });
     }

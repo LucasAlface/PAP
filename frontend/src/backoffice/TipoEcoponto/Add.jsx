@@ -1,22 +1,21 @@
 import { useState } from "react";
 
-export default function AddEquipamento() {
-  const [codigo, setCodigo] = useState("");
-  const [ativo, setAtivo] = useState("");
+export default function AddTipoEcoponto() {
+  const [tipo, setTipo] = useState("");
+  const [descricao, setDescricao] = useState("");
   const [status, setStatus] = useState("");
-
 
   async function handleSubmit(event) {
     event.preventDefault();
     setStatus("Sending...");
 
     const payload = [{
-      codigo,
-      ativo: ativo === "true",
+      tipo,
+      descricao,
     }];
 
     try {
-      const res = await fetch("http://localhost:3000/equipamento/inserir", {
+      const res = await fetch("http://localhost:3000/tipoecoponto/inserir", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -24,12 +23,12 @@ export default function AddEquipamento() {
 
       if (!res.ok) {
         const payload = await res.json();
-        throw new Error(payload.erro || "Failed to add equipamento");
+        throw new Error(payload.erro || "Failed to add tipo ecoponto");
       }
 
-      setStatus("Equipamento added successfully.");
-      setCodigo("");
-      setAtivo("");
+      setStatus("Tipo Ecoponto added successfully.");
+      setTipo("");
+      setDescricao("");
     } catch (error) {
       setStatus(`Error: ${error.message}`);
     }
@@ -37,22 +36,18 @@ export default function AddEquipamento() {
 
   return (
     <div>
-      <h2 style={{ marginTop: 0 }}>Add Equipamento</h2>
+      <h2 style={{ marginTop: 0 }}>Add Tipo Ecoponto</h2>
       <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12, maxWidth: 560 }}>
         <label>
-          Código
-          <input value={codigo} onChange={(e) => setCodigo(e.target.value)} placeholder="Equipamento code" />
+          Tipo
+          <input value={tipo} onChange={(e) => setTipo(e.target.value)} placeholder="Tipo" />
         </label>
         <label>
-          Ativo
-          <select value={ativo} onChange={(e) => setAtivo(e.target.value)}>
-            <option value="">Select status</option>
-            <option value="true">Sim</option>
-            <option value="false">Não</option>
-          </select>
+          Descrição
+          <textarea value={descricao} onChange={(e) => setDescricao(e.target.value)} placeholder="Descrição" rows={4} />
         </label>
         <button type="submit" style={{ padding: "10px 14px", borderRadius: 6, cursor: "pointer" }}>
-          Create Equipamento
+          Create Tipo Ecoponto
         </button>
       </form>
       {status && <div style={{ marginTop: 12, color: status.startsWith("Error") ? "#b91c1c" : "#166534" }}>{status}</div>}

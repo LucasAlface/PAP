@@ -41,14 +41,22 @@ router.delete("/apagar/:id", async (req, res) => {
     }
 });
 
-router.get("/total", async (req, res) => {
+router.get("/listar", async (req, res) => {
     try {
-        const total = await Equipamento.count({where: { ativo: true }});
-        res.json({ total });
+        const equipamentos = await Equipamento.findAll({ order: [["id", "ASC"]] });
+        res.json(equipamentos);
     } catch (err) {
         res.status(500).json({ erro: err.message });
     }
 });
 
+router.get("/total", async (req, res) => {
+    try {
+        const total = await Equipamento.count({ where: { ativo: true } });
+        res.json({ total });
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+});
 
 module.exports = router;

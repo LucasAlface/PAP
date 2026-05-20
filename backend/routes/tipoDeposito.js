@@ -41,4 +41,13 @@ router.delete('/apagar/:id', async (req, res) => {
   }
 });
 
+router.get('/listar', async (req, res) => {
+  try {
+    const tipos = await TipoDeposito.findAll({ order: [['id', 'ASC']] });
+    res.json(tipos);
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
+
 module.exports = router;

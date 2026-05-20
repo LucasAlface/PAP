@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 
 export default function Ecopontos({ onNavigate }) {
-  const [total, setTotal] = useState(null);
+  const [ecopontos, setEcopontos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:3000/ecoponto/total")
+    setLoading(true);
+    fetch("http://localhost:3000/ecoponto/listar")
       .then((res) => res.json())
       .then((result) => {
-        setTotal(result.total);
+        setEcopontos(result);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
@@ -27,13 +28,58 @@ export default function Ecopontos({ onNavigate }) {
         </button>
       </div>
 
-      {loading && <p>Loading ecoponto summary...</p>}
+      {loading && <p>Loading ecopontos...</p>}
       {error && <p style={{ color: "#b91c1c" }}>Error loading ecopontos: {error}</p>}
-      {total !== null && (
-        <div style={{ padding: 16, background: "#fff", border: "1px solid #eee", borderRadius: 10, maxWidth: 320 }}>
-          <div style={{ color: "#666", fontSize: 14 }}>Total registered ecopontos</div>
-          <div style={{ fontSize: 28, fontWeight: 700 }}>{total}</div>
-        </div>
+
+      {!loading && !error && (
+        <>
+          <div style={{ margin: "16px 0", padding: 16, background: "#fff", border: "1px solid #eee", borderRadius: 10, maxWidth: 320 }}>
+            <div style={{ color: "#666", fontSize: 14 }}>Total registered ecopontos</div>
+            <div style={{ fontSize: 28, fontWeight: 700 }}>{ecopontos.length}</div>
+          </div>
+
+          {ecopontos.length === 0 ? (
+            <p>No ecopontos found.</p>
+          ) : (
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 720 }}>
+                <thead>
+                  <tr style={{ textAlign: "left", borderBottom: "1px solid #ddd" }}>
+                    <th style={{ padding: "12px 8px" }}>Código</th>
+                    <th style={{ padding: "12px 8px" }}>Tipo</th>
+                    <th style={{ padding: "12px 8px" }}>Depósito</th>
+                    <th style={{ padding: "12px 8px" }}>Capacidade</th>
+                    <th style={{ padding: "12px 8px" }}>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ecopontos.map((item) => (
+                    <tr key={item.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                      <td style={{ padding: "12px 8px" }}>{item.codigo}</td>
+                      <td style={{ padding: "12px 8px" }}>{item.tipoEcopontoId}</td>
+                      <td style={{ padding: "12px 8px" }}>{item.depositoId}</td>
+                      <td style={{ padding: "12px 8px" }}>{item.capacidadeAtual}</td>
+                      <td style={{ padding: "12px 8px", display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <button
+                          onClick={() => onNavigate("edit-ecoponto", item)}
+                          style={{ padding: "8px 10px", borderRadius: 6, cursor: "pointer" }}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => onNavigate("delete-ecoponto", item)}
+                          style={{ padding: "8px 10px", borderRadius: 6, background: "#dc2626", color: "white", cursor: "pointer" }}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

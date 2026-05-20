@@ -41,4 +41,13 @@ router.delete("/apagar/:idEcoponto/:idEquipamento", async (req, res) => {
     }
 });
 
+router.get("/listar", async (req, res) => {
+    try {
+        const registros = await EcopontoEquipamento.findAll({ order: [["ecopontoId", "ASC"], ["equipamentoId", "ASC"]] });
+        res.json(registros);
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+});
+
 module.exports = router;
