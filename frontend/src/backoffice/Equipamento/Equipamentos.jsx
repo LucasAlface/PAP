@@ -1,20 +1,7 @@
-import { useEffect, useState } from "react";
+import useEquipamentos from "./useEquipamentos.js";
 
 export default function Equipamentos({ onNavigate }) {
-  const [equipamentos, setEquipamentos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    setLoading(true);
-    fetch("http://localhost:3000/equipamento/listar")
-      .then((res) => res.json())
-      .then((result) => {
-        setEquipamentos(result);
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
+  const { equipamentos, loading, error } = useEquipamentos();
 
   return (
     <div>

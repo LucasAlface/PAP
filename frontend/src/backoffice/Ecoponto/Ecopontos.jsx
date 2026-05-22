@@ -1,20 +1,9 @@
-import { useEffect, useState } from "react";
+import useDepositos from "../Deposito/useDepositos.js";
+import useEcopontos from "./useEcopontos.js";
 
 export default function Ecopontos({ onNavigate }) {
-  const [ecopontos, setEcopontos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    setLoading(true);
-    fetch("http://localhost:3000/ecoponto/listar")
-      .then((res) => res.json())
-      .then((result) => {
-        setEcopontos(result);
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
+  const { depositos } = useDepositos();
+  const { ecopontos, loading, error } = useEcopontos();
 
   return (
     <div>
@@ -57,7 +46,12 @@ export default function Ecopontos({ onNavigate }) {
                     <tr key={item.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
                       <td style={{ padding: "12px 8px" }}>{item.codigo}</td>
                       <td style={{ padding: "12px 8px" }}>{item.tipoEcopontoId}</td>
-                      <td style={{ padding: "12px 8px" }}>{item.depositoId}</td>
+                      <td style={{ padding: "12px 8px" }}>
+                      {Array.isArray(depositos)
+                        ? depositos.find((d) => d.id === item.depositoId)?.descricao ??
+                          "Depósito não encontrado"
+                        : "Loading..."}
+                    </td>
                       <td style={{ padding: "12px 8px" }}>{item.capacidadeAtual}</td>
                       <td style={{ padding: "12px 8px", display: "flex", gap: 8, flexWrap: "wrap" }}>
                         <button

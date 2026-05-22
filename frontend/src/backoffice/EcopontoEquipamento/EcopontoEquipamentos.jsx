@@ -1,20 +1,7 @@
-import { useEffect, useState } from "react";
+import useEcopontoEquipamentos from "./useEcopontoEquipamentos.js";
 
 export default function EcopontoEquipamentos({ onNavigate }) {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    setLoading(true);
-    fetch("http://localhost:3000/ecopontoequipamento/listar")
-      .then((res) => res.json())
-      .then((result) => {
-        setItems(result);
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
+  const { items, loading, error } = useEcopontoEquipamentos();
 
   return (
     <div>

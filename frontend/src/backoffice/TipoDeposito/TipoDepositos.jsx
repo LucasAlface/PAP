@@ -1,20 +1,7 @@
-import { useEffect, useState } from "react";
+import useTipoDepositos from "./useTipoDepositos.js";
 
 export default function TipoDepositos({ onNavigate }) {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    setLoading(true);
-    fetch("http://localhost:3000/tipodeposito/listar")
-      .then((res) => res.json())
-      .then((result) => {
-        setItems(result);
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
+  const { items, loading, error } = useTipoDepositos();
 
   return (
     <div>

@@ -1,20 +1,7 @@
-import { useEffect, useState } from "react";
+import useDepositos from "./useDepositos";
 
 export default function Depositos({ onNavigate }) {
-  const [depositos, setDepositos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    setLoading(true);
-    fetch("http://localhost:3000/deposito/listar")
-      .then((res) => res.json())
-      .then((result) => {
-        setDepositos(result);
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
+  const { depositos, loading, error, refetch } = useDepositos();
 
   return (
     <div>
