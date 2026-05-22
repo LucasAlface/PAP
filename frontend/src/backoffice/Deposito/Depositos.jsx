@@ -1,7 +1,9 @@
 import useDepositos from "./useDepositos";
+import useTipoDepositos from "../TipoDeposito/useTipoDepositos";
 
 export default function Depositos({ onNavigate }) {
   const { depositos, loading, error, refetch } = useDepositos();
+  const { items: tipoDepositos } = useTipoDepositos();
 
   return (
     <div>
@@ -35,7 +37,7 @@ export default function Depositos({ onNavigate }) {
                     <th style={{ padding: "12px 8px" }}>ID</th>
                     <th style={{ padding: "12px 8px" }}>Capacidade Total</th>
                     <th style={{ padding: "12px 8px" }}>Altura</th>
-                    <th style={{ padding: "12px 8px" }}>Tipo Deposito ID</th>
+                    <th style={{ padding: "12px 8px" }}>Tipo</th>
                     <th style={{ padding: "12px 8px" }}>Descrição</th>
                     <th style={{ padding: "12px 8px" }}>Ações</th>
                   </tr>
@@ -46,7 +48,12 @@ export default function Depositos({ onNavigate }) {
                       <td style={{ padding: "12px 8px" }}>{item.id}</td>
                       <td style={{ padding: "12px 8px" }}>{item.capacidadeTotal}</td>
                       <td style={{ padding: "12px 8px" }}>{item.altura}</td>
-                      <td style={{ padding: "12px 8px" }}>{item.tipoDepositoId}</td>
+                      <td style={{ padding: "12px 8px" }}>
+                        {Array.isArray(tipoDepositos)
+                          ? tipoDepositos.find((t) => t.id === item.tipoDepositoId)?.tipo ??
+                            "Tipo de depósito não encontrado"
+                          : "Loading..."}
+                      </td>
                       <td style={{ padding: "12px 8px" }}>{item.descricao}</td>
                       <td style={{ padding: "12px 8px", display: "flex", gap: 8, flexWrap: "wrap" }}>
                         <button

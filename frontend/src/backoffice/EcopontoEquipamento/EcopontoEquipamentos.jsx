@@ -1,7 +1,11 @@
 import useEcopontoEquipamentos from "./useEcopontoEquipamentos.js";
+import useEcopontos from "../Ecoponto/useEcopontos.js";
+import useEquipamentos from "../Equipamento/useEquipamentos.js";
 
 export default function EcopontoEquipamentos({ onNavigate }) {
   const { items, loading, error } = useEcopontoEquipamentos();
+  const { ecopontos } = useEcopontos();
+  const { equipamentos } = useEquipamentos();
 
   return (
     <div>
@@ -32,8 +36,8 @@ export default function EcopontoEquipamentos({ onNavigate }) {
               <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 720 }}>
                 <thead>
                   <tr style={{ textAlign: "left", borderBottom: "1px solid #ddd" }}>
-                    <th style={{ padding: "12px 8px" }}>Ecoponto ID</th>
-                    <th style={{ padding: "12px 8px" }}>Equipamento ID</th>
+                    <th style={{ padding: "12px 8px" }}>Ecoponto</th>
+                    <th style={{ padding: "12px 8px" }}>Equipamento</th>
                     <th style={{ padding: "12px 8px" }}>Ativo</th>
                     <th style={{ padding: "12px 8px" }}>Ações</th>
                   </tr>
@@ -41,8 +45,15 @@ export default function EcopontoEquipamentos({ onNavigate }) {
                 <tbody>
                   {items.map((item) => (
                     <tr key={`${item.ecopontoId}-${item.equipamentoId}`} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                      <td style={{ padding: "12px 8px" }}>{item.ecopontoId}</td>
-                      <td style={{ padding: "12px 8px" }}>{item.equipamentoId}</td>
+                      {Array.isArray(ecopontos)
+                          ? ecopontos.find((e) => e.id === item.ecopontoId)?.codigo ??
+                            "Ecoponto não encontrado"
+                          : "Loading..."}
+                      <td style={{ padding: "12px 8px" }}>
+                      {Array.isArray(equipamentos)
+                          ? equipamentos.find((eq) => eq.id === item.equipamentoId)?.codigo ??
+                            "Equipamento não encontrado"
+                          : "Loading..."}                      </td>
                       <td style={{ padding: "12px 8px" }}>{item.ativo ? "Sim" : "Não"}</td>
                       <td style={{ padding: "12px 8px", display: "flex", gap: 8, flexWrap: "wrap" }}>
                         <button

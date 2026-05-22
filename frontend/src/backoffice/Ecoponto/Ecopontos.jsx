@@ -1,8 +1,10 @@
 import useDepositos from "../Deposito/useDepositos.js";
+import useTipoEcopontos from "../TipoEcoponto/useTipoEcopontos.js";
 import useEcopontos from "./useEcopontos.js";
 
 export default function Ecopontos({ onNavigate }) {
   const { depositos } = useDepositos();
+  const { items: tipoEcopontos } = useTipoEcopontos();
   const { ecopontos, loading, error } = useEcopontos();
 
   return (
@@ -45,7 +47,12 @@ export default function Ecopontos({ onNavigate }) {
                   {ecopontos.map((item) => (
                     <tr key={item.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
                       <td style={{ padding: "12px 8px" }}>{item.codigo}</td>
-                      <td style={{ padding: "12px 8px" }}>{item.tipoEcopontoId}</td>
+                      <td style={{ padding: "12px 8px" }}>
+                        {Array.isArray(tipoEcopontos)
+                          ? tipoEcopontos.find((t) => t.id === item.tipoEcopontoId)?.tipo ??
+                            "Tipo de ecoponto não encontrado"
+                          : "Loading..."}
+                      </td>
                       <td style={{ padding: "12px 8px" }}>
                       {Array.isArray(depositos)
                         ? depositos.find((d) => d.id === item.depositoId)?.descricao ??
