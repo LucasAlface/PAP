@@ -52,15 +52,14 @@ router.get("/coordenadas", async (req, res) => {
 
       if (!deposito) continue;
 
-      const percentagem =
-        ecoponto.capacidadeAtual / deposito.capacidadeTotal;
+      const percentagem = ecoponto.capacidadeAtual / deposito.capacidadeTotal * 100;
 
-      if (percentagem > 0.7) {
-        ecopontosCheios.push({
-          latitude: ecoponto.latitude,
-          longitude: ecoponto.longitude
-        });
-      }
+      ecopontosCheios.push({
+        codigo: ecoponto.codigo,
+        percentagem: percentagem,
+        latitude: ecoponto.latitude,
+        longitude: ecoponto.longitude
+      });
     }
 
     res.json(ecopontosCheios);

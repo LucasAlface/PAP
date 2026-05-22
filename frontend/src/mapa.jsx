@@ -5,11 +5,13 @@ import {
   TileLayer,
   Marker,
   Popup,
+  Tooltip,
 } from "react-leaflet";
 import Routing from "./routing.jsx";
 
 export default function Mapa() {
   const [pontos, setPontos] = useState([]);
+  const pontosCheios = pontos.filter((p) => p.percentagem > 70);
   
     useEffect(() => {
       fetch("http://localhost:3000/rotas/coordenadas")
@@ -29,20 +31,23 @@ export default function Mapa() {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      {pontos.map((ponto, index) => (
+      {pontos.map((ponto) => (
         <Marker
-          key={index}
+          key={ponto.codigo}
           position={[
             Number(ponto.latitude),
             Number(ponto.longitude),
           ]}
         >
           <Popup>
-            Ponto {index + 1}
+            <div>Ecoponto {ponto.codigo}</div>
           </Popup>
+          <Tooltip permanent direction="bottom" offset={[0, 10]}>
+            {ponto.percentagem}%
+          </Tooltip>
         </Marker>
       ))}
-      <Routing pontos={pontos} />
+      <Routing pontos={pontosCheios} />
     </MapContainer>
   );
 }
