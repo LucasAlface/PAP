@@ -33,65 +33,43 @@ export default function EcopontoEquipamentoForm({
     event.preventDefault();
     setStatus("Sending...");
 
-    if (isEditMode) {
-      if (!ecopontoEquipamento?.ecopontoId || !ecopontoEquipamento?.equipamentoId) {
-        setStatus("Unable to update: missing ecoponto equipamento information.");
-        return;
-      }
+    if (isEditMode && (!ecopontoEquipamento?.ecopontoId || !ecopontoEquipamento?.equipamentoId)) {
+      setStatus("Unable to update: missing ecoponto equipamento information.");
+      return;
+    }
 
-      const payload = {
-        ativo: ativo?.value === "true",
-      };
-
-      try {
-        const res = await apiRequest(
-          `http://localhost:3000/ecopontoequipamento/atualizar/${ecopontoEquipamento.ecopontoId}/${ecopontoEquipamento.equipamentoId}`,
-          "PUT",
-          payload
-        );
-
-        if (!res.ok) {
-          const errorPayload = await res;
-          throw new Error(
-            errorPayload.erro || "Failed to update ecoponto equipamento"
-          );
+    const payload = isEditMode
+      ? {
+          ativo: ativo?.value === "true",
         }
+      : [
+          {
+            ecopontoId: ecopontoId ? Number(ecopontoId) : null,
+            equipamentoId: equipamentoId ? Number(equipamentoId) : null,
+            ativo: ativo?.value === "true",
+          },
+        ];
 
+    const endpoint = isEditMode
+      ? `http://localhost:3000/ecopontoequipamento/atualizar/${ecopontoEquipamento.ecopontoId}/${ecopontoEquipamento.equipamentoId}`
+      : "http://localhost:3000/ecopontoequipamento/inserir";
+
+    const method = isEditMode ? "PUT" : "POST";
+
+    try {
+      await apiRequest(endpoint, method, payload);
+
+      if (isEditMode) {
         setStatus("Ecoponto Equipamento updated successfully.");
         if (onNavigate) onNavigate("ecopontoequipamentos");
-      } catch (error) {
-        setStatus(`Error: ${error.message}`);
-      }
-    } else {
-      const payload = [
-        {
-          ecopontoId: ecopontoId ? Number(ecopontoId) : null,
-          equipamentoId: equipamentoId ? Number(equipamentoId) : null,
-          ativo: ativo?.value === "true",
-        },
-      ];
-
-      try {
-        const res = await apiRequest(
-          "http://localhost:3000/ecopontoequipamento/inserir",
-          "POST",
-          payload
-        );
-
-        if (!res.ok) {
-          const errorPayload = await res;
-          throw new Error(
-            errorPayload.erro || "Failed to add ecoponto equipamento"
-          );
-        }
-
+      } else {
         setStatus("Ecoponto Equipamento added successfully.");
         setEcopontoId("");
         setEquipamentoId("");
         setAtivo({ value: "true", label: "Sim" });
-      } catch (error) {
-        setStatus(`Error: ${error.message}`);
       }
+    } catch (error) {
+      setStatus(`Error: ${error.message}`);
     }
   }
 

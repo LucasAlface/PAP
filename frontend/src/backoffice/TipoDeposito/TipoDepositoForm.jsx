@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { apiRequest } from "../../middleware/request";
 
 export default function TipoDepositoForm({ tipoDeposito, onNavigate }) {
   const [tipo, setTipo] = useState("");
@@ -34,18 +35,9 @@ export default function TipoDepositoForm({ tipoDeposito, onNavigate }) {
         : "http://localhost:3000/tipodeposito/inserir";
 
       const method = isEditMode ? "PUT" : "POST";
-      const body = isEditMode ? JSON.stringify(payload) : JSON.stringify([payload]);
+      const requestData = isEditMode ? payload : [payload];
 
-      const res = await fetch(endpoint, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body,
-      });
-
-      if (!res.ok) {
-        const errorPayload = await res.json();
-        throw new Error(errorPayload.erro || "Failed to save tipo depósito");
-      }
+      await apiRequest(endpoint, method, requestData);
 
       if (isEditMode) {
         setStatus("Tipo Depósito updated successfully.");

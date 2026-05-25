@@ -13,5 +13,5 @@ console.log(res.ok);
     throw new Error(errorPayload.erro || "Request failed");
   }
 
-  return res.json();
+  return res;
 }

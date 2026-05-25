@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { apiRequest } from "../../middleware/request";
 
 export default function DepositoForm({ deposito, onNavigate }) {
   const [capacidadeTotal, setCapacidadeTotal] = useState("");
@@ -40,18 +41,9 @@ export default function DepositoForm({ deposito, onNavigate }) {
         : "http://localhost:3000/deposito/inserir";
 
       const method = isEditMode ? "PUT" : "POST";
-      const body = isEditMode ? JSON.stringify(payload) : JSON.stringify([payload]);
+      const requestData = isEditMode ? payload : [payload];
 
-      const res = await fetch(endpoint, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body,
-      });
-
-      if (!res.ok) {
-        const errorPayload = await res.json();
-        throw new Error(errorPayload.erro || "Failed to save depósito");
-      }
+      await apiRequest(endpoint, method, requestData);
 
       if (isEditMode) {
         setStatus("Depósito updated successfully.");

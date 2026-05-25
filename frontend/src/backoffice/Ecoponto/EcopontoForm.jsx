@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { apiRequest } from "../../middleware/request";
 
 export default function EcopontoForm({ ecoponto, onNavigate }) {
   const [codigo, setCodigo] = useState("");
@@ -49,18 +50,9 @@ export default function EcopontoForm({ ecoponto, onNavigate }) {
         : "http://localhost:3000/ecoponto/inserir";
 
       const method = isEditMode ? "PUT" : "POST";
-      const body = isEditMode ? JSON.stringify(payload) : JSON.stringify([payload]);
+      const requestData = isEditMode ? payload : [payload];
 
-      const res = await fetch(endpoint, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body,
-      });
-
-      if (!res.ok) {
-        const errorPayload = await res.json();
-        throw new Error(errorPayload.erro || "Failed to save ecoponto");
-      }
+      await apiRequest(endpoint, method, requestData);
 
       if (isEditMode) {
         setStatus("Ecoponto updated successfully.");

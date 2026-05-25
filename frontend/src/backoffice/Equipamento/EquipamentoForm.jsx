@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import Select from "react-select";
+import { apiRequest } from "../../middleware/request";
 
 export default function EquipamentoForm({ equipamento, onNavigate }) {
   const [codigo, setCodigo] = useState("");
-  const [ativo, setAtivo] = useState(null);
+  const [ativo, setAtivo] = useState({ value: "true", label: "Sim" });
   const [bateria, setBateria] = useState("");
   const [status, setStatus] = useState("");
 
@@ -52,18 +53,9 @@ export default function EquipamentoForm({ equipamento, onNavigate }) {
         : "http://localhost:3000/equipamento/inserir";
 
       const method = isEditMode ? "PUT" : "POST";
-      const body = isEditMode ? JSON.stringify(payload) : JSON.stringify([payload]);
+      const requestData = isEditMode ? payload : [payload];
 
-      const res = await fetch(endpoint, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body,
-      });
-
-      if (!res.ok) {
-        const errorPayload = await res.json();
-        throw new Error(errorPayload.erro || "Failed to save equipamento");
-      }
+      await apiRequest(endpoint, method, requestData);
 
       if (isEditMode) {
         setStatus("Equipamento updated successfully.");
@@ -71,7 +63,7 @@ export default function EquipamentoForm({ equipamento, onNavigate }) {
       } else {
         setStatus("Equipamento added successfully.");
         setCodigo("");
-        setAtivo(null);
+        setAtivo({ value: "true", label: "Sim" });
         setBateria("");
       }
     } catch (error) {
