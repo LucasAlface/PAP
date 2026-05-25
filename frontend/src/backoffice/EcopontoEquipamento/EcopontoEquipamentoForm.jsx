@@ -1,15 +1,21 @@
 import { useEffect, useState } from "react";
 import { apiRequest } from "../../middleware/request";
 import Select from "react-select";
+import useEcopontos from "../Ecoponto/useEcopontos.js";
+import useEquipamentos from "../Equipamento/useEquipamentos.js";
 
-export default function EcopontoEquipamentoForm({
-  ecopontoEquipamento,
-  onNavigate,
-}) {
-  const [ecopontoId, setEcopontoId] = useState("");
-  const [equipamentoId, setEquipamentoId] = useState("");
+export default function EcopontoEquipamentoForm({ ecopontoEquipamento, onNavigate }) {
+  const { ecopontos } = useEcopontos();
+  const { equipamentos } = useEquipamentos();
+
+  const ecopontoOptions = ecopontos.map((e) => ({ value: String(e.id), label: `${e.codigo} - ${e.descricao || ""}` }));
+  const equipamentoOptions = equipamentos.map((eq) => ({ value: String(eq.id), label: `${eq.codigo} - ${eq.descricao || ""}` }));
+
+  const [ecopontoId, setEcopontoId] = useState(null);
+  const [equipamentoId, setEquipamentoId] = useState(null);
   const [ativo, setAtivo] = useState({ value: "true", label: "Sim" });
   const [status, setStatus] = useState("");
+
   const options = [
     { value: "true", label: "Sim" },
     { value: "false", label: "Não" },
@@ -19,15 +25,18 @@ export default function EcopontoEquipamentoForm({
 
   useEffect(() => {
     if (isEditMode && ecopontoEquipamento) {
-      setEcopontoId(ecopontoEquipamento.ecopontoId ?? "");
-      setEquipamentoId(ecopontoEquipamento.equipamentoId ?? "");
-      setAtivo(
-        ecopontoEquipamento.ativo
-          ? { value: "true", label: "Sim" }
-          : { value: "false", label: "Não" }
-      );
+      setAtivo(ecopontoEquipamento.ativo ? options[0] : options[1]);
+
+      const eOpt = ecopontoOptions.find((o) => o.value === String(ecopontoEquipamento.ecopontoId));
+      const eqOpt = equipamentoOptions.find((o) => o.value === String(ecopontoEquipamento.equipamentoId));
+      setEcopontoId(eOpt || null);
+      setEquipamentoId(eqOpt || null);
+    } else if (!isEditMode) {
+      setEcopontoId(null);
+      setEquipamentoId(null);
+      setAtivo(options[0]);
     }
-  }, [ecopontoEquipamento, isEditMode]);
+  }, [ecopontoEquipamento, ecopontoOptions, equipamentoOptions, isEditMode]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -39,13 +48,11 @@ export default function EcopontoEquipamentoForm({
     }
 
     const payload = isEditMode
-      ? {
-          ativo: ativo?.value === "true",
-        }
+      ? { ativo: ativo?.value === "true" }
       : [
           {
-            ecopontoId: ecopontoId ? Number(ecopontoId) : null,
-            equipamentoId: equipamentoId ? Number(equipamentoId) : null,
+            ecopontoId: ecopontoId ? Number(ecopontoId.value) : null,
+            equipamentoId: equipamentoId ? Number(equipamentoId.value) : null,
             ativo: ativo?.value === "true",
           },
         ];
@@ -64,9 +71,9 @@ export default function EcopontoEquipamentoForm({
         if (onNavigate) onNavigate("ecopontoequipamentos");
       } else {
         setStatus("Ecoponto Equipamento added successfully.");
-        setEcopontoId("");
-        setEquipamentoId("");
-        setAtivo({ value: "true", label: "Sim" });
+        setEcopontoId(null);
+        setEquipamentoId(null);
+        setAtivo(options[0]);
       }
     } catch (error) {
       setStatus(`Error: ${error.message}`);
@@ -106,35 +113,36 @@ export default function EcopontoEquipamentoForm({
 
       <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12, maxWidth: 560 }}>
         <label>
-          Ecoponto ID
-          <input
-            type="number"
-            value={ecopontoId}
-            onChange={(e) => setEcopontoId(e.target.value)}
-            placeholder="Ecoponto ID"
-            disabled={isEditMode}
-          />
-        </label>
-        <label>
-          Equipamento ID
-          <input
-            type="number"
-            value={equipamentoId}
-            onChange={(e) => setEquipamentoId(e.target.value)}
-            placeholder="Equipamento ID"
-            disabled={isEditMode}
-          />
-        </label>
-        <label>
-          Ativo
+          Ecoponto
           <Select
-            options={options}
-            value={ativo}
-            onChange={setAtivo}
+            options={ecopontoOptions}
+            value={ecopontoId}
+            onChange={setEcopontoId}
             isSearchable={true}
             isClearable={false}
+            isDisabled={isEditMode}
+            placeholder="Select Ecoponto"
           />
         </label>
+
+        <label>
+          Equipamento
+          <Select
+            options={equipamentoOptions}
+            value={equipamentoId}
+            onChange={setEquipamentoId}
+            isSearchable={true}
+            isClearable={false}
+            isDisabled={isEditMode}
+            placeholder="Select Equipamento"
+          />
+        </label>
+
+        <label>
+          Ativo
+          <Select options={options} value={ativo} onChange={setAtivo} isSearchable isClearable={false} />
+        </label>
+
         <button type="submit" style={{ padding: "10px 14px", borderRadius: 6, cursor: "pointer" }}>
           {isEditMode ? "Save Changes" : "Create Ecoponto Equipamento"}
         </button>

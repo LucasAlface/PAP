@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import Select from "react-select";
 import { apiRequest } from "../../middleware/request";
 
 export default function DepositoForm({ deposito, onNavigate }) {
   const [capacidadeTotal, setCapacidadeTotal] = useState("");
   const [altura, setAltura] = useState("");
-  const [tipoDepositoId, setTipoDepositoId] = useState("");
+  const [tipoDepositoId, setTipoDepositoId] = useState(null);
+  const [tipoDepositoOptions, setTipoDepositoOptions] = useState([]);
   const [descricao, setDescricao] = useState("");
   const [status, setStatus] = useState("");
 
@@ -14,10 +16,32 @@ export default function DepositoForm({ deposito, onNavigate }) {
     if (isEditMode && deposito) {
       setCapacidadeTotal(deposito.capacidadeTotal ?? "");
       setAltura(deposito.altura ?? "");
-      setTipoDepositoId(deposito.tipoDepositoId ?? "");
       setDescricao(deposito.descricao ?? "");
     }
   }, [deposito, isEditMode]);
+
+  useEffect(() => {
+    async function loadOptions() {
+      try {
+        const res = await fetch("http://localhost:3000/tipodeposito/listar");
+        const data = await res.json();
+        setTipoDepositoOptions(data.map((d) => ({ value: String(d.id), label: d.tipo })));
+      } catch (err) {
+        // ignore
+      }
+    }
+
+    loadOptions();
+  }, []);
+
+  useEffect(() => {
+    if (isEditMode && deposito && tipoDepositoOptions.length > 0) {
+      const matchingOption = tipoDepositoOptions.find(
+        (opt) => opt.value === String(deposito.tipoDepositoId)
+      );
+      setTipoDepositoId(matchingOption || null);
+    }
+  }, [tipoDepositoOptions, deposito, isEditMode]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -31,7 +55,7 @@ export default function DepositoForm({ deposito, onNavigate }) {
     const payload = {
       capacidadeTotal: capacidadeTotal ? Number(capacidadeTotal) : null,
       altura: altura ? Number(altura) : null,
-      tipoDepositoId: tipoDepositoId ? Number(tipoDepositoId) : null,
+      tipoDepositoId: tipoDepositoId ? Number(tipoDepositoId.value) : null,
       descricao,
     };
 
@@ -52,7 +76,7 @@ export default function DepositoForm({ deposito, onNavigate }) {
         setStatus("Depósito added successfully.");
         setCapacidadeTotal("");
         setAltura("");
-        setTipoDepositoId("");
+        setTipoDepositoId(null);
         setDescricao("");
       }
     } catch (error) {
@@ -111,11 +135,13 @@ export default function DepositoForm({ deposito, onNavigate }) {
           />
         </label>
         <label>
-          Tipo Depósito ID
-          <input
+          Tipo Depósito
+          <Select
+            options={tipoDepositoOptions}
             value={tipoDepositoId}
-            onChange={(e) => setTipoDepositoId(e.target.value)}
-            placeholder="Tipo Depósito ID"
+            onChange={setTipoDepositoId}
+            isSearchable={true}
+            isClearable={false}
           />
         </label>
         <label>

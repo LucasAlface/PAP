@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
+import Select from "react-select";
 import { apiRequest } from "../../middleware/request";
 
 export default function EcopontoForm({ ecoponto, onNavigate }) {
   const [codigo, setCodigo] = useState("");
-  const [tipoEcopontoId, setTipoEcopontoId] = useState("");
-  const [depositoId, setDepositoId] = useState("");
+  const [tipoEcopontoId, setTipoEcopontoId] = useState(null);
+  const [depositoId, setDepositoId] = useState(null);
+  const [tipoOptions, setTipoOptions] = useState([]);
+  const [depositoOptions, setDepositoOptions] = useState([]);
   const [capacidadeAtual, setCapacidadeAtual] = useState("");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
@@ -16,14 +19,41 @@ export default function EcopontoForm({ ecoponto, onNavigate }) {
   useEffect(() => {
     if (isEditMode && ecoponto) {
       setCodigo(ecoponto.codigo ?? "");
-      setTipoEcopontoId(ecoponto.tipoEcopontoId ?? "");
-      setDepositoId(ecoponto.depositoId ?? "");
+      setTipoEcopontoId(ecoponto.tipoEcopontoId ?? null);
+      setDepositoId(ecoponto.depositoId ?? null);
       setCapacidadeAtual(ecoponto.capacidadeAtual ?? "");
       setLatitude(ecoponto.latitude ?? "");
       setLongitude(ecoponto.longitude ?? "");
       setDescricao(ecoponto.descricao ?? "");
     }
   }, [ecoponto, isEditMode]);
+
+  useEffect(() => {
+    async function loadOptions() {
+      try {
+        const resT = await fetch("http://localhost:3000/tipoecoponto/listar");
+        const dataT = await resT.json();
+        setTipoOptions(dataT.map((d) => ({ value: String(d.id), label: d.tipo })));
+
+        const resD = await fetch("http://localhost:3000/deposito/listar");
+        const dataD = await resD.json();
+        setDepositoOptions(dataD.map((d) => ({ value: String(d.id), label: d.descricao })));
+      } catch (err) {
+        // ignore
+      }
+    }
+
+    loadOptions();
+  }, []);
+
+  useEffect(() => {
+    if (isEditMode && ecoponto) {
+      const t = tipoOptions.find((o) => o.value === String(ecoponto.tipoEcopontoId));
+      const d = depositoOptions.find((o) => o.value === String(ecoponto.depositoId));
+      setTipoEcopontoId(t || null);
+      setDepositoId(d || null);
+    }
+  }, [tipoOptions, depositoOptions, ecoponto, isEditMode]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -36,8 +66,8 @@ export default function EcopontoForm({ ecoponto, onNavigate }) {
 
     const payload = {
       codigo,
-      tipoEcopontoId: tipoEcopontoId ? Number(tipoEcopontoId) : null,
-      depositoId: depositoId ? Number(depositoId) : null,
+      tipoEcopontoId: tipoEcopontoId ? Number(tipoEcopontoId.value) : null,
+      depositoId: depositoId ? Number(depositoId.value) : null,
       capacidadeAtual: capacidadeAtual ? Number(capacidadeAtual) : null,
       latitude: latitude ? Number(latitude) : null,
       longitude: longitude ? Number(longitude) : null,
@@ -60,8 +90,8 @@ export default function EcopontoForm({ ecoponto, onNavigate }) {
       } else {
         setStatus("Ecoponto added successfully.");
         setCodigo("");
-        setTipoEcopontoId("");
-        setDepositoId("");
+        setTipoEcopontoId(null);
+        setDepositoId(null);
         setCapacidadeAtual("");
         setLatitude("");
         setLongitude("");
@@ -113,19 +143,23 @@ export default function EcopontoForm({ ecoponto, onNavigate }) {
           />
         </label>
         <label>
-          Tipo Ecoponto ID
-          <input
+          Tipo Ecoponto
+          <Select
+            options={tipoOptions}
             value={tipoEcopontoId}
-            onChange={(e) => setTipoEcopontoId(e.target.value)}
-            placeholder="Tipo Ecoponto ID"
+            onChange={setTipoEcopontoId}
+            isSearchable={true}
+            isClearable={false}
           />
         </label>
         <label>
-          Depósito ID
-          <input
+          Depósito
+          <Select
+            options={depositoOptions}
             value={depositoId}
-            onChange={(e) => setDepositoId(e.target.value)}
-            placeholder="Depósito ID"
+            onChange={setDepositoId}
+            isSearchable={true}
+            isClearable={false}
           />
         </label>
         <label>
