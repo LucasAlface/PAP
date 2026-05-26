@@ -8,10 +8,14 @@ import {
   Tooltip,
 } from "react-leaflet";
 import Routing from "./routing.jsx";
+import formatCoordinates from "./middleware/coordinatesHelper.js";
 
 export default function Mapa() {
   const [pontos, setPontos] = useState([]);
   const pontosCheios = pontos.filter((p) => p.percentagem > 70);
+  const coordenadas = formatCoordinates(pontosCheios);
+
+  console.log("Coordenadas formatadas para roteamento:", coordenadas);
   
     useEffect(() => {
       fetch("http://localhost:3000/rotas/coordenadas")
@@ -20,8 +24,33 @@ export default function Mapa() {
           setPontos(data);
         });
     }, []);
+  
+  const handleGoogleMapsRedirect = () => {
+    window.open(`https://www.google.com/maps`);
+  };
+
   return (
-    <MapContainer
+    <>
+      <button 
+        onClick={handleGoogleMapsRedirect}
+        style={{
+          position: "absolute",
+          top: "10px",
+          right: "10px",
+          zIndex: 1000,
+          padding: "10px 15px",
+          backgroundColor: "#4285F4",
+          color: "white",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer",
+          fontSize: "14px",
+          fontWeight: "bold"
+        }}
+      >
+        Open Google Maps
+      </button>
+      <MapContainer
       center={[40.6, -8.6]}
       zoom={7}
       style={{ height: "100%", width: "100%" }}
@@ -49,5 +78,6 @@ export default function Mapa() {
       ))}
       <Routing pontos={pontosCheios} />
     </MapContainer>
+    </>
   );
 }
