@@ -8,15 +8,12 @@ import {
   Tooltip,
 } from "react-leaflet";
 import Routing from "./routing.jsx";
-import formatCoordinates from "./middleware/coordinatesHelper.js";
+import { formatCoordinates } from "./middleware/coordinatesHelper.js";
 
 export default function Mapa() {
   const [pontos, setPontos] = useState([]);
   const pontosCheios = pontos.filter((p) => p.percentagem > 70);
   const coordenadas = formatCoordinates(pontosCheios);
-
-  console.log("Coordenadas formatadas para roteamento:", coordenadas);
-  
     useEffect(() => {
       fetch("http://localhost:3000/rotas/coordenadas")
         .then((res) => res.json())
@@ -24,11 +21,10 @@ export default function Mapa() {
           setPontos(data);
         });
     }, []);
-  
-  const handleGoogleMapsRedirect = () => {
-    window.open(`https://www.google.com/maps`);
-  };
 
+    const handleGoogleMapsRedirect = () => {
+      window.open(`https://www.google.com/maps/dir/${coordenadas}`);
+    };
   return (
     <>
       <button 
