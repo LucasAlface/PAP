@@ -36,3 +36,19 @@ export default function useEcopontos() {
     refetch: fetchEcopontos,
   };
 }
+
+export async function filterEcopontosByCodigo(codigo) {
+  try {
+    const res = await fetch(`http://localhost:3000/ecoponto/listar/filtro?filtro=${codigo}`);
+
+    if (!res.ok) {
+      throw new Error("Erro ao filtrar ecopontos");
+    }
+
+    const data = await res.json();
+    return data.total || [];
+  } catch (err) {
+    console.error("Error filtering ecopontos:", err);
+    return [];
+  }
+}

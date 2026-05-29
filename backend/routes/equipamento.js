@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const Equipamento = require("../models/equipamento")
+const { Op } = require("sequelize");
 
 router.post("/inserir", async (req, res) => {
     try {
@@ -47,6 +48,73 @@ router.get("/listar", async (req, res) => {
         res.json(equipamentos);
     } catch (err) {
         res.status(500).json({ erro: err.message });
+    }
+});
+
+router.get("/listar/filtro", async (req, res) => {
+    try {
+        const {
+            codigo,
+            ativo,
+            bateria,
+            operadorBateria
+        } = req.query;
+
+        const filtros = {};
+
+        if (codigo) {
+            filtros.codigo = codigo;
+        }
+
+        if (ativo !== undefined && ativo !== "") {
+            filtros.ativo = ativo === "true";
+        }
+
+        if (bateria) {
+            switch (operadorBateria) {
+                case "maior":
+                    filtros.bateria = {
+                        [Op.gt]: bateria
+                    };
+                    break;
+
+                case "menor":
+                    filtros.bateria = {
+                        [Op.lt]: bateria
+                    };
+                    break;
+
+                case "igual":
+                default:
+                    filtros.bateria = {
+                        [Op.eq]: bateria
+                    };
+                    break;
+
+                case "maior_igual":
+                    filtros.bateria = {
+                        [Op.gte]: bateria
+                    };
+                    break;
+
+                case "menor_igual":
+                    filtros.bateria = {
+                        [Op.lte]: bateria
+                    };
+                    break;
+            }
+        }
+
+        const equipamentos = await Equipamento.findAll({
+            where: filtros
+        });
+
+        res.json(equipamentos);
+
+    } catch (err) {
+        res.status(500).json({
+            erro: err.message
+        });
     }
 });
 

@@ -3,7 +3,7 @@ const sequelize = require("../db");
 
 const TipoEcoponto = sequelize.define("TipoEcoponto", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  tipo: DataTypes.TEXT,
+  tipo: { type: DataTypes.TEXT, unique: true },
   descricao: DataTypes.TEXT,
 }, {
   tableName: "tipo_ecoponto",

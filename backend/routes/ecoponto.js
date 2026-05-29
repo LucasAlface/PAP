@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const Ecoponto = require("../models/ecoponto")
+const { Op } = require("sequelize");
 
 router.post("/inserir", async (req, res) => {
     try {
@@ -50,28 +51,86 @@ router.get("/listar", async (req, res) => {
     }
 });
 
-router.get("/total", async (req, res) => {
+router.get("/listar/filtro", async (req, res) => {
     try {
-        const total = await Ecoponto.count();
-        res.json({ total });
-    } catch (err) {
-        res.status(500).json({ erro: err.message });
-    }
-});
+        const {
+            codigo,
+            tipoEcopontoId,
+            depositoId,
+            capacidadeAtual,
+            operadorCapacidade,
+            descricao
+        } = req.query;
 
-router.get("/:id", async (req, res) => {
-    try {
-        const { id } = req.params;
-        const ecoponto = await Ecoponto.findOne({ where: { id: id } });
+        const filtros = {};
 
-        if (!ecoponto) {
-            return res.status(404).json({ erro: "Registro não encontrado" });
+        // Igual
+        if (codigo) filtros.codigo = codigo;
+
+        if (tipoEcopontoId)
+            filtros.tipoEcopontoId = tipoEcopontoId;
+
+        if (depositoId)
+            filtros.depositoId = depositoId;
+
+        // Descrição contendo texto
+        if (descricao) {
+            filtros.descricao = {
+                [Op.like]: `%${descricao}%`
+            };
         }
 
-        res.json(ecoponto);
+        // Capacidade com operador
+        if (capacidadeAtual) {
+
+            switch (operadorCapacidade) {
+
+                case "maior":
+                    filtros.capacidadeAtual = {
+                        [Op.gt]: capacidadeAtual
+                    };
+                    break;
+
+                case "menor":
+                    filtros.capacidadeAtual = {
+                        [Op.lt]: capacidadeAtual
+                    };
+                    break;
+
+                case "igual":
+                default:
+                    filtros.capacidadeAtual = {
+                        [Op.eq]: capacidadeAtual
+                    };
+                    break;
+                    
+                case "maior_igual":
+                    filtros.capacidadeAtual = {
+                        [Op.gte]: capacidadeAtual
+                    };
+                    break;
+
+                case "menor_igual":
+                    filtros.capacidadeAtual = {
+                        [Op.lte]: capacidadeAtual
+                    };
+                    break;
+            }
+        }
+
+        const ecopontos = await Ecoponto.findAll({
+            where: filtros
+        });
+
+        res.json(ecopontos);
+
     } catch (err) {
-        res.status(500).json({ erro: err.message });
+        res.status(500).json({
+            erro: err.message
+        });
     }
 });
+
+
 
 module.exports = router;

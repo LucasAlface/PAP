@@ -11,6 +11,7 @@ const {
   ecoponto_router,
   equipamento_router,
   ecoponto_equipamento_router,
+  ecoponto_logs_router,
   rotas_router
 } = require("./routes/routes");
 
@@ -36,6 +37,7 @@ app.use("/deposito", deposito_router);
 app.use("/ecoponto", ecoponto_router);
 app.use("/equipamento", equipamento_router);
 app.use("/ecopontoequipamento", ecoponto_equipamento_router);
+app.use("/ecopontologs", ecoponto_logs_router);
 app.use("/rotas", rotas_router);
 
 app.listen(PORT, () => {

@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const EcopontoEquipamento = require("../models/ecopontoEquipamento")
+const { Op } = require("sequelize");
 
 router.post("/inserir", async (req, res) => {
     try {
@@ -47,6 +48,39 @@ router.get("/listar", async (req, res) => {
         res.json(registros);
     } catch (err) {
         res.status(500).json({ erro: err.message });
+    }
+});
+
+router.get("/listar/filtro", async (req, res) => {
+    try {
+        const {
+            ecopontoId,
+            equipamentoId,
+            ativo
+        } = req.query;
+
+        const filtros = {};
+
+        if (ecopontoId)
+            filtros.ecopontoId = ecopontoId;
+
+        if (equipamentoId)
+            filtros.equipamentoId = equipamentoId;
+
+        if (ativo !== undefined && ativo !== "") {
+            filtros.ativo = ativo === "true";
+        }
+
+        const registros = await EcopontoEquipamento.findAll({
+            where: filtros
+        });
+
+        res.json(registros);
+
+    } catch (err) {
+        res.status(500).json({
+            erro: err.message
+        });
     }
 });
 
