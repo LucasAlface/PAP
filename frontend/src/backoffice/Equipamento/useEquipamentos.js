@@ -5,12 +5,24 @@ export default function useEquipamentos() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchEquipamentos = useCallback(async () => {
+  const fetchEquipamentos = useCallback(async (filters = null) => {
     try {
       setLoading(true);
       setError(null);
 
-      const res = await fetch("http://localhost:3000/equipamento/listar");
+      let url = "http://localhost:3000/equipamento/listar";
+      
+      if (filters && Object.keys(filters).length > 0) {
+        const params = new URLSearchParams();
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value !== null && value !== undefined && value !== "") {
+            params.append(key, value);
+          }
+        });
+        url = `http://localhost:3000/equipamento/listar/filtro?${params.toString()}`;
+      }
+
+      const res = await fetch(url);
 
       if (!res.ok) {
         throw new Error("Erro ao buscar equipamentos");

@@ -5,12 +5,24 @@ export default function useTipoEcopontos() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchItems = useCallback(async () => {
+  const fetchItems = useCallback(async (filters = null) => {
     try {
       setLoading(true);
       setError(null);
 
-      const res = await fetch("http://localhost:3000/tipoecoponto/listar");
+      let url = "http://localhost:3000/tipoecoponto/listar";
+      
+      if (filters && Object.keys(filters).length > 0) {
+        const params = new URLSearchParams();
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value !== null && value !== undefined && value !== "") {
+            params.append(key, value);
+          }
+        });
+        url = `http://localhost:3000/tipoecoponto/listar/filtro?${params.toString()}`;
+      }
+
+      const res = await fetch(url);
 
       if (!res.ok) {
         throw new Error("Erro ao buscar tipo ecopontos");

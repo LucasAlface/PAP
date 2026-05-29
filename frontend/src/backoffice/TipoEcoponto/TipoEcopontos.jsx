@@ -1,7 +1,43 @@
+import { useState, useMemo } from "react";
+import Select from "react-select";
 import useTipoEcopontos from "./useTipoEcopontos.js";
 
 export default function TipoEcopontos({ onNavigate }) {
-  const { items, loading, error } = useTipoEcopontos();
+  const { items, loading, error, refetch } = useTipoEcopontos();
+
+  const [filters, setFilters] = useState({
+    tipo: null,
+    descricao: ""
+  });
+
+  // Create options for tipo
+  const tipoOptions = useMemo(() =>
+    items.map(t => ({ value: t.tipo, label: t.tipo })),
+    [items]
+  );
+
+  const handleFilterChange = (field, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleApplyFilters = () => {
+    const filterValues = {
+      tipo: filters.tipo?.value || null,
+      descricao: filters.descricao
+    };
+    refetch(filterValues);
+  };
+
+  const handleClearFilters = () => {
+    setFilters({
+      tipo: null,
+      descricao: ""
+    });
+    refetch(null);
+  };
 
   return (
     <div>
@@ -15,13 +51,82 @@ export default function TipoEcopontos({ onNavigate }) {
         </button>
       </div>
 
+      {/* Filter Section */}
+      <div style={{ margin: "16px 0", padding: 16, background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 10 }}>
+        <h3 style={{ marginTop: 0, marginBottom: 16 }}>Filtros</h3>
+        
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12, marginBottom: 12 }}>
+          <div>
+            <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Tipo</label>
+            <Select
+              options={tipoOptions}
+              value={filters.tipo}
+              onChange={(option) => handleFilterChange("tipo", option)}
+              placeholder="Pesquisar por tipo"
+              isClearable
+              isSearchable
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  borderRadius: 6,
+                  borderColor: "#d1d5db",
+                  minHeight: 38
+                })
+              }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Descrição</label>
+            <input
+              type="text"
+              value={filters.descricao}
+              onChange={(e) => handleFilterChange("descricao", e.target.value)}
+              placeholder="Pesquisar por descrição"
+              style={{ width: "100%", padding: "8px 12px", borderRadius: 6, border: "1px solid #d1d5db", boxSizing: "border-box" }}
+            />
+          </div>
+        </div>
+
+        <div style={{ display: "flex", gap: 8 }}>
+          <button
+            onClick={handleApplyFilters}
+            disabled={loading}
+            style={{
+              padding: "8px 16px",
+              borderRadius: 6,
+              border: "none",
+              background: "#3b82f6",
+              color: "white",
+              cursor: loading ? "not-allowed" : "pointer",
+              opacity: loading ? 0.5 : 1
+            }}
+          >
+            {loading ? "Carregando..." : "Aplicar Filtros"}
+          </button>
+          <button
+            onClick={handleClearFilters}
+            style={{
+              padding: "8px 16px",
+              borderRadius: 6,
+              border: "1px solid #d1d5db",
+              background: "white",
+              color: "#374151",
+              cursor: "pointer"
+            }}
+          >
+            Limpar Filtros
+          </button>
+        </div>
+      </div>
+
       {loading && <p>Loading tipo ecopontos...</p>}
       {error && <p style={{ color: "#b91c1c" }}>Error loading tipo ecopontos: {error}</p>}
 
       {!loading && !error && (
         <>
           <div style={{ margin: "16px 0", padding: 16, background: "#fff", border: "1px solid #eee", borderRadius: 10, maxWidth: 320 }}>
-            <div style={{ color: "#666", fontSize: 14 }}>Total registered tipo ecopontos</div>
+            <div style={{ color: "#666", fontSize: 14 }}>Total de tipo ecopontos</div>
             <div style={{ fontSize: 28, fontWeight: 700 }}>{items.length}</div>
           </div>
 
