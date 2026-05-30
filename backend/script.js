@@ -6,6 +6,8 @@ const {
   Equipamento,
   EcopontoEquipamento,
   Empresa,
+  Utilizador,
+  Cargo
 } = require("./models/models");
 
 const sequelize = require("./db");
@@ -170,30 +172,26 @@ async function inserirDados() {
 
   ]);
 
+  await Cargo.bulkCreate([
+    {
+      cargo: "Super-Administrador"
+    },
+
+    {
+      cargo: "Administrador"
+    },
+
+    {
+      cargo: "Funcionário"
+    }
+
+  ]);
 
 
   console.log("Dados inseridos com sucesso!");
 
 
-await Empresa.bulkCreate([
 
-  {
-    nome: "Empresa A",
-    nif: "123456789",
-    email: "empresaA@example.com",
-    telefone: "912345678"
-  },
-
-  {
-    nome: "Empresa B",
-    nif: "987654321",
-    email: "empresaB@example.com",
-    telefone: "912345679"
-  }
-
-]);
-
-  console.log("Empresas inseridas com sucesso!");
 
 }
 

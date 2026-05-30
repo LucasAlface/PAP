@@ -13,9 +13,6 @@ export default function Sidebar({ page, onNavigate }) {
         <div style={itemStyle(page === "dashboard")} onClick={() => onNavigate("dashboard")}>
           Dashboard
         </div>
-        <div style={itemStyle(page === "users")} onClick={() => onNavigate("users")}>
-          Users
-        </div>
         <div style={itemStyle(page === "ecopontos")} onClick={() => onNavigate("ecopontos")}>
           Ecopontos
         </div>
@@ -33,6 +30,12 @@ export default function Sidebar({ page, onNavigate }) {
         </div>
         <div style={itemStyle(page === "ecopontoequipamentos")} onClick={() => onNavigate("ecopontoequipamentos")}>
           Ecoponto Equipamentos
+        </div>
+        <div style={itemStyle(page === "empresas")} onClick={() => onNavigate("empresas")}>
+          Empresas
+        </div>
+        <div style={itemStyle(page === "utilizadores")} onClick={() => onNavigate("utilizadores")}>
+          Utilizadores
         </div>
       </div>
     </aside>

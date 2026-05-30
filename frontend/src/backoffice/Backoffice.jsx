@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Sidebar from "./Sidebar.jsx";
 import Dashboard from "./Dashboard.jsx";
-import Users from "./Users.jsx";
 import Ecopontos from "./Ecoponto/Ecopontos.jsx";
 import EcopontoForm from "./Ecoponto/EcopontoForm.jsx";
 import DeleteEcoponto from "./Ecoponto/Delete.jsx";
@@ -20,6 +19,12 @@ import DeleteTipoEcoponto from "./TipoEcoponto/Delete.jsx";
 import EcopontoEquipamentos from "./EcopontoEquipamento/EcopontoEquipamentos.jsx";
 import EcopontoEquipamentoForm from "./EcopontoEquipamento/EcopontoEquipamentoForm.jsx";
 import DeleteEcopontoEquipamento from "./EcopontoEquipamento/Delete.jsx";
+import Empresas from "./Empresa/Empresas.jsx";
+import EmpresasForm from "./Empresa/EmpresasForm.jsx";
+import DeleteEmpresa from "./Empresa/Delete.jsx";
+import Utilizadores from "./Utilizador/Utilizadores.jsx";
+import UtilizadorForm from "./Utilizador/UtilizadorForm.jsx";
+import DeleteUtilizador from "./Utilizador/Delete.jsx";
 
 export default function Backoffice() {
   const [page, setPage] = useState("dashboard");
@@ -36,7 +41,14 @@ export default function Backoffice() {
 
       <div style={{ flex: 1, padding: 20, overflow: "auto" }}>
         {page === "dashboard" && <Dashboard />}
-        {page === "users" && <Users />}
+        {page === "empresas" && <Empresas onNavigate={navigate} />}
+        {page === "add-empresa" && <EmpresasForm onNavigate={navigate} />}
+        {page === "edit-empresa" && <EmpresasForm empresa={selectedItem} onNavigate={navigate} />}
+        {page === "delete-empresa" && <DeleteEmpresa empresa={selectedItem} onNavigate={navigate} />}
+        {page === "utilizadores" && <Utilizadores onNavigate={navigate} />}
+        {page === "add-utilizador" && <UtilizadorForm onNavigate={navigate} />}
+        {page === "edit-utilizador" && <UtilizadorForm utilizador={selectedItem} onNavigate={navigate} />}
+        {page === "delete-utilizador" && <DeleteUtilizador utilizador={selectedItem} onNavigate={navigate} />}
         {page === "ecopontos" && <Ecopontos onNavigate={navigate} />}
         {page === "add-ecoponto" && <EcopontoForm onNavigate={navigate} />}
         {page === "edit-ecoponto" && <EcopontoForm ecoponto={selectedItem} onNavigate={navigate} />}
