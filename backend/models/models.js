@@ -7,6 +7,17 @@ const Deposito = require("./deposito")
 const TipoDeposito = require("./tipoDeposito")
 const TipoEcoponto = require("./tipoEcoponto")
 const EcopontoEquipamento = require("./ecopontoEquipamento")
+const User = require("./user")
+const Role = require("./role")
+const Company = require("./company")
+
+// Role -> User
+Role.hasMany(User, { foreignKey: "roleId" });
+User.belongsTo(Role, { foreignKey: "roleId" });
+  
+// Company -> User
+Company.hasMany(User, { foreignKey: "companyId" });
+User.belongsTo(Company, { foreignKey: "companyId" });
 
 // Tipo Ecoponto -> Ecoponto
 TipoEcoponto.hasMany(Ecoponto, { foreignKey: "tipoEcopontoId" });
