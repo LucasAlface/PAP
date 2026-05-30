@@ -12,7 +12,10 @@ const {
   equipamento_router,
   ecoponto_equipamento_router,
   ecoponto_logs_router,
-  rotas_router
+  rotas_router,
+  utilizador_router,
+  cargo_router,
+  empresa_router
 } = require("./routes/routes");
 
 const app = express();
@@ -39,6 +42,9 @@ app.use("/equipamento", equipamento_router);
 app.use("/ecopontoequipamento", ecoponto_equipamento_router);
 app.use("/ecopontologs", ecoponto_logs_router);
 app.use("/rotas", rotas_router);
+app.use("/utilizador", utilizador_router);
+app.use("/cargo", cargo_router);
+app.use("/empresa", empresa_router);
 
 app.listen(PORT, () => {
   console.log("Servidor online");

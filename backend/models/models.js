@@ -7,17 +7,17 @@ const Deposito = require("./deposito")
 const TipoDeposito = require("./tipoDeposito")
 const TipoEcoponto = require("./tipoEcoponto")
 const EcopontoEquipamento = require("./ecopontoEquipamento")
-const User = require("./user")
-const Role = require("./role")
-const Company = require("./company")
+const Utilizador = require("./utilizador")
+const Cargo = require("./cargo")
+const Empresa = require("./empresa")
 
-// Role -> User
-Role.hasMany(User, { foreignKey: "roleId" });
-User.belongsTo(Role, { foreignKey: "roleId" });
+// Cargo -> Utilizador
+Cargo.hasMany(Utilizador, { foreignKey: "cargoId" });
+Utilizador.belongsTo(Cargo, { foreignKey: "cargoId" });
   
-// Company -> User
-Company.hasMany(User, { foreignKey: "companyId" });
-User.belongsTo(Company, { foreignKey: "companyId" });
+// Empresa -> Utilizador
+Empresa.hasMany(Utilizador, { foreignKey: "empresaId" });
+Utilizador.belongsTo(Empresa, { foreignKey: "empresaId" });
 
 // Tipo Ecoponto -> Ecoponto
 TipoEcoponto.hasMany(Ecoponto, { foreignKey: "tipoEcopontoId" });
@@ -50,5 +50,8 @@ module.exports = {
   Ecoponto,
   Equipamento,
   EcopontoEquipamento,
-  EcopontoLogs
+  EcopontoLogs,
+  Utilizador,
+  Cargo,
+  Empresa
 };

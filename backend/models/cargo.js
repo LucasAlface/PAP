@@ -1,13 +1,13 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../db");
 
-const Role = sequelize.define("Role", {
+const Cargo = sequelize.define("Cargo", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  role: { type: DataTypes.STRING, allowNull: false },
+  cargo: { type: DataTypes.STRING, allowNull: false },
 }, {
-  tableName: "role",
+  tableName: "cargo",
   timestamps: false
 });
 
 
-module.exports = Role;
+module.exports = Cargo;
