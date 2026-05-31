@@ -5,8 +5,6 @@ export async function apiRequest(url, method, payload) {
     body: JSON.stringify(payload),
   });
 
-  console.log(res.status);
-console.log(res.ok);
 
   if (!res.ok) {
     const errorPayload = await res.json();

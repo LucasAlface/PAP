@@ -35,7 +35,7 @@ export default function TipoDepositoForm({ tipoDeposito, onNavigate }) {
         : "http://localhost:3000/tipodeposito/inserir";
 
       const method = isEditMode ? "PUT" : "POST";
-      const requestData = isEditMode ? payload : [payload];
+      const requestData = isEditMode ? payload : payload;
 
       await apiRequest(endpoint, method, requestData);
 

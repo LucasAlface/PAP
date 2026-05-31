@@ -80,7 +80,7 @@ export default function EcopontoForm({ ecoponto, onNavigate }) {
         : "http://localhost:3000/ecoponto/inserir";
 
       const method = isEditMode ? "PUT" : "POST";
-      const requestData = isEditMode ? payload : [payload];
+      const requestData = isEditMode ? payload : payload;
 
       await apiRequest(endpoint, method, requestData);
 

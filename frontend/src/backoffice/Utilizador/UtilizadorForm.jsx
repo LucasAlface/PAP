@@ -64,7 +64,7 @@ export default function UtilizadorForm({ utilizador, onNavigate }) {
         ? `http://localhost:3000/utilizador/atualizar/${utilizador.id}`
         : "http://localhost:3000/utilizador/inserir";
       const method = isEditMode ? "PUT" : "POST";
-      const requestData = isEditMode ? payload : [payload];
+      const requestData = isEditMode ? payload : payload;
 
       await apiRequest(endpoint, method, requestData);
 

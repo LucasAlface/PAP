@@ -1,11 +1,16 @@
 const router = require("express").Router();
 const Utilizador = require("../models/utilizador")
 const { Op } = require("sequelize");
+const bcrypt = require('bcrypt');
 
 router.post("/inserir", async (req, res) => {
     try {
+        console.log("Received request to insert utilizador with data:", req.body);
         const dados = req.body;
-        await Utilizador.bulkCreate(dados);
+        dados.password = await bcrypt.hash(dados.password, await bcrypt.genSalt(10));
+
+        await Utilizador.create(dados);
+
         res.json("Registro criado com sucesso");
     } catch (err) {
         res.status(500).json({ erro: err.message });
@@ -16,6 +21,10 @@ router.put("/atualizar/:id", async (req, res) => {
     try {
         const dados = req.body;
         const { id } = req.params;
+        if (dados.password) {
+            const salt = await bcrypt.genSalt(10);
+            dados.password = await bcrypt.hash(dados.password, salt);
+        }
 
         const result = await Utilizador.update(dados, { where: { id: id } });
 

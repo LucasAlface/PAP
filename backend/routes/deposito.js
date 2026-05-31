@@ -5,7 +5,7 @@ const { Op } = require("sequelize");
 router.post("/inserir", async (req, res) => {
     try {
         const dados = req.body;
-        await Deposito.bulkCreate(dados);
+        await Deposito.create(dados);
         res.json("Registro criado com sucesso");
     } catch (err) {
         res.status(500).json({ erro: err.message });
