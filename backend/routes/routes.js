@@ -9,6 +9,7 @@ const rotas_router = require("./getTabela")
 const utilizador_router = require("./utilizador")
 const cargo_router = require("./cargo")
 const empresa_router = require("./empresa")
+const login_router = require("./login")
 
 module.exports = {
   tipo_ecoponto_router,
@@ -21,5 +22,6 @@ module.exports = {
   rotas_router, 
   utilizador_router,
   cargo_router,
-  empresa_router
+  empresa_router,
+  login_router
 };

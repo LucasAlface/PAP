@@ -15,7 +15,8 @@ const {
   rotas_router,
   utilizador_router,
   cargo_router,
-  empresa_router
+  empresa_router,
+  login_router
 } = require("./routes/routes");
 
 const app = express();
@@ -45,6 +46,7 @@ app.use("/rotas", rotas_router);
 app.use("/utilizador", utilizador_router);
 app.use("/cargo", cargo_router);
 app.use("/empresa", empresa_router);
+app.use("/login", login_router);
 
 app.listen(PORT, () => {
   console.log("Servidor online");

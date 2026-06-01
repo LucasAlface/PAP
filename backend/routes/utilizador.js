@@ -5,7 +5,6 @@ const bcrypt = require('bcrypt');
 
 router.post("/inserir", async (req, res) => {
     try {
-        console.log("Received request to insert utilizador with data:", req.body);
         const dados = req.body;
         dados.password = await bcrypt.hash(dados.password, await bcrypt.genSalt(10));
 
