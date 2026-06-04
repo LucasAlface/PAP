@@ -3,7 +3,9 @@ const cors = require("cors");
 const path = require("path");
 require('dotenv').config({ path: path.resolve(__dirname, "../.env") });
 const PORT = process.env.PORT || 3000;
+const cookieParser = require("cookie-parser");
 const { inserirDados } = require("./script");
+const sequelize = require("./db");
 const {
   tipo_ecoponto_router,
   tipo_deposito_router,
@@ -22,7 +24,13 @@ const {
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}));
+
+app.use(cookieParser());
 
 
 app.get("/", async (req, res) => {
@@ -51,3 +59,13 @@ app.use("/login", login_router);
 app.listen(PORT, () => {
   console.log("Servidor online");
 });
+
+(async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("Database connection established.");
+  } catch (err) {
+    console.error("Unable to connect to the database:", err.message || err);
+    process.exit(1);
+  }
+})();

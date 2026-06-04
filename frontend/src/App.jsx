@@ -1,25 +1,51 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Mapa from "./mapa.jsx";
 import Backoffice from "./backoffice/Backoffice.jsx";
 import Login from "./Login.jsx";
 
 export default function App() {
-  const [view, setView] = useState("map"); // 'map' or 'backoffice'
-  const [authUser, setAuthUser] = useState(() => {
-    const stored = localStorage.getItem("authUser");
-    return stored ? JSON.parse(stored) : null;
-  });
+  const [view, setView] = useState("map");
+  const [authUser, setAuthUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const user = await apiRequest(
+          "http://localhost:3000/login/me",
+          "GET"
+        );
+
+        setAuthUser(user);
+      } catch {
+        setAuthUser(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    checkAuth();
+  }, []);
 
   const handleLogin = (user) => {
     setAuthUser(user);
-    localStorage.setItem("authUser", JSON.stringify(user));
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await apiRequest(
+        "http://localhost:3000/auth/logout",
+        "POST"
+      );
+    } catch {}
+
     setAuthUser(null);
-    localStorage.removeItem("authUser");
     setView("map");
   };
+
+  if (loading) {
+    return <div>A carregar...</div>;
+  }
 
   if (!authUser) {
     return <Login onLogin={handleLogin} />;

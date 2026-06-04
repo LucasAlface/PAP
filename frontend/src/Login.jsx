@@ -13,14 +13,24 @@ export default function Login({ onLogin }) {
     setLoading(true);
 
     try {
-      const data = await apiRequest("http://localhost:3000/login", "POST", { email, password });
-      const { password: _, ...safeUser } = data.utilizador ?? {};
-      onLogin(safeUser);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+  await apiRequest(
+    "http://localhost:3000/login",
+    "POST",
+    { email, password }
+  );
+
+  const user = await apiRequest(
+    "http://localhost:3000/login/me",
+    "GET"
+  );
+
+  onLogin(user);
+
+} catch (err) {
+  setError(err.message);
+} finally {
+  setLoading(false);
+}
   };
 
   return (
@@ -99,14 +109,21 @@ export default function Login({ onLogin }) {
           disabled={loading}
           style={{
             width: "100%",
+            height: 48,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
             padding: "12px 14px",
             borderRadius: 10,
             border: "none",
             background: "#2f6bff",
             color: "#ffffff",
             cursor: loading ? "not-allowed" : "pointer",
+            opacity: loading ? 0.7 : 1,
+            pointerEvents: loading ? "none" : "auto",
             fontWeight: 600,
             fontSize: 15,
+            lineHeight: "20px",
           }}
         >
           {loading ? "A iniciar sessão..." : "Entrar"}
