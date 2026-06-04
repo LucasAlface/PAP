@@ -4,7 +4,7 @@ import useEquipamentos from "./useEquipamentos.js";
 import {getOperatorOptions} from "../../middleware/options"
 
 export default function Equipamentos({ onNavigate }) {
-  const { equipamentos, loading, error, refetch } = useEquipamentos();
+  const { items: equipamentos, loading, error, refetch } = useEquipamentos();
 
   const [filters, setFilters] = useState({
     codigo: null,

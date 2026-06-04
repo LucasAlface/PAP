@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext.jsx";
 import Sidebar from "./Sidebar.jsx";
 import Dashboard from "./Dashboard.jsx";
 import Ecopontos from "./Ecoponto/Ecopontos.jsx";
@@ -29,12 +30,16 @@ import DeleteUtilizador from "./Utilizador/Delete.jsx";
 export default function Backoffice() {
   const [page, setPage] = useState("dashboard");
   const [selectedItem, setSelectedItem] = useState(null);
+  const {authUser} = useAuth();
 
   const navigate = (newPage, item = null) => {
     setSelectedItem(item);
     setPage(newPage);
   };
 
+  if (authUser?.cargo !== 1 && authUser?.cargo !== 2) {
+    return <div style={{ padding: 20 }}>Acesso negado. Apenas administradores podem aceder a esta secção.</div>;
+  }
   return (
     <div style={{ display: "flex", height: "100%" }}>
       <Sidebar page={page} onNavigate={navigate} />

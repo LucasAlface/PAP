@@ -35,9 +35,6 @@ router.post("/", async (req, res) => {
         const token = jwt.sign(
             {
                 id: utilizador.id,
-                nome: utilizador.nome,
-                email: utilizador.email,
-                cargo: utilizador.cargo
             },
             process.env.JWT_SECRET,
             {
@@ -75,7 +72,7 @@ router.get("/me", autenticarJWT, async (req, res) => {
             id: utilizador.id,
             nome: utilizador.nome,
             email: utilizador.email,
-            cargo: utilizador.cargo
+            cargo: utilizador.cargoId
         });
     } catch (err) {
         return res.status(500).json({

@@ -6,8 +6,8 @@ import useEquipamentos from "../Equipamento/useEquipamentos.js";
 
 export default function EcopontoEquipamentos({ onNavigate }) {
   const { items, loading, error, refetch } = useEcopontoEquipamentos();
-  const { ecopontos } = useEcopontos();
-  const { equipamentos } = useEquipamentos();
+  const { items: ecopontos } = useEcopontos();
+  const { items: equipamentos } = useEquipamentos();
 
   const [filters, setFilters] = useState({
     ecopontoId: null,

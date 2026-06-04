@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Dashboard() {
-        const [stats, setStats] = useState([]);
+  const { user } = useAuth();
+  const [stats, setStats] = useState([]);
 
     useEffect(() => {
            fetch("http://localhost:3000/ecoponto/total")
@@ -10,6 +12,11 @@ export default function Dashboard() {
           setStats(data);
         });
     }, []);
+
+  if (stats.loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div>
       <h2 style={{ marginTop: 0 }}>Dashboard</h2>

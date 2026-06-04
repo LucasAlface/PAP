@@ -2,6 +2,11 @@ const router = require("express").Router();
 const Utilizador = require("../models/utilizador")
 const { Op } = require("sequelize");
 const bcrypt = require('bcrypt');
+const autenticarJWT = require("../middleware/autenticarJWT");
+const autorizarAcesso = require("../middleware/autorizarAcesso");
+
+router.use(autenticarJWT);
+router.use(autorizarAcesso);
 
 router.post("/inserir", async (req, res) => {
     try {

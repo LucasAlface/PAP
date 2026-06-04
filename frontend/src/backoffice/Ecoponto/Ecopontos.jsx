@@ -6,9 +6,9 @@ import useEcopontos from "./useEcopontos.js";
 import {getOperatorOptions} from "../../middleware/options"
 
 export default function Ecopontos({ onNavigate }) {
-  const { depositos } = useDepositos();
+  const { items: depositos } = useDepositos();
   const { items: tipoEcopontos } = useTipoEcopontos();
-  const { ecopontos, loading, error, refetch } = useEcopontos();
+  const { items: ecopontos, loading, error, refetch } = useEcopontos();
 
   const operators = getOperatorOptions();
 

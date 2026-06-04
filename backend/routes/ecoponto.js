@@ -1,8 +1,19 @@
 const router = require("express").Router();
 const Ecoponto = require("../models/ecoponto")
+const Utilizador = require("../models/utilizador")
 const { Op } = require("sequelize");
+const autenticarJWT = require("../middleware/autenticarJWT");
+const autorizarAcesso = require("../middleware/autorizarAcesso");
+
+router.use(autenticarJWT);
+router.use(autorizarAcesso);
 
 router.post("/inserir", async (req, res) => {
+    const user = await Utilizador.findByPk(req.user.id);
+
+    if (user.cargoId !== 1 && user.cargoId !== 2) {
+        return res.status(403).json({ erro: "Acesso negado" });
+    }
     try {
         const dados = req.body;
         await Ecoponto.create(dados);
@@ -43,6 +54,13 @@ router.delete("/apagar/:id", async (req, res) => {
 });
 
 router.get("/listar", async (req, res) => {
+    const user = await Utilizador.findByPk(req.user.id);
+
+    if (user.cargoId !== 1 && user.cargoId !== 2) {
+        return res.status(403).json({ erro: "Acesso negado" });
+    }
+
+
     try {
         const ecopontos = await Ecoponto.findAll({ order: [["id", "ASC"]] });
         res.json(ecopontos);

@@ -4,7 +4,7 @@ import useEmpresas from "../Empresa/useEmpresas.js";
 import useCargos from "./useCargos.js";
 
 export default function Utilizadores({ onNavigate }) {
-  const { items, loading, error, refetch } = useUtilizadores();
+  const { items: utilizadores, loading, error, refetch } = useUtilizadores();
   const { items: empresas } = useEmpresas();
   const { items: cargos } = useCargos();
 
@@ -54,7 +54,7 @@ export default function Utilizadores({ onNavigate }) {
             </tr>
           </thead>
           <tbody>
-            {items.map((utilizador) => (
+            {utilizadores.map((utilizador) => (
               <tr key={utilizador.id} style={{ borderBottom: "1px solid #e5e7eb" }}>
                 <td style={{ padding: 8 }}>{utilizador.id}</td>
                 <td style={{ padding: 8 }}>{utilizador.nome}</td>

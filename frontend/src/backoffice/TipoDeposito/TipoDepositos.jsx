@@ -3,7 +3,7 @@ import Select from "react-select";
 import useTipoDepositos from "./useTipoDepositos.js";
 
 export default function TipoDepositos({ onNavigate }) {
-  const { items, loading, error, refetch } = useTipoDepositos();
+  const { items: tipoDepositos, loading, error, refetch } = useTipoDepositos();
 
   const [filters, setFilters] = useState({
     tipo: null,
@@ -12,8 +12,8 @@ export default function TipoDepositos({ onNavigate }) {
 
   // Create options for tipo
   const tipoOptions = useMemo(() =>
-    items.map(t => ({ value: t.tipo, label: t.tipo })),
-    [items]
+    tipoDepositos.map(t => ({ value: t.tipo, label: t.tipo })),
+    [tipoDepositos]
   );
 
   const handleFilterChange = (field, value) => {
@@ -127,10 +127,10 @@ export default function TipoDepositos({ onNavigate }) {
         <>
           <div style={{ margin: "16px 0", padding: 16, background: "#fff", border: "1px solid #eee", borderRadius: 10, maxWidth: 320 }}>
             <div style={{ color: "#666", fontSize: 14 }}>Total de tipo depósitos</div>
-            <div style={{ fontSize: 28, fontWeight: 700 }}>{items.length}</div>
+            <div style={{ fontSize: 28, fontWeight: 700 }}>{tipoDepositos.length}</div>
           </div>
 
-          {items.length === 0 ? (
+          {tipoDepositos.length === 0 ? (
             <p>No tipo depósitos found.</p>
           ) : (
             <div style={{ overflowX: "auto" }}>

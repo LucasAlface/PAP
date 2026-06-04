@@ -1,45 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Mapa from "./mapa.jsx";
 import Backoffice from "./backoffice/Backoffice.jsx";
 import Login from "./Login.jsx";
+import { useAuth } from "./context/AuthContext.jsx";
 
 export default function App() {
   const [view, setView] = useState("map");
-  const [authUser, setAuthUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function checkAuth() {
-      try {
-        const user = await apiRequest(
-          "http://localhost:3000/login/me",
-          "GET"
-        );
-
-        setAuthUser(user);
-      } catch {
-        setAuthUser(null);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    checkAuth();
-  }, []);
-
-  const handleLogin = (user) => {
-    setAuthUser(user);
-  };
+  const { authUser, loading, login, logout } = useAuth();
+  const isAdmin = authUser?.cargo === 1 || authUser?.cargo === 2;
 
   const handleLogout = async () => {
-    try {
-      await apiRequest(
-        "http://localhost:3000/auth/logout",
-        "POST"
-      );
-    } catch {}
-
-    setAuthUser(null);
+    await logout();
     setView("map");
   };
 
@@ -48,7 +19,7 @@ export default function App() {
   }
 
   if (!authUser) {
-    return <Login onLogin={handleLogin} />;
+    return <Login onLogin={login} />;
   }
 
   return (
@@ -67,12 +38,14 @@ export default function App() {
           >
             Mapa
           </button>
-          <button
-            onClick={() => setView("backoffice")}
-            style={{ padding: "8px 12px", borderRadius: 6, border: "1px solid #ccc", cursor: "pointer", background: view === "backoffice" ? "#e6f0ff" : undefined }}
-          >
-            Backoffice
-          </button>
+          {isAdmin && (
+            <button
+              onClick={() => setView("backoffice")}
+              style={{ padding: "8px 12px", borderRadius: 6, border: "1px solid #ccc", cursor: "pointer", background: view === "backoffice" ? "#e6f0ff" : undefined }}
+            >
+              Backoffice
+            </button>
+          )}
           <button
             onClick={handleLogout}
             style={{ padding: "8px 12px", borderRadius: 6, border: "1px solid #ccc", cursor: "pointer", background: "#ff5858", color: "#fff" }}

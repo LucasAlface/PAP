@@ -5,7 +5,7 @@ import useTipoDepositos from "../TipoDeposito/useTipoDepositos";
 import {getOperatorOptions} from "../../middleware/options"
 
 export default function Depositos({ onNavigate }) {
-  const { depositos, loading, error, refetch } = useDepositos();
+  const { items: depositos, loading, error, refetch } = useDepositos();
   const { items: tipoDepositos } = useTipoDepositos();
 
   const [filters, setFilters] = useState({

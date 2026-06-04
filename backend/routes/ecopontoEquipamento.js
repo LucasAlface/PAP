@@ -1,6 +1,11 @@
 const router = require("express").Router();
 const EcopontoEquipamento = require("../models/ecopontoEquipamento")
 const { Op } = require("sequelize");
+const autenticarJWT = require("../middleware/autenticarJWT");
+const autorizarAcesso = require("../middleware/autorizarAcesso");
+
+router.use(autenticarJWT);
+router.use(autorizarAcesso);
 
 router.post("/inserir", async (req, res) => {
     try {

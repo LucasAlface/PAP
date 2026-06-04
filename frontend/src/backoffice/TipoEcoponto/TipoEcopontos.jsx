@@ -3,7 +3,7 @@ import Select from "react-select";
 import useTipoEcopontos from "./useTipoEcopontos.js";
 
 export default function TipoEcopontos({ onNavigate }) {
-  const { items, loading, error, refetch } = useTipoEcopontos();
+  const { items: tipoEcopontos, loading, error, refetch } = useTipoEcopontos();
 
   const [filters, setFilters] = useState({
     tipo: null,
@@ -12,8 +12,8 @@ export default function TipoEcopontos({ onNavigate }) {
 
   // Create options for tipo
   const tipoOptions = useMemo(() =>
-    items.map(t => ({ value: t.tipo, label: t.tipo })),
-    [items]
+    tipoEcopontos.map(t => ({ value: t.tipo, label: t.tipo })),
+    [tipoEcopontos]
   );
 
   const handleFilterChange = (field, value) => {
@@ -127,10 +127,10 @@ export default function TipoEcopontos({ onNavigate }) {
         <>
           <div style={{ margin: "16px 0", padding: 16, background: "#fff", border: "1px solid #eee", borderRadius: 10, maxWidth: 320 }}>
             <div style={{ color: "#666", fontSize: 14 }}>Total de tipo ecopontos</div>
-            <div style={{ fontSize: 28, fontWeight: 700 }}>{items.length}</div>
+            <div style={{ fontSize: 28, fontWeight: 700 }}>{tipoEcopontos.length}</div>
           </div>
 
-          {items.length === 0 ? (
+          {tipoEcopontos.length === 0 ? (
             <p>No tipo ecopontos found.</p>
           ) : (
             <div style={{ overflowX: "auto" }}>
@@ -144,7 +144,7 @@ export default function TipoEcopontos({ onNavigate }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {items.map((item) => (
+                  {tipoEcopontos.map((item) => (
                     <tr key={item.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
                       <td style={{ padding: "12px 8px" }}>{item.id}</td>
                       <td style={{ padding: "12px 8px" }}>{item.tipo}</td>

@@ -3,7 +3,7 @@ import Select from 'react-select';
 import useEmpresas from './useEmpresas.js';
 
 export default function Empresas({ onNavigate }) {
-  const { items, loading, error, refetch } = useEmpresas();
+  const { items: empresas, loading, error, refetch } = useEmpresas();
 
   return (
     <div>
@@ -31,7 +31,7 @@ export default function Empresas({ onNavigate }) {
             </tr>
           </thead>
           <tbody>
-            {items.map(empresa => (
+            {empresas.map(empresa => (
               <tr key={empresa.id} style={{ borderBottom: "1px solid #e5e7eb" }}>
                 <td style={{ padding: 8 }}>{empresa.id}</td>
                 <td style={{ padding: 8 }}>{empresa.nome}</td>

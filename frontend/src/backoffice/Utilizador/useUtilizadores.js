@@ -1,37 +1,12 @@
-import { useEffect, useState, useCallback } from "react";
+import useModel from "../../middleware/use";
+import { apiRequest } from "../../middleware/request";
 
-export default function useUtilizadores() {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const fetchUtilizadores = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const res = await fetch("http://localhost:3000/utilizador/listar");
-      if (!res.ok) {
-        throw new Error("Erro ao buscar utilizadores");
-      }
-
-      const data = await res.json();
-      setItems(data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchUtilizadores();
-  }, [fetchUtilizadores]);
-
+export default function useUtilizadores(filters = null) {
+  const { model, loading, error, refetch } = useModel("utilizador", filters);
   return {
-    items,
+    items: model,
     loading,
     error,
-    refetch: fetchUtilizadores,
+    refetch,
   };
 }
