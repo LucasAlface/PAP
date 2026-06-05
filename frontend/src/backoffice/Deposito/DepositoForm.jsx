@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { apiRequest } from "../../middleware/request";
+import useTipoDepositos from "../TipoDeposito/useTipoDepositos.js";
 
 export default function DepositoForm({ deposito, onNavigate }) {
+  const { items: tipoDepositos = [] } = useTipoDepositos();
+  const tipoDepositoOptions = tipoDepositos.map((d) => ({ value: String(d.id), label: d.tipo }));
   const [capacidadeTotal, setCapacidadeTotal] = useState("");
   const [altura, setAltura] = useState("");
   const [tipoDepositoId, setTipoDepositoId] = useState(null);
-  const [tipoDepositoOptions, setTipoDepositoOptions] = useState([]);
   const [descricao, setDescricao] = useState("");
   const [status, setStatus] = useState("");
 
@@ -20,22 +22,9 @@ export default function DepositoForm({ deposito, onNavigate }) {
     }
   }, [deposito, isEditMode]);
 
-  useEffect(() => {
-    async function loadOptions() {
-      try {
-        const res = await fetch("http://localhost:3000/tipodeposito/listar");
-        const data = await res.json();
-        setTipoDepositoOptions(data.map((d) => ({ value: String(d.id), label: d.tipo })));
-      } catch (err) {
-        // ignore
-      }
-    }
-
-    loadOptions();
-  }, []);
 
   useEffect(() => {
-    if (isEditMode && deposito && tipoDepositoOptions.length > 0) {
+    if (isEditMode && deposito) {
       const matchingOption = tipoDepositoOptions.find(
         (opt) => opt.value === String(deposito.tipoDepositoId)
       );
@@ -153,7 +142,7 @@ export default function DepositoForm({ deposito, onNavigate }) {
             rows={4}
           />
         </label>
-        <button type="submit" style={{ padding: "10px 14px", borderRadius: 6, cursor: "pointer" }}>
+        <button type="submit" style={{ padding: "10px 14px", borderRadius: 6, border: "none", background: "#3b82f6", color: "white", cursor: "pointer" }}>
           {isEditMode ? "Save Changes" : "Create Depósito"}
         </button>
       </form>

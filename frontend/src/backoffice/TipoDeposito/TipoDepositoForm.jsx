@@ -74,7 +74,7 @@ export default function TipoDepositoForm({ tipoDeposito, onNavigate }) {
           <h2 style={{ marginTop: 0 }}>Edit Tipo Depósito #{tipoDeposito.id}</h2>
           <button
             onClick={() => onNavigate("tipodepositos")}
-            style={{ padding: "10px 14px", borderRadius: 6, cursor: "pointer" }}
+            style={{ padding: "10px 14px", borderRadius: 6, border: "none", background: "#3b82f6", color: "white", cursor: "pointer" }}
           >
             Cancel
           </button>
@@ -101,7 +101,7 @@ export default function TipoDepositoForm({ tipoDeposito, onNavigate }) {
             rows={4}
           />
         </label>
-        <button type="submit" style={{ padding: "10px 14px", borderRadius: 6, cursor: "pointer" }}>
+        <button type="submit" style={{ padding: "10px 14px", borderRadius: 6, border: "none", background: "#3b82f6", color: "white", cursor: "pointer" }}>
           {isEditMode ? "Save Changes" : "Create Tipo Depósito"}
         </button>
       </form>

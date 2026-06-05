@@ -77,8 +77,20 @@ export default function EmpresasForm({ empresa, onNavigate }) {
 
   return (
     <div>
-      <h2 style={{ marginTop: 0 }}>{isEditMode ? "Edit Empresa" : "Add Empresa"}</h2>
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 12, maxWidth: 400 }}>
+      {isEditMode ? (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+          <h2 style={{ marginTop: 0 }}>Edit Empresa</h2>
+          <button
+            onClick={() => onNavigate("empresas")}
+            style={{ padding: "10px 14px", borderRadius: 6, border: "none", background: "#3b82f6", color: "white", cursor: "pointer" }}
+          >
+            Cancel
+          </button>
+        </div>
+      ) : (
+        <h2 style={{ marginTop: 0 }}>Add Empresa</h2>
+      )}
+      <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12, maxWidth: 560 }}>
         <label>
           Nome:
           <input
@@ -121,7 +133,7 @@ export default function EmpresasForm({ empresa, onNavigate }) {
         </label>
         <button
           type="submit"
-          style={{ padding: "10px 16px", borderRadius: 6, border: "1px solid #3b82f6", background: "#3b82f6", color: "white", cursor: "pointer" }}
+          style={{ padding: "10px 14px", borderRadius: 6, border: "none", background: "#3b82f6", color: "white", cursor: "pointer" }}
         >
           {isEditMode ? "Update Empresa" : "Add Empresa"}
         </button>

@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { apiRequest } from "../../middleware/request";
+import useTipoEcopontos from "../TipoEcoponto/useTipoEcopontos.js";
+import useDepositos from "../Deposito/useDepositos.js";
 
 export default function EcopontoForm({ ecoponto, onNavigate }) {
+  const { items: tipos = [] } = useTipoEcopontos();
+  const { items: depositos = [] } = useDepositos();
+
   const [codigo, setCodigo] = useState("");
   const [tipoEcopontoId, setTipoEcopontoId] = useState(null);
   const [depositoId, setDepositoId] = useState(null);
-  const [tipoOptions, setTipoOptions] = useState([]);
-  const [depositoOptions, setDepositoOptions] = useState([]);
   const [capacidadeAtual, setCapacidadeAtual] = useState("");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
@@ -19,8 +22,8 @@ export default function EcopontoForm({ ecoponto, onNavigate }) {
   useEffect(() => {
     if (isEditMode && ecoponto) {
       setCodigo(ecoponto.codigo ?? "");
-      setTipoEcopontoId(ecoponto.tipoEcopontoId ?? null);
-      setDepositoId(ecoponto.depositoId ?? null);
+      setTipoEcopontoId(null);
+      setDepositoId(null);
       setCapacidadeAtual(ecoponto.capacidadeAtual ?? "");
       setLatitude(ecoponto.latitude ?? "");
       setLongitude(ecoponto.longitude ?? "");
@@ -28,23 +31,8 @@ export default function EcopontoForm({ ecoponto, onNavigate }) {
     }
   }, [ecoponto, isEditMode]);
 
-  useEffect(() => {
-    async function loadOptions() {
-      try {
-        const resT = await fetch("http://localhost:3000/tipoecoponto/listar");
-        const dataT = await resT.json();
-        setTipoOptions(dataT.map((d) => ({ value: String(d.id), label: d.tipo })));
-
-        const resD = await fetch("http://localhost:3000/deposito/listar");
-        const dataD = await resD.json();
-        setDepositoOptions(dataD.map((d) => ({ value: String(d.id), label: d.descricao })));
-      } catch (err) {
-        // ignore
-      }
-    }
-
-    loadOptions();
-  }, []);
+  const tipoOptions = tipos.map((d) => ({ value: String(d.id), label: d.tipo }));
+  const depositoOptions = depositos.map((d) => ({ value: String(d.id), label: d.descricao }));
 
   useEffect(() => {
     if (isEditMode && ecoponto) {

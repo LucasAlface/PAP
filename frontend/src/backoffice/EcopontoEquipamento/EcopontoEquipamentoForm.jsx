@@ -5,8 +5,8 @@ import useEcopontos from "../Ecoponto/useEcopontos.js";
 import useEquipamentos from "../Equipamento/useEquipamentos.js";
 
 export default function EcopontoEquipamentoForm({ ecopontoEquipamento, onNavigate }) {
-  const { ecopontos } = useEcopontos();
-  const { equipamentos } = useEquipamentos();
+  const { items: ecopontos = [] } = useEcopontos();
+  const { items: equipamentos = [] } = useEquipamentos();
 
   const ecopontoOptions = ecopontos.map((e) => ({ value: String(e.id), label: `${e.codigo} - ${e.descricao || ""}` }));
   const equipamentoOptions = equipamentos.map((eq) => ({ value: String(eq.id), label: `${eq.codigo} - ${eq.descricao || ""}` }));

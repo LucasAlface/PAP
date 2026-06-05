@@ -144,7 +144,7 @@ export default function TipoDepositos({ onNavigate }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {items.map((item) => (
+                  {tipoDepositos.map((item) => (
                     <tr key={item.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
                       <td style={{ padding: "12px 8px" }}>{item.id}</td>
                       <td style={{ padding: "12px 8px" }}>{item.tipo}</td>

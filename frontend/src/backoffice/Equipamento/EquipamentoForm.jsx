@@ -93,7 +93,7 @@ export default function EquipamentoForm({ equipamento, onNavigate }) {
           <h2 style={{ marginTop: 0 }}>Edit Equipamento #{equipamento.id}</h2>
           <button
             onClick={() => onNavigate("equipamentos")}
-            style={{ padding: "10px 14px", borderRadius: 6, cursor: "pointer" }}
+            style={{ padding: "10px 14px", borderRadius: 6, border: "none", background: "#3b82f6", color: "white", cursor: "pointer" }}
           >
             Cancel
           </button>
@@ -135,7 +135,7 @@ export default function EquipamentoForm({ equipamento, onNavigate }) {
           </label>
         )}
 
-        <button type="submit" style={{ padding: "10px 14px", borderRadius: 6, cursor: "pointer" }}>
+        <button type="submit" style={{ padding: "10px 14px", borderRadius: 6, border: "none", background: "#3b82f6", color: "white", cursor: "pointer" }}>
           {isEditMode ? "Save Changes" : "Create Equipamento"}
         </button>
       </form>

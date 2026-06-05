@@ -13,8 +13,8 @@ export default function UtilizadorForm({ utilizador, onNavigate }) {
   const [status, setStatus] = useState("");
 
   const isEditMode = !!utilizador;
-  const { items: cargos } = useCargos();
-  const { items: empresas } = useEmpresas();
+  const { items: cargos = [] } = useCargos();
+  const { items: empresas = [] } = useEmpresas();
 
   const cargoOptions = cargos.map((cargo) => ({ value: String(cargo.id), label: cargo.nome || String(cargo.id) }));
   const empresaOptions = empresas.map((empresa) => ({ value: String(empresa.id), label: empresa.nome || String(empresa.id) }));
