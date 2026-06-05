@@ -70,10 +70,10 @@ router.delete("/apagar/:id", async (req, res) => {
 }); 
 
 router.get("/listar", async (req, res) => {
-    isSuperAdmin = req.superAdmin;
+    const isSuperAdmin = req.superAdmin;
     try {
-        whereClause = isSuperAdmin ? {} : { cargoId: { [Op.gt]: req.user.cargo } };
-        const utilizadores = await Utilizador.findAll({ order: [["id", "ASC"]]});
+        const whereClause = isSuperAdmin ? {} : { cargoId: { [Op.gt]: req.user.cargo } };
+        const utilizadores = await Utilizador.findAll({ order: [["id", "ASC"]] });
         res.json(utilizadores);
     } catch (err) {
         res.status(500).json({ erro: err.message });

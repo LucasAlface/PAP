@@ -20,14 +20,16 @@ export default function UtilizadorForm({ utilizador, onNavigate }) {
   const empresaOptions = empresas.map((empresa) => ({ value: String(empresa.id), label: empresa.nome || String(empresa.id) }));
 
   useEffect(() => {
-    if (isEditMode && utilizador) {
+    if (isEditMode && utilizador && cargos.length > 0 && empresas.length > 0) {
       setNome(utilizador.nome ?? "");
       setEmail(utilizador.email ?? "");
       setPassword("");
-      setCargoId(cargoOptions.find((option) => option.value === String(utilizador.cargoId)) || null);
-      setEmpresaId(empresaOptions.find((option) => option.value === String(utilizador.empresaId)) || null);
+      const cargoOpts = cargos.map((cargo) => ({ value: String(cargo.id), label: cargo.nome || String(cargo.id) }));
+      const empresaOpts = empresas.map((empresa) => ({ value: String(empresa.id), label: empresa.nome || String(empresa.id) }));
+      setCargoId(cargoOpts.find((option) => option.value === String(utilizador.cargoId)) || null);
+      setEmpresaId(empresaOpts.find((option) => option.value === String(utilizador.empresaId)) || null);
     }
-  }, [utilizador, isEditMode, cargoOptions, empresaOptions]);
+  }, [utilizador?.id, cargos, empresas]);
 
   async function handleSubmit(event) {
     event.preventDefault();

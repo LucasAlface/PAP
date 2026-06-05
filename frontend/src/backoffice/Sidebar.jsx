@@ -1,4 +1,9 @@
+import React from "react";
+import { useAuth } from "../context/AuthContext.jsx";
+
 export default function Sidebar({ page, onNavigate }) {
+  const { user } = useAuth();
+  const isAdmin = user?.cargo === 1;
   const itemStyle = (active) => ({
     padding: "12px 16px",
     cursor: "pointer",
@@ -31,9 +36,11 @@ export default function Sidebar({ page, onNavigate }) {
         <div style={itemStyle(page === "ecopontoequipamentos")} onClick={() => onNavigate("ecopontoequipamentos")}>
           Ecoponto Equipamentos
         </div>
-        <div style={itemStyle(page === "empresas")} onClick={() => onNavigate("empresas")}>
-          Empresas
-        </div>
+        {isAdmin && (
+          <div style={itemStyle(page === "empresas")} onClick={() => onNavigate("empresas")}>
+            Empresas
+          </div>
+        )}
         <div style={itemStyle(page === "utilizadores")} onClick={() => onNavigate("utilizadores")}>
           Utilizadores
         </div>

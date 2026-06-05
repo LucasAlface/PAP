@@ -1,17 +1,11 @@
+import { apiRequest } from "../../middleware/request";
+
 export default function DeleteDeposito({ deposito, onNavigate }) {
   const handleDelete = async () => {
     if (!deposito?.id) return;
 
     try {
-      const res = await fetch(`http://localhost:3000/deposito/apagar/${deposito.id}`, {
-        method: "DELETE",
-      });
-
-      if (!res.ok) {
-        const payload = await res.json();
-        throw new Error(payload.erro || "Failed to delete depósito");
-      }
-
+      await apiRequest(`http://localhost:3000/deposito/apagar/${deposito.id}`, "DELETE");
       onNavigate("depositos");
     } catch (error) {
       alert(`Error deleting depósito: ${error.message}`);

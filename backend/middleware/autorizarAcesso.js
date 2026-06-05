@@ -16,13 +16,14 @@ async function autorizarAcessoBackoffice(req, res, next) {
 async function autorizarAcessoSuperAdmin(req, res, next) {
     try {
         const user = await Utilizador.findByPk(req.user.id);
-        if (!user || user.cargoId !== 1) {
+        if (!user) {
             req.superAdmin = false;
-        } else {
-            req.superAdmin = true;
+            return res.status(403).json({ erro: "Acesso negado" });
         }
 
-        req.user.cargo = user.cargoId;
+        req.superAdmin = (user.cargoId === 1);
+
+        req.user.cargo = req.superAdmin ? 0 : user.cargoId;
         next();
     } catch (err) {
         res.status(500).json({ erro: err.message });

@@ -1,3 +1,5 @@
+import { apiRequest } from "../../middleware/request";
+
 export default function DeleteEmpresa({ empresa, onNavigate }) {
   async function handleDelete() {
     if (!empresa?.id) {
@@ -10,14 +12,7 @@ export default function DeleteEmpresa({ empresa, onNavigate }) {
     }
 
     try {
-      const res = await fetch(`http://localhost:3000/empresa/deletar/${empresa.id}`, {
-        method: "DELETE",
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to delete empresa");
-      }
-
+      await apiRequest(`http://localhost:3000/empresa/deletar/${empresa.id}`, "DELETE");
       alert("Empresa deleted successfully.");
       if (onNavigate) onNavigate("empresas");
     } catch (error) {

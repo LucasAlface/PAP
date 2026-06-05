@@ -1,18 +1,14 @@
+import { apiRequest } from "../../middleware/request";
+
 export default function DeleteEcopontoEquipamento({ ecopontoEquipamento, onNavigate }) {
   const handleDelete = async () => {
     if (!ecopontoEquipamento?.ecopontoId || !ecopontoEquipamento?.equipamentoId) return;
 
     try {
-      const res = await fetch(
+      await apiRequest(
         `http://localhost:3000/ecopontoequipamento/apagar/${ecopontoEquipamento.ecopontoId}/${ecopontoEquipamento.equipamentoId}`,
-        { method: "DELETE" }
+        "DELETE"
       );
-
-      if (!res.ok) {
-        const payload = await res.json();
-        throw new Error(payload.erro || "Failed to delete ecoponto equipamento");
-      }
-
       onNavigate("ecopontoequipamentos");
     } catch (error) {
       alert(`Error deleting ecoponto equipamento: ${error.message}`);

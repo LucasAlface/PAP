@@ -1,17 +1,11 @@
+import { apiRequest } from "../../middleware/request";
+
 export default function DeleteTipoEcoponto({ tipoEcoponto, onNavigate }) {
   const handleDelete = async () => {
     if (!tipoEcoponto?.id) return;
 
     try {
-      const res = await fetch(`http://localhost:3000/tipoecoponto/apagar/${tipoEcoponto.id}`, {
-        method: "DELETE",
-      });
-
-      if (!res.ok) {
-        const payload = await res.json();
-        throw new Error(payload.erro || "Failed to delete tipo ecoponto");
-      }
-
+      await apiRequest(`http://localhost:3000/tipoecoponto/apagar/${tipoEcoponto.id}`, "DELETE");
       onNavigate("tipoecopontos");
     } catch (error) {
       alert(`Error deleting tipo ecoponto: ${error.message}`);

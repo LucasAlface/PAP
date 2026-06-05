@@ -1,3 +1,5 @@
+import { apiRequest } from "../../middleware/request";
+
 export default function DeleteUtilizador({ utilizador, onNavigate }) {
   if (!utilizador?.id) {
     alert("Unable to delete: missing utilizador information.");
@@ -11,14 +13,7 @@ export default function DeleteUtilizador({ utilizador, onNavigate }) {
     }
 
     try {
-      const res = await fetch(`http://localhost:3000/utilizador/apagar/${utilizador.id}`, {
-        method: "DELETE",
-      });
-
-      // if (!res.ok) {
-      //   throw new Error("Failed to delete utilizador");
-      // }
-
+      await apiRequest(`http://localhost:3000/utilizador/apagar/${utilizador.id}`, "DELETE");
       // alert("Utilizador deleted successfully.");
       if (onNavigate) onNavigate("utilizadores");
     } catch (err) {

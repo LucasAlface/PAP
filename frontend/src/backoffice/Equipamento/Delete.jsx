@@ -1,17 +1,11 @@
+import { apiRequest } from "../../middleware/request";
+
 export default function DeleteEquipamento({ equipamento, onNavigate }) {
   const handleDelete = async () => {
     if (!equipamento?.id) return;
 
     try {
-      const res = await fetch(`http://localhost:3000/equipamento/apagar/${equipamento.id}`, {
-        method: "DELETE",
-      });
-
-      if (!res.ok) {
-        const payload = await res.json();
-        throw new Error(payload.erro || "Failed to delete equipamento");
-      }
-
+      await apiRequest(`http://localhost:3000/equipamento/apagar/${equipamento.id}`, "DELETE");
       onNavigate("equipamentos");
     } catch (error) {
       alert(`Error deleting equipamento: ${error.message}`);
