@@ -2,10 +2,11 @@ const router = require("express").Router();
 const Cargo = require("../models/cargo")
 const { Op } = require("sequelize");
 const autenticarJWT = require("../middleware/autenticarJWT");
-const autorizarAcesso = require("../middleware/autorizarAcesso");
+const { autorizarAcessoBackoffice, autorizarAcessoSuperAdmin } = require("../middleware/autorizarAcesso");
 
 router.use(autenticarJWT);
-router.use(autorizarAcesso);
+router.use(autorizarAcessoBackoffice);
+router.use(autorizarAcessoSuperAdmin);
 
 router.post("/inserir", async (req, res) => {
     try {
@@ -48,7 +49,9 @@ router.delete("/apagar/:id", async (req, res) => {
 });
 
 router.get("/listar", async (req, res) => {
+    isSuperAdmin = req.superAdmin;
     try {
+        whereClause = isSuperAdmin ? {} : { id: { [Op.gt]: req.user.cargo } };
         const cargos = await Cargo.findAll({ order: [["id", "ASC"]] });
         res.json(cargos);
     } catch (err) {

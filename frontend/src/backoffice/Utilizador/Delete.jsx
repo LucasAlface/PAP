@@ -15,11 +15,11 @@ export default function DeleteUtilizador({ utilizador, onNavigate }) {
         method: "DELETE",
       });
 
-      if (!res.ok) {
-        throw new Error("Failed to delete utilizador");
-      }
+      // if (!res.ok) {
+      //   throw new Error("Failed to delete utilizador");
+      // }
 
-      alert("Utilizador deleted successfully.");
+      // alert("Utilizador deleted successfully.");
       if (onNavigate) onNavigate("utilizadores");
     } catch (err) {
       alert(`Error deleting utilizador: ${err.message}`);

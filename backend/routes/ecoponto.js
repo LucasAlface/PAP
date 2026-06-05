@@ -3,10 +3,10 @@ const Ecoponto = require("../models/ecoponto")
 const Utilizador = require("../models/utilizador")
 const { Op } = require("sequelize");
 const autenticarJWT = require("../middleware/autenticarJWT");
-const autorizarAcesso = require("../middleware/autorizarAcesso");
+const { autorizarAcessoBackoffice } = require("../middleware/autorizarAcesso");
 
 router.use(autenticarJWT);
-router.use(autorizarAcesso);
+router.use(autorizarAcessoBackoffice);
 
 router.post("/inserir", async (req, res) => {
     const user = await Utilizador.findByPk(req.user.id);
