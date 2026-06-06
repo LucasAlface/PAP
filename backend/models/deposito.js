@@ -6,6 +6,7 @@ const Deposito = sequelize.define("Deposito", {
   capacidadeTotal: DataTypes.FLOAT,
   altura: DataTypes.FLOAT,
   tipoDepositoId: DataTypes.INTEGER,
+  empresaId: DataTypes.INTEGER,
   descricao: DataTypes.TEXT,
 }, {
   tableName: "deposito",

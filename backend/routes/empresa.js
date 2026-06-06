@@ -2,9 +2,10 @@ const router = require("express").Router();
 const Empresa = require("../models/empresa")
 const { Op } = require("sequelize");
 const autenticarJWT = require("../middleware/autenticarJWT");
-const { autorizarAcessoBackoffice } = require("../middleware/autorizarAcesso");
+const { autorizarAcessoBackoffice, carregarUtilizador } = require("../middleware/autorizarAcesso");
 
 router.use(autenticarJWT);
+router.use(carregarUtilizador);
 router.use(autorizarAcessoBackoffice);
 
 router.post("/inserir", async (req, res) => {

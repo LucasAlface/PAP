@@ -72,7 +72,8 @@ router.get("/me", autenticarJWT, async (req, res) => {
             id: utilizador.id,
             nome: utilizador.nome,
             email: utilizador.email,
-            cargo: utilizador.cargoId
+            cargo: utilizador.cargoId,
+            empresa: utilizador.empresaId
         });
     } catch (err) {
         return res.status(500).json({

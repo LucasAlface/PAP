@@ -1,16 +1,22 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Select from "react-select";
 import { apiRequest } from "../../middleware/request";
 import useTipoDepositos from "../TipoDeposito/useTipoDepositos.js";
+import useEmpresas from "../Empresa/useEmpresas.js";
 
 export default function DepositoForm({ deposito, onNavigate }) {
   const { items: tipoDepositos = [] } = useTipoDepositos();
-  const tipoDepositoOptions = tipoDepositos.map((d) => ({ value: String(d.id), label: d.tipo }));
+  const { items: empresas = [] } = useEmpresas();
+
+  const tipoDepositoOptions = useMemo(() => tipoDepositos.map((d) => ({ value: String(d.id), label: d.tipo })), [tipoDepositos]);
+  const empresaOptions = useMemo(() => empresas.map((d) => ({ value: String(d.id), label: d.nome })), [empresas]);
+
   const [capacidadeTotal, setCapacidadeTotal] = useState("");
   const [altura, setAltura] = useState("");
   const [tipoDepositoId, setTipoDepositoId] = useState(null);
   const [descricao, setDescricao] = useState("");
   const [status, setStatus] = useState("");
+  const [empresaId, setEmpresaId] = useState(null);
 
   const isEditMode = !!deposito;
 
@@ -19,6 +25,7 @@ export default function DepositoForm({ deposito, onNavigate }) {
       setCapacidadeTotal(deposito.capacidadeTotal ?? "");
       setAltura(deposito.altura ?? "");
       setDescricao(deposito.descricao ?? "");
+      setEmpresaId(null);
     }
   }, [deposito, isEditMode]);
 
@@ -29,8 +36,10 @@ export default function DepositoForm({ deposito, onNavigate }) {
         (opt) => opt.value === String(deposito.tipoDepositoId)
       );
       setTipoDepositoId(matchingOption || null);
+      const e = empresaOptions.find((o) => o.value === String(deposito.empresaId));
+      setEmpresaId(e || null);
     }
-  }, [tipoDepositoOptions, deposito, isEditMode]);
+  }, [tipoDepositoOptions, deposito, empresaOptions, isEditMode]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -46,6 +55,7 @@ export default function DepositoForm({ deposito, onNavigate }) {
       altura: altura ? Number(altura) : null,
       tipoDepositoId: tipoDepositoId ? Number(tipoDepositoId.value) : null,
       descricao,
+      empresaId: empresaId ? Number(empresaId.value) : null,
     };
 
     try {
@@ -67,6 +77,7 @@ export default function DepositoForm({ deposito, onNavigate }) {
         setAltura("");
         setTipoDepositoId(null);
         setDescricao("");
+          setEmpresaId(null);
       }
     } catch (error) {
       setStatus(`Error: ${error.message}`);
@@ -121,6 +132,16 @@ export default function DepositoForm({ deposito, onNavigate }) {
             value={altura}
             onChange={(e) => setAltura(e.target.value)}
             placeholder="Altura"
+          />
+        </label>
+        <label>
+          Empresa
+          <Select
+            options={empresaOptions}
+            value={empresaId}
+            onChange={setEmpresaId}
+            isSearchable={true}
+            isClearable={false}
           />
         </label>
         <label>

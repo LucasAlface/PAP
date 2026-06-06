@@ -3,11 +3,13 @@ import Select from "react-select";
 import useDepositos from "../Deposito/useDepositos.js";
 import useTipoEcopontos from "../TipoEcoponto/useTipoEcopontos.js";
 import useEcopontos from "./useEcopontos.js";
+import useEmpresas from "../Empresa/useEmpresas.js";
 import {getOperatorOptions} from "../../middleware/options"
 
 export default function Ecopontos({ onNavigate }) {
   const { items: depositos } = useDepositos();
   const { items: tipoEcopontos } = useTipoEcopontos();
+  const { items: empresas } = useEmpresas();
   const { items: ecopontos, loading, error, refetch } = useEcopontos();
 
   const operators = getOperatorOptions();
@@ -16,6 +18,7 @@ export default function Ecopontos({ onNavigate }) {
     codigo: null,
     tipoEcopontoId: null,
     depositoId: null,
+    empresaId: null,
     descricao: "",
     capacidadeAtual: "",
     operadorCapacidade: "igual"
@@ -37,6 +40,11 @@ export default function Ecopontos({ onNavigate }) {
     [depositos]
   );
 
+  const empresaOptions = useMemo(() =>
+    Array.isArray(empresas) ? empresas.map(e => ({ value: String(e.id), label: e.nome })) : [],
+    [empresas]
+  );
+
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({
       ...prev,
@@ -51,7 +59,8 @@ export default function Ecopontos({ onNavigate }) {
       depositoId: filters.depositoId?.value || null,
       descricao: filters.descricao,
       capacidadeAtual: filters.capacidadeAtual,
-      operadorCapacidade: filters.operadorCapacidade
+      operadorCapacidade: filters.operadorCapacidade,
+      empresaId: filters.empresaId?.value || null
     };
     refetch(filterValues);
   };
@@ -61,6 +70,7 @@ export default function Ecopontos({ onNavigate }) {
       codigo: null,
       tipoEcopontoId: null,
       depositoId: null,
+      empresaId: null,
       descricao: "",
       capacidadeAtual: "",
       operadorCapacidade: "igual"
@@ -132,6 +142,25 @@ export default function Ecopontos({ onNavigate }) {
               value={filters.depositoId}
               onChange={(option) => handleFilterChange("depositoId", option)}
               placeholder="Selecionar depósito"
+              isClearable
+              isSearchable
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  borderRadius: 6,
+                  borderColor: "#d1d5db",
+                  minHeight: 38
+                })
+              }}
+            />
+          </div>
+          <div>
+            <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Empresa</label>
+            <Select
+              options={empresaOptions}
+              value={filters.empresaId}
+              onChange={(option) => handleFilterChange("empresaId", option)}
+              placeholder="Selecionar empresa"
               isClearable
               isSearchable
               styles={{

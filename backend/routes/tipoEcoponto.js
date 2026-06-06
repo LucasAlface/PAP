@@ -2,12 +2,13 @@ const router = require("express").Router();
 const TipoEcoponto = require("../models/tipoEcoponto");
 const { Op } = require("sequelize");
 const autenticarJWT = require("../middleware/autenticarJWT");
-const { autorizarAcessoBackoffice } = require("../middleware/autorizarAcesso");
+const { autorizarAcessoBackoffice, autorizarAcessoSuperAdmin, carregarUtilizador } = require("../middleware/autorizarAcesso");
 
 router.use(autenticarJWT);
+router.use(carregarUtilizador);
 router.use(autorizarAcessoBackoffice);
 
-router.post("/inserir", async (req, res) => {
+router.post("/inserir", autorizarAcessoSuperAdmin,async (req, res) => {
   try {
     const dados = req.body;
     await TipoEcoponto.create(dados);
@@ -17,7 +18,7 @@ router.post("/inserir", async (req, res) => {
   }
 });
 
-router.put("/atualizar/:id", async (req, res) => {
+router.put("/atualizar/:id", autorizarAcessoSuperAdmin, async (req, res) => {
   try {
     const dados = req.body;
     const { id } = req.params;
@@ -33,7 +34,7 @@ router.put("/atualizar/:id", async (req, res) => {
   }
 });
 
-router.delete("/apagar/:id", async (req, res) => {
+router.delete("/apagar/:id", autorizarAcessoSuperAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const result = await TipoEcoponto.destroy({ where: { id: id } });

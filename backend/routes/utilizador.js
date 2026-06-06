@@ -3,21 +3,27 @@ const Utilizador = require("../models/utilizador")
 const { Op } = require("sequelize");
 const bcrypt = require('bcrypt');
 const autenticarJWT = require("../middleware/autenticarJWT");
-const { autorizarAcessoBackoffice, autorizarAcessoSuperAdmin } = require("../middleware/autorizarAcesso");
+const { autorizarAcessoBackoffice, carregarUtilizador } = require("../middleware/autorizarAcesso");
+const { whereEmpresa, setEmpresaId } = require("../functions/functions");
 
 router.use(autenticarJWT);
+router.use(carregarUtilizador);
 router.use(autorizarAcessoBackoffice);
-router.use(autorizarAcessoSuperAdmin);
 
 router.post("/inserir", async (req, res) => {
     try {
         const dados = req.body;
-        if (dados.cargoId <= req.user.cargo) {
-            return res.status(403).json({ erro: "Acesso negado" });
+        const isSuperAdmin = req.user.superAdmin;
+        const empresaId = setEmpresaId(req);
+
+        if (!isSuperAdmin) {
+            if (dados.cargoId <= req.user.cargo) {
+                return res.status(403).json({ erro: "Acesso negado" });
+            }
         }
         dados.password = await bcrypt.hash(dados.password, await bcrypt.genSalt(10));
-        await Utilizador.create(dados);
-
+        await Utilizador.create({ ...dados, empresaId });
+    
         res.json("Registro criado com sucesso");
     } catch (err) {
         res.status(500).json({ erro: err.message });
@@ -27,16 +33,20 @@ router.post("/inserir", async (req, res) => {
 router.put("/atualizar/:id", async (req, res) => {
     try {
         const dados = req.body;
-        if (dados.cargoId <= req.user.cargo) {
-            return res.status(403).json({ erro: "Acesso negado" });
-        }
+        const isSuperAdmin = req.user.superAdmin;
+        const empresaId = setEmpresaId(req);
+        if (!isSuperAdmin) {
+            if (dados.cargoId <= req.user.cargo) {
+                return res.status(403).json({ erro: "Acesso negado" });
+            }
+    }
         const { id } = req.params;
         if (dados.password) {
             const salt = await bcrypt.genSalt(10);
             dados.password = await bcrypt.hash(dados.password, salt);
         }
-
-        const result = await Utilizador.update(dados, { where: { id: id } });
+        const whereClause = whereEmpresa(req, { id: id });
+        const result = await Utilizador.update({ ...dados, empresaId }, { where: whereClause });
 
         if (result[0] === 0) {
             return res.status(404).json({ erro: "Registro não encontrado" });
@@ -50,15 +60,19 @@ router.put("/atualizar/:id", async (req, res) => {
 router.delete("/apagar/:id", async (req, res) => {
     try {
         const { id } = req.params;
+        const isSuperAdmin = req.user.superAdmin;
         const userToDelete = await Utilizador.findByPk(id);
 
         if (!userToDelete) {
             return res.status(404).json({ erro: "Registro não encontrado" });
         }
-        if (userToDelete.cargoId <= req.user.cargo) {
-            return res.status(403).json({ erro: "Acesso negado" });
+        if (!isSuperAdmin) {
+            if (userToDelete.cargoId <= req.user.cargo) {
+                return res.status(403).json({ erro: "Acesso negado" });
+            }
         }
-        const result = await Utilizador.destroy({ where: { id: id } });
+        const whereClause = whereEmpresa(req, { id: id });
+        const result = await Utilizador.destroy({ where: whereClause });
 
         if (result === 0) {
             return res.status(404).json({ erro: "Registro não encontrado" });
@@ -70,10 +84,10 @@ router.delete("/apagar/:id", async (req, res) => {
 }); 
 
 router.get("/listar", async (req, res) => {
-    const isSuperAdmin = req.superAdmin;
+    const isSuperAdmin = req.user.superAdmin;
     try {
-        const whereClause = isSuperAdmin ? {} : { cargoId: { [Op.gt]: req.user.cargo } };
-        const utilizadores = await Utilizador.findAll({ order: [["id", "ASC"]] });
+        const whereClause = isSuperAdmin ? {} : whereEmpresa(req, { cargoId: { [Op.gt]: req.user.cargo } });
+        const utilizadores = await Utilizador.findAll({ order: [["id", "ASC"]], where: whereClause });
         res.json(utilizadores);
     } catch (err) {
         res.status(500).json({ erro: err.message });

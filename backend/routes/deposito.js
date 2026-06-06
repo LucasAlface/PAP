@@ -2,15 +2,20 @@ const router = require("express").Router();
 const Deposito = require("../models/deposito")
 const { Op } = require("sequelize");
 const autenticarJWT = require("../middleware/autenticarJWT");
-const { autorizarAcessoBackoffice } = require("../middleware/autorizarAcesso");
+const { autorizarAcessoBackoffice, carregarUtilizador } = require("../middleware/autorizarAcesso");
+const {whereEmpresa, setEmpresaId} = require("../functions/functions");
 
 router.use(autenticarJWT);
+router.use(carregarUtilizador);
 router.use(autorizarAcessoBackoffice);
 
 router.post("/inserir", async (req, res) => {
     try {
-        const dados = req.body;
-        await Deposito.create(dados);
+        const empresaId = setEmpresaId(req);
+        const deposito = await Deposito.create({
+            ...req.body,
+            empresaId
+        });
         res.json("Registro criado com sucesso");
     } catch (err) {
         res.status(500).json({ erro: err.message });
@@ -21,11 +26,13 @@ router.put("/atualizar/:id", async (req, res) => {
     try {
         const dados = req.body;
         const { id } = req.params;
+        const whereClause = whereEmpresa(req, { id: id });
+        const empresaId = setEmpresaId(req);
 
-        const result = await Deposito.update(dados, { where: { id: id } });
+        const result = await Deposito.update({ ...dados, empresaId }, { where: whereClause });
 
         if (result[0] === 0) {
-            return res.status(404).json({ erro: "Registro não encontrado" });
+            return res.status(404).json({ erro: "Registro não encontrado ou sem permissão" });
         }
         res.json("Registro atualizado com sucesso");
     } catch (err) {
@@ -36,10 +43,11 @@ router.put("/atualizar/:id", async (req, res) => {
 router.delete("/apagar/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const result = await Deposito.destroy({ where: { id: id } });
+        const whereClause = whereEmpresa(req, { id: id });
+        const result = await Deposito.destroy({ where: whereClause });
 
         if (result === 0) {
-            return res.status(404).json({ erro: "Registro não encontrado" });
+            return res.status(404).json({ erro: "Registro não encontrado ou sem permissão" });
         }
         res.json("Registro deletado com sucesso");
     } catch (err) {
@@ -49,7 +57,8 @@ router.delete("/apagar/:id", async (req, res) => {
 
 router.get("/listar", async (req, res) => {
     try {
-        const depositos = await Deposito.findAll({ order: [["id", "ASC"]] });
+        const whereClause = whereEmpresa(req);
+        const depositos = await Deposito.findAll({ where: whereClause, order: [["id", "ASC"]] });
         res.json(depositos);
     } catch (err) {
         res.status(500).json({ erro: err.message });
@@ -135,8 +144,9 @@ router.get("/listar/filtro", async (req, res) => {
             }
         }
 
+        const whereClause = whereEmpresa(req);
         const depositos = await Deposito.findAll({
-            where: filtros
+            where: { ...filtros, ...whereClause }
         });
 
         res.json(depositos);

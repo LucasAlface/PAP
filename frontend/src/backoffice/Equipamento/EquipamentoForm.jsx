@@ -1,12 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Select from "react-select";
 import { apiRequest } from "../../middleware/request";
+import useEmpresas from "../Empresa/useEmpresas.js";
 
 export default function EquipamentoForm({ equipamento, onNavigate }) {
   const [codigo, setCodigo] = useState("");
   const [ativo, setAtivo] = useState({ value: "true", label: "Sim" });
   const [bateria, setBateria] = useState("");
   const [status, setStatus] = useState("");
+  const { items: empresas = [] } = useEmpresas();
+  const [empresaId, setEmpresaId] = useState(null);
 
   const isEditMode = !!equipamento;
 
@@ -24,8 +27,17 @@ export default function EquipamentoForm({ equipamento, onNavigate }) {
           : { value: "false", label: "Não" }
       );
       setBateria(equipamento.bateria ?? "");
+      setEmpresaId(null);
     }
   }, [equipamento, isEditMode]);
+
+  const empresaOptions = useMemo(() => empresas.map((d) => ({ value: String(d.id), label: d.nome })), [empresas]);
+  useEffect(() => {
+    if (isEditMode && equipamento) {
+      const e = empresaOptions.find((o) => o.value === String(equipamento.empresaId));
+      setEmpresaId(e || null);
+    }
+  }, [empresaOptions, equipamento, isEditMode]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -41,10 +53,12 @@ export default function EquipamentoForm({ equipamento, onNavigate }) {
           codigo,
           ativo: ativo?.value === "true",
           bateria: bateria ? Number(bateria) : null,
+          empresaId: empresaId ? Number(empresaId.value) : null,
         }
       : {
           codigo,
           ativo: ativo?.value === "true",
+          empresaId: empresaId ? Number(empresaId.value) : null,
         };
 
     try {
@@ -65,6 +79,7 @@ export default function EquipamentoForm({ equipamento, onNavigate }) {
         setCodigo("");
         setAtivo({ value: "true", label: "Sim" });
         setBateria("");
+          setEmpresaId(null);
       }
     } catch (error) {
       setStatus(`Error: ${error.message}`);
@@ -118,6 +133,17 @@ export default function EquipamentoForm({ equipamento, onNavigate }) {
             options={options}
             value={ativo}
             onChange={setAtivo}
+            isSearchable={true}
+            isClearable={false}
+          />
+        </label>
+
+        <label>
+          Empresa
+          <Select
+            options={empresaOptions}
+            value={empresaId}
+            onChange={setEmpresaId}
             isSearchable={true}
             isClearable={false}
           />

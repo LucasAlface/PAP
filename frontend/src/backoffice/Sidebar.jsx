@@ -2,8 +2,8 @@ import React from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Sidebar({ page, onNavigate }) {
-  const { user } = useAuth();
-  const isAdmin = user?.cargo === 1;
+  const { authUser } = useAuth();
+  const isAdmin = authUser?.cargo === 1;
   const itemStyle = (active) => ({
     padding: "12px 16px",
     cursor: "pointer",

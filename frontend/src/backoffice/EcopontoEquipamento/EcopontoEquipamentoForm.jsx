@@ -1,20 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { apiRequest } from "../../middleware/request";
 import Select from "react-select";
 import useEcopontos from "../Ecoponto/useEcopontos.js";
 import useEquipamentos from "../Equipamento/useEquipamentos.js";
+import useEmpresas from "../Empresa/useEmpresas.js";
 
 export default function EcopontoEquipamentoForm({ ecopontoEquipamento, onNavigate }) {
   const { items: ecopontos = [] } = useEcopontos();
   const { items: equipamentos = [] } = useEquipamentos();
+  const { items: empresas = [] } = useEmpresas();
 
-  const ecopontoOptions = ecopontos.map((e) => ({ value: String(e.id), label: `${e.codigo} - ${e.descricao || ""}` }));
-  const equipamentoOptions = equipamentos.map((eq) => ({ value: String(eq.id), label: `${eq.codigo} - ${eq.descricao || ""}` }));
+  const ecopontoOptions = useMemo(() => ecopontos.map((e) => ({ value: String(e.id), label: `${e.codigo} - ${e.descricao || ""}` })), [ecopontos]);
+  const equipamentoOptions = useMemo(() => equipamentos.map((eq) => ({ value: String(eq.id), label: `${eq.codigo} - ${eq.descricao || ""}` })), [equipamentos]);
+  const empresaOptions = useMemo(() => empresas.map((d) => ({ value: String(d.id), label: d.nome })), [empresas]);
 
   const [ecopontoId, setEcopontoId] = useState(null);
   const [equipamentoId, setEquipamentoId] = useState(null);
   const [ativo, setAtivo] = useState({ value: "true", label: "Sim" });
   const [status, setStatus] = useState("");
+  const [empresaId, setEmpresaId] = useState(null);
 
   const options = [
     { value: "true", label: "Sim" },
@@ -31,12 +35,16 @@ export default function EcopontoEquipamentoForm({ ecopontoEquipamento, onNavigat
       const eqOpt = equipamentoOptions.find((o) => o.value === String(ecopontoEquipamento.equipamentoId));
       setEcopontoId(eOpt || null);
       setEquipamentoId(eqOpt || null);
+      const empOpt = empresaOptions.find((o) => o.value === String(ecopontoEquipamento.empresaId));
+      setEmpresaId(empOpt || null);
     } else if (!isEditMode) {
       setEcopontoId(null);
       setEquipamentoId(null);
       setAtivo(options[0]);
+      setEmpresaId(null);
     }
-  }, [ecopontoEquipamento, ecopontoOptions, equipamentoOptions, isEditMode]);
+  }, [ecopontoEquipamento, ecopontoOptions, equipamentoOptions, empresaOptions, isEditMode]);
+  
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -48,14 +56,15 @@ export default function EcopontoEquipamentoForm({ ecopontoEquipamento, onNavigat
     }
 
     const payload = isEditMode
-      ? { ativo: ativo?.value === "true" }
-      : [
+      ? { ativo: ativo?.value === "true", empresaId: empresaId ? Number(empresaId.value) : null }
+      : 
           {
             ecopontoId: ecopontoId ? Number(ecopontoId.value) : null,
             equipamentoId: equipamentoId ? Number(equipamentoId.value) : null,
             ativo: ativo?.value === "true",
-          },
-        ];
+            empresaId: empresaId ? Number(empresaId.value) : null,
+          }
+        ;
 
     const endpoint = isEditMode
       ? `http://localhost:3000/ecopontoequipamento/atualizar/${ecopontoEquipamento.ecopontoId}/${ecopontoEquipamento.equipamentoId}`
@@ -74,6 +83,7 @@ export default function EcopontoEquipamentoForm({ ecopontoEquipamento, onNavigat
         setEcopontoId(null);
         setEquipamentoId(null);
         setAtivo(options[0]);
+        setEmpresaId(null);
       }
     } catch (error) {
       setStatus(`Error: ${error.message}`);
@@ -135,6 +145,17 @@ export default function EcopontoEquipamentoForm({ ecopontoEquipamento, onNavigat
             isClearable={false}
             isDisabled={isEditMode}
             placeholder="Select Equipamento"
+          />
+        </label>
+
+        <label>
+          Empresa
+          <Select
+            options={empresaOptions}
+            value={empresaId}
+            onChange={setEmpresaId}
+            isSearchable={true}
+            isClearable={false}
           />
         </label>
 

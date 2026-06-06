@@ -2,15 +2,21 @@ const router = require("express").Router();
 const EcopontoEquipamento = require("../models/ecopontoEquipamento")
 const { Op } = require("sequelize");
 const autenticarJWT = require("../middleware/autenticarJWT");
-const { autorizarAcessoBackoffice } = require("../middleware/autorizarAcesso");
+const { autorizarAcessoBackoffice, carregarUtilizador } = require("../middleware/autorizarAcesso");
+const {whereEmpresa, setEmpresaId} = require("../functions/functions");
 
 router.use(autenticarJWT);
+router.use(carregarUtilizador);
 router.use(autorizarAcessoBackoffice);
 
 router.post("/inserir", async (req, res) => {
     try {
-        const dados = req.body;
-        await EcopontoEquipamento.create(dados);
+        const empresaId = setEmpresaId(req);
+        console.log(req.body);
+        const registro = await EcopontoEquipamento.create({
+            ...req.body,
+            empresaId
+        });
         res.json("Registro criado com sucesso");
     } catch (err) {
         res.status(500).json({ erro: err.message });
@@ -21,11 +27,13 @@ router.put("/atualizar/:idEcoponto/:idEquipamento", async (req, res) => {
     try {
         const dados = req.body;
         const { idEcoponto, idEquipamento } = req.params;
+        const empresaId = setEmpresaId(req);
+        const whereClause = whereEmpresa(req, { ecopontoId: idEcoponto, equipamentoId: idEquipamento });
 
-        const result = await EcopontoEquipamento.update(dados, { where: { ecopontoId: idEcoponto, equipamentoId: idEquipamento } });
+        const result = await EcopontoEquipamento.update({ ...dados, empresaId }, { where: whereClause });
 
         if (result[0] === 0) {
-            return res.status(404).json({ erro: "Registro não encontrado" });
+            return res.status(404).json({ erro: "Registro não encontrado ou sem permissão" });
         }
         res.json("Registro atualizado com sucesso");
     } catch (err) {
@@ -36,10 +44,11 @@ router.put("/atualizar/:idEcoponto/:idEquipamento", async (req, res) => {
 router.delete("/apagar/:idEcoponto/:idEquipamento", async (req, res) => {
     try {
         const { idEcoponto, idEquipamento } = req.params;
-        const result = await EcopontoEquipamento.destroy({ where: { ecopontoId: idEcoponto, equipamentoId: idEquipamento } });
+        const whereClause = whereEmpresa(req, { ecopontoId: idEcoponto, equipamentoId: idEquipamento });
+        const result = await EcopontoEquipamento.destroy({ where: whereClause });
 
         if (result === 0) {
-            return res.status(404).json({ erro: "Registro não encontrado" });
+            return res.status(404).json({ erro: "Registro não encontrado ou sem permissão" });
         }
         res.json("Registro deletado com sucesso");
     } catch (err) {
@@ -49,7 +58,8 @@ router.delete("/apagar/:idEcoponto/:idEquipamento", async (req, res) => {
 
 router.get("/listar", async (req, res) => {
     try {
-        const registros = await EcopontoEquipamento.findAll({ order: [["ecopontoId", "ASC"], ["equipamentoId", "ASC"]] });
+        const whereClause = whereEmpresa(req);
+        const registros = await EcopontoEquipamento.findAll({ where: whereClause, order: [["ecopontoId", "ASC"], ["equipamentoId", "ASC"]] });
         res.json(registros);
     } catch (err) {
         res.status(500).json({ erro: err.message });
@@ -76,8 +86,9 @@ router.get("/listar/filtro", async (req, res) => {
             filtros.ativo = ativo === "true";
         }
 
+        const whereClause = whereEmpresa(req);
         const registros = await EcopontoEquipamento.findAll({
-            where: filtros
+            where: { ...filtros, ...whereClause }
         });
 
         res.json(registros);

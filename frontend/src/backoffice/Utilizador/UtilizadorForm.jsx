@@ -16,7 +16,7 @@ export default function UtilizadorForm({ utilizador, onNavigate }) {
   const { items: cargos = [] } = useCargos();
   const { items: empresas = [] } = useEmpresas();
 
-  const cargoOptions = cargos.map((cargo) => ({ value: String(cargo.id), label: cargo.nome || String(cargo.id) }));
+  const cargoOptions = cargos.map((cargo) => ({ value: String(cargo.id), label: cargo.cargo || String(cargo.id) }));
   const empresaOptions = empresas.map((empresa) => ({ value: String(empresa.id), label: empresa.nome || String(empresa.id) }));
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export default function UtilizadorForm({ utilizador, onNavigate }) {
       setNome(utilizador.nome ?? "");
       setEmail(utilizador.email ?? "");
       setPassword("");
-      const cargoOpts = cargos.map((cargo) => ({ value: String(cargo.id), label: cargo.nome || String(cargo.id) }));
+      const cargoOpts = cargos.map((cargo) => ({ value: String(cargo.id), label: cargo.cargo || String(cargo.id) }));
       const empresaOpts = empresas.map((empresa) => ({ value: String(empresa.id), label: empresa.nome || String(empresa.id) }));
       setCargoId(cargoOpts.find((option) => option.value === String(utilizador.cargoId)) || null);
       setEmpresaId(empresaOpts.find((option) => option.value === String(utilizador.empresaId)) || null);

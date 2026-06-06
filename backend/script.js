@@ -10,6 +10,7 @@ const {
   Cargo
 } = require("./models/models");
 
+const bcrypt = require("bcrypt");
 const sequelize = require("./db");
 
 
@@ -47,6 +48,7 @@ async function inserirDados() {
       capacidadeTotal: 2.5,
       altura: 1.0,
       tipoDepositoId: 1,
+      empresaId: 1,
       descricao: "apenas um ecoponto regular"
     },
 
@@ -54,6 +56,7 @@ async function inserirDados() {
       capacidadeTotal: 5.0,
       altura: 2.0,
       tipoDepositoId: 2,
+      empresaId: 1,
       descricao: "subterraneo grande e tal ya"
     }
   ]);
@@ -69,6 +72,7 @@ async function inserirDados() {
       codigo: "VX5FT",
       tipoEcopontoId: 1,
       depositoId: 1,
+      empresaId: 1,
       capacidadeAtual: 2.0,
       latitude: 41.1622468,
       longitude: -8.6631531,
@@ -79,6 +83,7 @@ async function inserirDados() {
       codigo: "VX6FT",
       tipoEcopontoId: 2,
       depositoId: 1,
+      empresaId: 1,
       capacidadeAtual: 2.2,
       latitude: 38.7441392,
       longitude: -9.2009353,
@@ -89,6 +94,7 @@ async function inserirDados() {
       codigo: "VX7FT",
       tipoEcopontoId: 3,
       depositoId: 1,
+      empresaId: 1,
       capacidadeAtual: 2.5,
       latitude: 40.4380986,
       longitude: -3.844343,
@@ -99,6 +105,7 @@ async function inserirDados() {
       codigo: "VX5FS",
       tipoEcopontoId: 1,
       depositoId: 2,
+      empresaId: 1,
       latitude: 40.642346,
       longitude: -8.649730,
       descricao: "um vidrão subterrâneo em aveiro"
@@ -108,6 +115,7 @@ async function inserirDados() {
       codigo: "VX6FS",
       tipoEcopontoId: 2,
       depositoId: 2,
+      empresaId: 1,
       latitude: 40.642346,
       longitude: -8.649730,
       descricao: "um embalão subterrâneo em aveiro"
@@ -117,6 +125,7 @@ async function inserirDados() {
       codigo: "VX7FS",
       tipoEcopontoId: 3,
       depositoId: 2,
+      empresaId: 1,
       latitude: 40.642346,
       longitude: -8.649730,
       descricao: "um papelão subterrâneo em aveiro"
@@ -133,16 +142,19 @@ async function inserirDados() {
 
     {
       codigo: "ARD001",
+      empresaId: 1,
       ativo: true
     },
 
     {
       codigo: "ARD002",
+      empresaId: 1,
       ativo: true
     },
 
     {
       codigo: "ARD003",
+      empresaId: 1,
       ativo: true
     }
 
@@ -158,16 +170,19 @@ async function inserirDados() {
     {
       equipamentoId: 1,
       ecopontoId: 1,
+      empresaId: 1
     },
 
     {
       equipamentoId: 2,
       ecopontoId: 2,
+      empresaId: 1
     },
 
     {
       equipamentoId: 3,
       ecopontoId: 3,
+      empresaId: 1
     }
 
   ]);
@@ -185,6 +200,16 @@ async function inserirDados() {
       cargo: "Funcionário"
     }
 
+  ]);
+
+  await Utilizador.bulkCreate([
+
+    {
+      nome: "Super Admin",
+      email: "faca.e.porta@gmail.com",
+      password: await bcrypt.hash("superadmin123", await bcrypt.genSalt(10)),
+      cargoId: 1,
+    }
   ]);
 
 

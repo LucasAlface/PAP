@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Select from "react-select";
 import { apiRequest } from "../../middleware/request";
 import useTipoEcopontos from "../TipoEcoponto/useTipoEcopontos.js";
 import useDepositos from "../Deposito/useDepositos.js";
+import useEmpresas from "../Empresa/useEmpresas.js";
 
 export default function EcopontoForm({ ecoponto, onNavigate }) {
   const { items: tipos = [] } = useTipoEcopontos();
   const { items: depositos = [] } = useDepositos();
+  const { items: empresas = [] } = useEmpresas();
 
   const [codigo, setCodigo] = useState("");
   const [tipoEcopontoId, setTipoEcopontoId] = useState(null);
@@ -16,7 +18,7 @@ export default function EcopontoForm({ ecoponto, onNavigate }) {
   const [longitude, setLongitude] = useState("");
   const [descricao, setDescricao] = useState("");
   const [status, setStatus] = useState("");
-
+  const [empresaId, setEmpresaId] = useState(null);
   const isEditMode = !!ecoponto;
 
   useEffect(() => {
@@ -28,20 +30,23 @@ export default function EcopontoForm({ ecoponto, onNavigate }) {
       setLatitude(ecoponto.latitude ?? "");
       setLongitude(ecoponto.longitude ?? "");
       setDescricao(ecoponto.descricao ?? "");
+      setEmpresaId(null);
     }
   }, [ecoponto, isEditMode]);
 
-  const tipoOptions = tipos.map((d) => ({ value: String(d.id), label: d.tipo }));
-  const depositoOptions = depositos.map((d) => ({ value: String(d.id), label: d.descricao }));
-
+  const tipoOptions = useMemo(() => tipos.map((d) => ({ value: String(d.id), label: d.tipo })), [tipos]);
+  const depositoOptions = useMemo(() => depositos.map((d) => ({ value: String(d.id), label: d.descricao })), [depositos]);
+  const empresaOptions = useMemo(() => empresas.map((d) => ({ value: String(d.id), label: d.nome })), [empresas]);
   useEffect(() => {
     if (isEditMode && ecoponto) {
       const t = tipoOptions.find((o) => o.value === String(ecoponto.tipoEcopontoId));
       const d = depositoOptions.find((o) => o.value === String(ecoponto.depositoId));
+      const e = empresaOptions.find((o) => o.value === String(ecoponto.empresaId));
       setTipoEcopontoId(t || null);
       setDepositoId(d || null);
+      setEmpresaId(e || null);
     }
-  }, [tipoOptions, depositoOptions, ecoponto, isEditMode]);
+  }, [tipoOptions, depositoOptions, empresaOptions, ecoponto, isEditMode]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -60,6 +65,7 @@ export default function EcopontoForm({ ecoponto, onNavigate }) {
       latitude: latitude ? Number(latitude) : null,
       longitude: longitude ? Number(longitude) : null,
       descricao,
+      empresaId: empresaId ? Number(empresaId.value) : null,
     };
 
     try {
@@ -146,6 +152,16 @@ export default function EcopontoForm({ ecoponto, onNavigate }) {
             options={depositoOptions}
             value={depositoId}
             onChange={setDepositoId}
+            isSearchable={true}
+            isClearable={false}
+          />
+        </label>
+        <label>
+          Empresa
+          <Select
+            options={empresaOptions}
+            value={empresaId}
+            onChange={setEmpresaId}
             isSearchable={true}
             isClearable={false}
           />

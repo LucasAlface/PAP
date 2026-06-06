@@ -2,13 +2,13 @@ const router = require("express").Router();
 const Cargo = require("../models/cargo")
 const { Op } = require("sequelize");
 const autenticarJWT = require("../middleware/autenticarJWT");
-const { autorizarAcessoBackoffice, autorizarAcessoSuperAdmin } = require("../middleware/autorizarAcesso");
+const { autorizarAcessoBackoffice, autorizarAcessoSuperAdmin, carregarUtilizador } = require("../middleware/autorizarAcesso");
 
 router.use(autenticarJWT);
+router.use(carregarUtilizador);
 router.use(autorizarAcessoBackoffice);
-router.use(autorizarAcessoSuperAdmin);
 
-router.post("/inserir", async (req, res) => {
+router.post("/inserir", autorizarAcessoSuperAdmin, async (req, res) => {
     try {
         const dados = req.body;
         await Cargo.create(dados);
@@ -18,7 +18,7 @@ router.post("/inserir", async (req, res) => {
     }
 });
 
-router.put("/atualizar/:id", async (req, res) => {
+router.put("/atualizar/:id", autorizarAcessoSuperAdmin,async (req, res) => {
     try {
         const dados = req.body;
         const { id } = req.params;
@@ -34,7 +34,7 @@ router.put("/atualizar/:id", async (req, res) => {
     }
 });
 
-router.delete("/apagar/:id", async (req, res) => {
+router.delete("/apagar/:id", autorizarAcessoSuperAdmin, async (req, res) => {
     try {
         const { id } = req.params;
         const result = await Cargo.destroy({ where: { id: id } });
@@ -49,7 +49,7 @@ router.delete("/apagar/:id", async (req, res) => {
 });
 
 router.get("/listar", async (req, res) => {
-    const isSuperAdmin = req.superAdmin;
+    const isSuperAdmin = req.user.superAdmin;
     try {
         const whereClause = isSuperAdmin ? {} : { id: { [Op.gt]: req.user.cargo } };
         const cargos = await Cargo.findAll({ order: [["id", "ASC"]], where: whereClause });
