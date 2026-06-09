@@ -56,7 +56,7 @@ app.use("/cargo", cargo_router);
 app.use("/empresa", empresa_router);
 app.use("/login", login_router);
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log("Servidor online");
 });
 

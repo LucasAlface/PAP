@@ -5,11 +5,14 @@ router.put("/capacidade", async (req, res) => {
   try {
     const { codigoEquipamento, profundidade } = req.body;
 
+    console.log("Código do equipamento:", codigoEquipamento);
+
     const equipamento = await Equipamento.findOne({ where: { codigo: codigoEquipamento } });
     if (!equipamento) {
       return res.status(404).json({ erro: "Equipamento não encontrado" });
     }
     const equipamentoId = equipamento.id;
+    console.log("ID do equipamento:", equipamentoId);
 
     const ecopontoEquipamento = await EcopontoEquipamento.findOne({ where: { equipamentoId: equipamentoId, ativo: true } });
     if (!ecopontoEquipamento) {
@@ -30,13 +33,13 @@ router.put("/capacidade", async (req, res) => {
     const capacidadeTotal = deposito.capacidadeTotal;
     const altura = deposito.altura;
 
-    const percentagem = profundidade / altura;
+    const percentagem = profundidade / 100 / altura;
     const capacidadeAtual = percentagem * capacidadeTotal;
 
     await ecoponto.update({ capacidadeAtual: capacidadeAtual }); 
 
 
-    res.json("simmmm");
+    res.json("simmmm", ecoponto);
   } catch (err) {
     res.status(500).json({ erro: err.message });
   }
