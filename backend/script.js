@@ -206,7 +206,7 @@ async function inserirDados() {
 
     {
       nome: "Super Admin",
-      email: "faca.e.porta@gmail.com",
+      email: "teste@gmail.com",
       password: await bcrypt.hash("superadmin123", await bcrypt.genSalt(10)),
       cargoId: 1,
     }
