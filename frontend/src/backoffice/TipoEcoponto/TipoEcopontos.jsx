@@ -1,6 +1,16 @@
 import { useState, useMemo } from "react";
 import Select from "react-select";
 import useTipoEcopontos from "./useTipoEcopontos.js";
+import ListTemplate from "../ListTemplate.jsx";
+
+const selectStyles = {
+  control: (base) => ({
+    ...base,
+    borderRadius: 6,
+    borderColor: "#d1d5db",
+    minHeight: 38
+  })
+};
 
 export default function TipoEcopontos({ onNavigate }) {
   const { items: tipoEcopontos, loading, error, refetch } = useTipoEcopontos();
@@ -10,7 +20,6 @@ export default function TipoEcopontos({ onNavigate }) {
     descricao: ""
   });
 
-  // Create options for tipo
   const tipoOptions = useMemo(() =>
     tipoEcopontos.map(t => ({ value: t.tipo, label: t.tipo })),
     [tipoEcopontos]
@@ -39,23 +48,30 @@ export default function TipoEcopontos({ onNavigate }) {
     refetch(null);
   };
 
+  const columns = [
+    { key: "id", label: "ID" },
+    { key: "tipo", label: "Tipo" },
+    { key: "descricao", label: "Descrição" },
+  ];
+
   return (
-    <div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-        <h2 style={{ marginTop: 0 }}>Tipo Ecopontos</h2>
-        <button
-          onClick={() => onNavigate("add-tipoecoponto")}
-          style={{ padding: "10px 16px", borderRadius: 6, border: "1px solid #3b82f6", background: "#3b82f6", color: "white", cursor: "pointer" }}
-        >
-          Add Tipo Ecoponto
-        </button>
-      </div>
-
-      {/* Filter Section */}
-      <div style={{ margin: "16px 0", padding: 16, background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 10 }}>
-        <h3 style={{ marginTop: 0, marginBottom: 16 }}>Filtros</h3>
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12, marginBottom: 12 }}>
+    <ListTemplate
+      title="Tipo Ecopontos"
+      addLabel="Add Tipo Ecoponto"
+      onAdd={() => onNavigate("add-tipoecoponto")}
+      loading={loading}
+      error={error}
+      items={tipoEcopontos}
+      totalLabel="Total de tipo ecopontos"
+      emptyMessage="No tipo ecopontos found."
+      columns={columns}
+      getRowKey={(item) => item.id}
+      onEdit={(item) => onNavigate("edit-tipoecoponto", item)}
+      onDelete={(item) => onNavigate("delete-tipoecoponto", item)}
+      onApplyFilters={handleApplyFilters}
+      onClearFilters={handleClearFilters}
+      filterSection={
+        <>
           <div>
             <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Tipo</label>
             <Select
@@ -65,14 +81,7 @@ export default function TipoEcopontos({ onNavigate }) {
               placeholder="Pesquisar por tipo"
               isClearable
               isSearchable
-              styles={{
-                control: (base) => ({
-                  ...base,
-                  borderRadius: 6,
-                  borderColor: "#d1d5db",
-                  minHeight: 38
-                })
-              }}
+              styles={selectStyles}
             />
           </div>
 
@@ -86,91 +95,8 @@ export default function TipoEcopontos({ onNavigate }) {
               style={{ width: "100%", padding: "8px 12px", borderRadius: 6, border: "1px solid #d1d5db", boxSizing: "border-box" }}
             />
           </div>
-        </div>
-
-        <div style={{ display: "flex", gap: 8 }}>
-          <button
-            onClick={handleApplyFilters}
-            disabled={loading}
-            style={{
-              padding: "8px 16px",
-              borderRadius: 6,
-              border: "none",
-              background: "#3b82f6",
-              color: "white",
-              cursor: loading ? "not-allowed" : "pointer",
-              opacity: loading ? 0.5 : 1
-            }}
-          >
-            {loading ? "Carregando..." : "Aplicar Filtros"}
-          </button>
-          <button
-            onClick={handleClearFilters}
-            style={{
-              padding: "8px 16px",
-              borderRadius: 6,
-              border: "1px solid #d1d5db",
-              background: "white",
-              color: "#374151",
-              cursor: "pointer"
-            }}
-          >
-            Limpar Filtros
-          </button>
-        </div>
-      </div>
-
-      {loading && <p>Loading tipo ecopontos...</p>}
-      {error && <p style={{ color: "#b91c1c" }}>Error loading tipo ecopontos: {error}</p>}
-
-      {!loading && !error && (
-        <>
-          <div style={{ margin: "16px 0", padding: 16, background: "#fff", border: "1px solid #eee", borderRadius: 10, maxWidth: 320 }}>
-            <div style={{ color: "#666", fontSize: 14 }}>Total de tipo ecopontos</div>
-            <div style={{ fontSize: 28, fontWeight: 700 }}>{tipoEcopontos.length}</div>
-          </div>
-
-          {tipoEcopontos.length === 0 ? (
-            <p>No tipo ecopontos found.</p>
-          ) : (
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 720 }}>
-                <thead>
-                  <tr style={{ textAlign: "left", borderBottom: "1px solid #ddd" }}>
-                    <th style={{ padding: "12px 8px" }}>ID</th>
-                    <th style={{ padding: "12px 8px" }}>Tipo</th>
-                    <th style={{ padding: "12px 8px" }}>Descrição</th>
-                    <th style={{ padding: "12px 8px" }}>Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tipoEcopontos.map((item) => (
-                    <tr key={item.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                      <td style={{ padding: "12px 8px" }}>{item.id}</td>
-                      <td style={{ padding: "12px 8px" }}>{item.tipo}</td>
-                      <td style={{ padding: "12px 8px" }}>{item.descricao}</td>
-                      <td style={{ padding: "12px 8px", display: "flex", gap: 8, flexWrap: "wrap" }}>
-                        <button
-                          onClick={() => onNavigate("edit-tipoecoponto", item)}
-                          style={{ padding: "8px 10px", borderRadius: 6, cursor: "pointer" }}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => onNavigate("delete-tipoecoponto", item)}
-                          style={{ padding: "8px 10px", borderRadius: 6, background: "#dc2626", color: "white", cursor: "pointer" }}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
         </>
-      )}
-    </div>
+      }
+    />
   );
 }

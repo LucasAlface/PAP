@@ -3,6 +3,16 @@ import Select from "react-select";
 import useEcopontoEquipamentos from "./useEcopontoEquipamentos.js";
 import useEcopontos from "../Ecoponto/useEcopontos.js";
 import useEquipamentos from "../Equipamento/useEquipamentos.js";
+import ListTemplate from "../ListTemplate.jsx";
+
+const selectStyles = {
+  control: (base) => ({
+    ...base,
+    borderRadius: 6,
+    borderColor: "#d1d5db",
+    minHeight: 38
+  })
+};
 
 export default function EcopontoEquipamentos({ onNavigate }) {
   const { items, loading, error, refetch } = useEcopontoEquipamentos();
@@ -15,7 +25,6 @@ export default function EcopontoEquipamentos({ onNavigate }) {
     ativo: null
   });
 
-  // Create options for ecoponto codigo and equipamento codigo
   const ecopontoOptions = useMemo(() =>
     Array.isArray(ecopontos) ? ecopontos.map(e => ({ value: e.id, label: e.codigo })) : [],
     [ecopontos]
@@ -56,23 +65,48 @@ export default function EcopontoEquipamentos({ onNavigate }) {
     refetch(null);
   };
 
-  return (
-    <div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-        <h2 style={{ marginTop: 0 }}>Ecoponto Equipamentos</h2>
-        <button
-          onClick={() => onNavigate("add-ecopontoequipamento")}
-          style={{ padding: "10px 16px", borderRadius: 6, border: "1px solid #3b82f6", background: "#3b82f6", color: "white", cursor: "pointer" }}
-        >
-          Add Ecoponto Equipamento
-        </button>
-      </div>
+  const columns = [
+    {
+      key: "ecopontoId",
+      label: "Ecoponto",
+      render: (item) =>
+        Array.isArray(ecopontos)
+          ? ecopontos.find((e) => e.id === item.ecopontoId)?.codigo ?? "Ecoponto não encontrado"
+          : "Loading..."
+    },
+    {
+      key: "equipamentoId",
+      label: "Equipamento",
+      render: (item) =>
+        Array.isArray(equipamentos)
+          ? equipamentos.find((eq) => eq.id === item.equipamentoId)?.codigo ?? "Equipamento não encontrado"
+          : "Loading..."
+    },
+    {
+      key: "ativo",
+      label: "Status",
+      render: (item) => item.ativo ? "Ativo" : "Inativo"
+    },
+  ];
 
-      {/* Filter Section */}
-      <div style={{ margin: "16px 0", padding: 16, background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 10 }}>
-        <h3 style={{ marginTop: 0, marginBottom: 16 }}>Filtros</h3>
-        
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12, marginBottom: 12 }}>
+  return (
+    <ListTemplate
+      title="Ecoponto Equipamentos"
+      addLabel="Add Ecoponto Equipamento"
+      onAdd={() => onNavigate("add-ecopontoequipamento")}
+      loading={loading}
+      error={error}
+      items={items}
+      totalLabel="Total de ecoponto equipamentos"
+      emptyMessage="No ecoponto equipamentos found."
+      columns={columns}
+      getRowKey={(item) => `${item.ecopontoId}-${item.equipamentoId}`}
+      onEdit={(item) => onNavigate("edit-ecopontoequipamento", item)}
+      onDelete={(item) => onNavigate("delete-ecopontoequipamento", item)}
+      onApplyFilters={handleApplyFilters}
+      onClearFilters={handleClearFilters}
+      filterSection={
+        <>
           <div>
             <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Ecoponto</label>
             <Select
@@ -82,14 +116,7 @@ export default function EcopontoEquipamentos({ onNavigate }) {
               placeholder="Selecionar ecoponto"
               isClearable
               isSearchable
-              styles={{
-                control: (base) => ({
-                  ...base,
-                  borderRadius: 6,
-                  borderColor: "#d1d5db",
-                  minHeight: 38
-                })
-              }}
+              styles={selectStyles}
             />
           </div>
 
@@ -102,14 +129,7 @@ export default function EcopontoEquipamentos({ onNavigate }) {
               placeholder="Selecionar equipamento"
               isClearable
               isSearchable
-              styles={{
-                control: (base) => ({
-                  ...base,
-                  borderRadius: 6,
-                  borderColor: "#d1d5db",
-                  minHeight: 38
-                })
-              }}
+              styles={selectStyles}
             />
           </div>
 
@@ -122,111 +142,11 @@ export default function EcopontoEquipamentos({ onNavigate }) {
               placeholder="Todos"
               isClearable
               isSearchable
-              styles={{
-                control: (base) => ({
-                  ...base,
-                  borderRadius: 6,
-                  borderColor: "#d1d5db",
-                  minHeight: 38
-                })
-              }}
+              styles={selectStyles}
             />
           </div>
-        </div>
-
-        <div style={{ display: "flex", gap: 8 }}>
-          <button
-            onClick={handleApplyFilters}
-            disabled={loading}
-            style={{
-              padding: "8px 16px",
-              borderRadius: 6,
-              border: "none",
-              background: "#3b82f6",
-              color: "white",
-              cursor: loading ? "not-allowed" : "pointer",
-              opacity: loading ? 0.5 : 1
-            }}
-          >
-            {loading ? "Carregando..." : "Aplicar Filtros"}
-          </button>
-          <button
-            onClick={handleClearFilters}
-            style={{
-              padding: "8px 16px",
-              borderRadius: 6,
-              border: "1px solid #d1d5db",
-              background: "white",
-              color: "#374151",
-              cursor: "pointer"
-            }}
-          >
-            Limpar Filtros
-          </button>
-        </div>
-      </div>
-
-      {loading && <p>Loading ecoponto equipamentos...</p>}
-      {error && <p style={{ color: "#b91c1c" }}>Error loading ecoponto equipamentos: {error}</p>}
-
-      {!loading && !error && (
-        <>
-          <div style={{ margin: "16px 0", padding: 16, background: "#fff", border: "1px solid #eee", borderRadius: 10, maxWidth: 320 }}>
-            <div style={{ color: "#666", fontSize: 14 }}>Total de ecoponto equipamentos</div>
-            <div style={{ fontSize: 28, fontWeight: 700 }}>{items.length}</div>
-          </div>
-
-          {items.length === 0 ? (
-            <p>No ecoponto equipamentos found.</p>
-          ) : (
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 720 }}>
-                <thead>
-                  <tr style={{ textAlign: "left", borderBottom: "1px solid #ddd" }}>
-                    <th style={{ padding: "12px 8px" }}>Ecoponto</th>
-                    <th style={{ padding: "12px 8px" }}>Equipamento</th>
-                    <th style={{ padding: "12px 8px" }}>Status</th>
-                    <th style={{ padding: "12px 8px" }}>Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map((item) => (
-                    <tr key={`${item.ecopontoId}-${item.equipamentoId}`} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                      <td style={{ padding: "12px 8px" }}>
-                        {Array.isArray(ecopontos)
-                          ? ecopontos.find((e) => e.id === item.ecopontoId)?.codigo ??
-                            "Ecoponto não encontrado"
-                          : "Loading..."}
-                      </td>
-                      <td style={{ padding: "12px 8px" }}>
-                        {Array.isArray(equipamentos)
-                          ? equipamentos.find((eq) => eq.id === item.equipamentoId)?.codigo ??
-                            "Equipamento não encontrado"
-                          : "Loading..."}
-                      </td>
-                      <td style={{ padding: "12px 8px" }}>{item.ativo ? "Ativo" : "Inativo"}</td>
-                      <td style={{ padding: "12px 8px", display: "flex", gap: 8, flexWrap: "wrap" }}>
-                        <button
-                          onClick={() => onNavigate("edit-ecopontoequipamento", item)}
-                          style={{ padding: "8px 10px", borderRadius: 6, cursor: "pointer" }}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => onNavigate("delete-ecopontoequipamento", item)}
-                          style={{ padding: "8px 10px", borderRadius: 6, background: "#dc2626", color: "white", cursor: "pointer" }}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
         </>
-      )}
-    </div>
+      }
+    />
   );
 }

@@ -2,16 +2,15 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Dashboard() {
-  const { user } = useAuth();
   const [stats, setStats] = useState([]);
 
-    useEffect(() => {
-           fetch("http://localhost:3000/ecoponto/total")
-        .then((res) => res.json())
-        .then((data) => {
-          setStats(data);
-        });
-    }, []);
+  useEffect(() => {
+    fetch("http://localhost:3000/ecoponto/total")
+      .then((res) => res.json())
+      .then((data) => {
+        setStats(data);
+      });
+  }, []);
 
   if (stats.loading) {
     return <div>Loading...</div>;

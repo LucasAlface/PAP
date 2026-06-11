@@ -2,7 +2,17 @@ import { useState, useMemo } from "react";
 import Select from "react-select";
 import useDepositos from "./useDepositos";
 import useTipoDepositos from "../TipoDeposito/useTipoDepositos";
-import { getOperatorOptions } from "../../middleware/options"
+import { getOperatorOptions } from "../../middleware/options";
+import ListTemplate from "../ListTemplate.jsx";
+
+const selectStyles = {
+  control: (base) => ({
+    ...base,
+    borderRadius: 6,
+    borderColor: "#d1d5db",
+    minHeight: 38
+  })
+};
 
 export default function Depositos({ onNavigate }) {
   const { items: depositos, loading, error, refetch } = useDepositos();
@@ -19,7 +29,6 @@ export default function Depositos({ onNavigate }) {
 
   const operators = getOperatorOptions();
 
-  // Create options for deposito ID and tipo
   const tipoOptions = useMemo(() =>
     Array.isArray(tipoDepositos) ? tipoDepositos.map(t => ({ value: t.id, label: t.tipo })) : [],
     [tipoDepositos]
@@ -51,28 +60,44 @@ export default function Depositos({ onNavigate }) {
       capacidadeTotal: "",
       operadorCapacidade: "igual",
       altura: "",
-      operaadorAltura: "igual"
+      operadorAltura: "igual"
     });
     refetch(null);
   };
 
+  const columns = [
+    { key: "id", label: "ID" },
+    { key: "capacidadeTotal", label: "Capacidade Total" },
+    { key: "altura", label: "Altura" },
+    {
+      key: "tipoDepositoId",
+      label: "Tipo",
+      render: (item) =>
+        Array.isArray(tipoDepositos)
+          ? tipoDepositos.find((t) => t.id === item.tipoDepositoId)?.tipo ?? "Tipo de depósito não encontrado"
+          : "Loading..."
+    },
+    { key: "descricao", label: "Descrição" },
+  ];
+
   return (
-    <div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-        <h2 style={{ marginTop: 0 }}>Depósitos</h2>
-        <button
-          onClick={() => onNavigate("add-deposito")}
-          style={{ padding: "10px 16px", borderRadius: 6, border: "1px solid #3b82f6", background: "#3b82f6", color: "white", cursor: "pointer" }}
-        >
-          Add Depósito
-        </button>
-      </div>
-
-      {/* Filter Section */}
-      <div style={{ margin: "16px 0", padding: 16, background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 10 }}>
-        <h3 style={{ marginTop: 0, marginBottom: 16 }}>Filtros</h3>
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12, marginBottom: 12 }}>
+    <ListTemplate
+      title="Depósitos"
+      addLabel="Add Depósito"
+      onAdd={() => onNavigate("add-deposito")}
+      loading={loading}
+      error={error}
+      items={depositos}
+      totalLabel="Total de depósitos"
+      emptyMessage="No depósitos found."
+      columns={columns}
+      getRowKey={(item) => item.id}
+      onEdit={(item) => onNavigate("edit-deposito", item)}
+      onDelete={(item) => onNavigate("delete-deposito", item)}
+      onApplyFilters={handleApplyFilters}
+      onClearFilters={handleClearFilters}
+      filterSection={
+        <>
           <div>
             <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Tipo de Depósito</label>
             <Select
@@ -82,14 +107,7 @@ export default function Depositos({ onNavigate }) {
               placeholder="Selecionar tipo"
               isClearable
               isSearchable
-              styles={{
-                control: (base) => ({
-                  ...base,
-                  borderRadius: 6,
-                  borderColor: "#d1d5db",
-                  minHeight: 38
-                })
-              }}
+              styles={selectStyles}
             />
           </div>
 
@@ -113,14 +131,7 @@ export default function Depositos({ onNavigate }) {
                 onChange={(option) => handleFilterChange("operadorCapacidade", option)}
                 placeholder="Selecionar operador"
                 isClearable
-                styles={{
-                  control: (base) => ({
-                    ...base,
-                    borderRadius: 6,
-                    borderColor: "#d1d5db",
-                    minHeight: 38
-                  })
-                }}
+                styles={selectStyles}
               />
               <input
                 type="number"
@@ -141,14 +152,7 @@ export default function Depositos({ onNavigate }) {
                 onChange={(option) => handleFilterChange("operadorAltura", option)}
                 placeholder="Selecionar operador"
                 isClearable
-                styles={{
-                  control: (base) => ({
-                    ...base,
-                    borderRadius: 6,
-                    borderColor: "#d1d5db",
-                    minHeight: 38
-                  })
-                }}
+                styles={selectStyles}
               />
               <input
                 type="number"
@@ -159,100 +163,8 @@ export default function Depositos({ onNavigate }) {
               />
             </div>
           </div>
-        </div>
-
-        <div style={{ display: "flex", gap: 8 }}>
-          <button
-            onClick={handleApplyFilters}
-            disabled={loading}
-            style={{
-              padding: "8px 16px",
-              borderRadius: 6,
-              border: "none",
-              background: "#3b82f6",
-              color: "white",
-              cursor: loading ? "not-allowed" : "pointer",
-              opacity: loading ? 0.5 : 1
-            }}
-          >
-            {loading ? "Carregando..." : "Aplicar Filtros"}
-          </button>
-          <button
-            onClick={handleClearFilters}
-            style={{
-              padding: "8px 16px",
-              borderRadius: 6,
-              border: "1px solid #d1d5db",
-              background: "white",
-              color: "#374151",
-              cursor: "pointer"
-            }}
-          >
-            Limpar Filtros
-          </button>
-        </div>
-      </div>
-
-      {loading && <p>Loading depositos...</p>}
-      {error && <p style={{ color: "#b91c1c" }}>Error loading depositos: {error}</p>}
-
-      {!loading && !error && (
-        <>
-          <div style={{ margin: "16px 0", padding: 16, background: "#fff", border: "1px solid #eee", borderRadius: 10, maxWidth: 320 }}>
-            <div style={{ color: "#666", fontSize: 14 }}>Total de depósitos</div>
-            <div style={{ fontSize: 28, fontWeight: 700 }}>{depositos.length}</div>
-          </div>
-
-          {depositos.length === 0 ? (
-            <p>No depósitos found.</p>
-          ) : (
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 720 }}>
-                <thead>
-                  <tr style={{ textAlign: "left", borderBottom: "1px solid #ddd" }}>
-                    <th style={{ padding: "12px 8px" }}>ID</th>
-                    <th style={{ padding: "12px 8px" }}>Capacidade Total</th>
-                    <th style={{ padding: "12px 8px" }}>Altura</th>
-                    <th style={{ padding: "12px 8px" }}>Tipo</th>
-                    <th style={{ padding: "12px 8px" }}>Descrição</th>
-                    <th style={{ padding: "12px 8px" }}>Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {depositos.map((item) => (
-                    <tr key={item.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                      <td style={{ padding: "12px 8px" }}>{item.id}</td>
-                      <td style={{ padding: "12px 8px" }}>{item.capacidadeTotal}</td>
-                      <td style={{ padding: "12px 8px" }}>{item.altura}</td>
-                      <td style={{ padding: "12px 8px" }}>
-                        {Array.isArray(tipoDepositos)
-                          ? tipoDepositos.find((t) => t.id === item.tipoDepositoId)?.tipo ??
-                          "Tipo de depósito não encontrado"
-                          : "Loading..."}
-                      </td>
-                      <td style={{ padding: "12px 8px" }}>{item.descricao}</td>
-                      <td style={{ padding: "12px 8px", display: "flex", gap: 8, flexWrap: "wrap" }}>
-                        <button
-                          onClick={() => onNavigate("edit-deposito", item)}
-                          style={{ padding: "8px 10px", borderRadius: 6, cursor: "pointer" }}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => onNavigate("delete-deposito", item)}
-                          style={{ padding: "8px 10px", borderRadius: 6, background: "#dc2626", color: "white", cursor: "pointer" }}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
         </>
-      )}
-    </div>
+      }
+    />
   );
 }

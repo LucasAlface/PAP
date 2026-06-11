@@ -1,7 +1,17 @@
 import { useState, useMemo } from "react";
 import Select from "react-select";
 import useEquipamentos from "./useEquipamentos.js";
-import { getOperatorOptions } from "../../middleware/options"
+import { getOperatorOptions } from "../../middleware/options";
+import ListTemplate from "../ListTemplate.jsx";
+
+const selectStyles = {
+  control: (base) => ({
+    ...base,
+    borderRadius: 6,
+    borderColor: "#d1d5db",
+    minHeight: 38
+  })
+};
 
 export default function Equipamentos({ onNavigate }) {
   const { items: equipamentos, loading, error, refetch } = useEquipamentos();
@@ -15,7 +25,6 @@ export default function Equipamentos({ onNavigate }) {
 
   const operators = getOperatorOptions();
 
-  // Create options for codigo
   const codigoOptions = useMemo(() =>
     equipamentos.map(e => ({ value: e.codigo, label: e.codigo })),
     [equipamentos]
@@ -53,23 +62,38 @@ export default function Equipamentos({ onNavigate }) {
     refetch(null);
   };
 
+  const columns = [
+    { key: "codigo", label: "Código" },
+    {
+      key: "bateria",
+      label: "Bateria",
+      render: (item) => `${item.bateria}%`
+    },
+    {
+      key: "ativo",
+      label: "Status",
+      render: (item) => item.ativo ? "Ativo" : "Inativo"
+    },
+  ];
+
   return (
-    <div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-        <h2 style={{ marginTop: 0 }}>Equipamentos</h2>
-        <button
-          onClick={() => onNavigate("add-equipamento")}
-          style={{ padding: "10px 16px", borderRadius: 6, border: "1px solid #3b82f6", background: "#3b82f6", color: "white", cursor: "pointer" }}
-        >
-          Add Equipamento
-        </button>
-      </div>
-
-      {/* Filter Section */}
-      <div style={{ margin: "16px 0", padding: 16, background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 10 }}>
-        <h3 style={{ marginTop: 0, marginBottom: 16 }}>Filtros</h3>
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12, marginBottom: 12 }}>
+    <ListTemplate
+      title="Equipamentos"
+      addLabel="Add Equipamento"
+      onAdd={() => onNavigate("add-equipamento")}
+      loading={loading}
+      error={error}
+      items={equipamentos}
+      totalLabel="Total de equipamentos"
+      emptyMessage="No equipamentos found."
+      columns={columns}
+      getRowKey={(item) => item.id}
+      onEdit={(item) => onNavigate("edit-equipamento", item)}
+      onDelete={(item) => onNavigate("delete-equipamento", item)}
+      onApplyFilters={handleApplyFilters}
+      onClearFilters={handleClearFilters}
+      filterSection={
+        <>
           <div>
             <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Código</label>
             <Select
@@ -79,14 +103,7 @@ export default function Equipamentos({ onNavigate }) {
               placeholder="Selecionar código"
               isClearable
               isSearchable
-              styles={{
-                control: (base) => ({
-                  ...base,
-                  borderRadius: 6,
-                  borderColor: "#d1d5db",
-                  minHeight: 38
-                })
-              }}
+              styles={selectStyles}
             />
           </div>
 
@@ -99,14 +116,7 @@ export default function Equipamentos({ onNavigate }) {
               placeholder="Todos"
               isClearable
               isSearchable
-              styles={{
-                control: (base) => ({
-                  ...base,
-                  borderRadius: 6,
-                  borderColor: "#d1d5db",
-                  minHeight: 38
-                })
-              }}
+              styles={selectStyles}
             />
           </div>
 
@@ -119,14 +129,7 @@ export default function Equipamentos({ onNavigate }) {
                 onChange={(option) => handleFilterChange("operadorBateria", option)}
                 placeholder="Selecionar operador"
                 isClearable
-                styles={{
-                  control: (base) => ({
-                    ...base,
-                    borderRadius: 6,
-                    borderColor: "#d1d5db",
-                    minHeight: 38
-                  })
-                }}
+                styles={selectStyles}
               />
               <input
                 type="number"
@@ -137,91 +140,8 @@ export default function Equipamentos({ onNavigate }) {
               />
             </div>
           </div>
-        </div>
-
-        <div style={{ display: "flex", gap: 8 }}>
-          <button
-            onClick={handleApplyFilters}
-            disabled={loading}
-            style={{
-              padding: "8px 16px",
-              borderRadius: 6,
-              border: "none",
-              background: "#3b82f6",
-              color: "white",
-              cursor: loading ? "not-allowed" : "pointer",
-              opacity: loading ? 0.5 : 1
-            }}
-          >
-            {loading ? "Carregando..." : "Aplicar Filtros"}
-          </button>
-          <button
-            onClick={handleClearFilters}
-            style={{
-              padding: "8px 16px",
-              borderRadius: 6,
-              border: "1px solid #d1d5db",
-              background: "white",
-              color: "#374151",
-              cursor: "pointer"
-            }}
-          >
-            Limpar Filtros
-          </button>
-        </div>
-      </div>
-
-      {loading && <p>Loading equipamentos...</p>}
-      {error && <p style={{ color: "#b91c1c" }}>Error loading equipamentos: {error}</p>}
-
-      {!loading && !error && (
-        <>
-          <div style={{ margin: "16px 0", padding: 16, background: "#fff", border: "1px solid #eee", borderRadius: 10, maxWidth: 320 }}>
-            <div style={{ color: "#666", fontSize: 14 }}>Total de equipamentos</div>
-            <div style={{ fontSize: 28, fontWeight: 700 }}>{equipamentos.length}</div>
-          </div>
-
-          {equipamentos.length === 0 ? (
-            <p>No equipamentos found.</p>
-          ) : (
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 720 }}>
-                <thead>
-                  <tr style={{ textAlign: "left", borderBottom: "1px solid #ddd" }}>
-                    <th style={{ padding: "12px 8px" }}>Código</th>
-                    <th style={{ padding: "12px 8px" }}>Bateria</th>
-                    <th style={{ padding: "12px 8px" }}>Status</th>
-                    <th style={{ padding: "12px 8px" }}>Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {equipamentos.map((item) => (
-                    <tr key={item.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                      <td style={{ padding: "12px 8px" }}>{item.codigo}</td>
-                      <td style={{ padding: "12px 8px" }}>{item.bateria}%</td>
-                      <td style={{ padding: "12px 8px" }}>{item.ativo ? "Ativo" : "Inativo"}</td>
-                      <td style={{ padding: "12px 8px", display: "flex", gap: 8, flexWrap: "wrap" }}>
-                        <button
-                          onClick={() => onNavigate("edit-equipamento", item)}
-                          style={{ padding: "8px 10px", borderRadius: 6, cursor: "pointer" }}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => onNavigate("delete-equipamento", item)}
-                          style={{ padding: "8px 10px", borderRadius: 6, background: "#dc2626", color: "white", cursor: "pointer" }}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
         </>
-      )}
-    </div>
+      }
+    />
   );
 }
