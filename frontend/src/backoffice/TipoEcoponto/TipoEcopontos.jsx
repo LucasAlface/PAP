@@ -54,7 +54,7 @@ export default function TipoEcopontos({ onNavigate }) {
       {/* Filter Section */}
       <div style={{ margin: "16px 0", padding: 16, background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 10 }}>
         <h3 style={{ marginTop: 0, marginBottom: 16 }}>Filtros</h3>
-        
+
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12, marginBottom: 12 }}>
           <div>
             <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Tipo</label>

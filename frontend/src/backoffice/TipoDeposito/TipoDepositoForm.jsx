@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { apiRequest } from "../../middleware/request";
+import FormTemplate from "../FormTemplate.jsx";
 
 export default function TipoDepositoForm({ tipoDeposito, onNavigate }) {
   const [tipo, setTipo] = useState("");
@@ -52,70 +53,34 @@ export default function TipoDepositoForm({ tipoDeposito, onNavigate }) {
     }
   }
 
-  if (isEditMode && !tipoDeposito) {
-    return (
-      <div>
-        <h2 style={{ marginTop: 0 }}>Edit Tipo Depósito</h2>
-        <p style={{ color: "#b91c1c" }}>No tipo depósito selected.</p>
-        <button
-          onClick={() => onNavigate("tipodepositos")}
-          style={{ padding: "10px 14px", borderRadius: 6, cursor: "pointer" }}
-        >
-          Back to Tipo Depósitos
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <div>
-      {isEditMode ? (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-          <h2 style={{ marginTop: 0 }}>Edit Tipo Depósito #{tipoDeposito.id}</h2>
-          <button
-            onClick={() => onNavigate("tipodepositos")}
-            style={{ padding: "10px 14px", borderRadius: 6, border: "none", background: "#3b82f6", color: "white", cursor: "pointer" }}
-          >
-            Cancel
-          </button>
-        </div>
-      ) : (
-        <h2 style={{ marginTop: 0 }}>Add Tipo Depósito</h2>
-      )}
-
-      <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12, maxWidth: 560 }}>
-        <label>
-          Tipo
-          <input
-            value={tipo}
-            onChange={(e) => setTipo(e.target.value)}
-            placeholder="Tipo"
-          />
-        </label>
-        <label>
-          Descrição
-          <textarea
-            value={descricao}
-            onChange={(e) => setDescricao(e.target.value)}
-            placeholder="Descrição"
-            rows={4}
-          />
-        </label>
-        <button type="submit" style={{ padding: "10px 14px", borderRadius: 6, border: "none", background: "#3b82f6", color: "white", cursor: "pointer" }}>
-          {isEditMode ? "Save Changes" : "Create Tipo Depósito"}
-        </button>
-      </form>
-
-      {status && (
-        <div
-          style={{
-            marginTop: 12,
-            color: status.startsWith("Error") ? "#b91c1c" : "#166534",
-          }}
-        >
-          {status}
-        </div>
-      )}
-    </div>
+    <FormTemplate
+      isEditMode={isEditMode}
+      entityName="Tipo Depósito"
+      entityId={tipoDeposito?.id}
+      hasEntity={!!tipoDeposito}
+      onCancel={() => onNavigate("tipodepositos")}
+      onSubmit={handleSubmit}
+      status={status}
+      backLabel="Back to Tipo Depósitos"
+    >
+      <label>
+        Tipo
+        <input
+          value={tipo}
+          onChange={(e) => setTipo(e.target.value)}
+          placeholder="Tipo"
+        />
+      </label>
+      <label>
+        Descrição
+        <textarea
+          value={descricao}
+          onChange={(e) => setDescricao(e.target.value)}
+          placeholder="Descrição"
+          rows={4}
+        />
+      </label>
+    </FormTemplate>
   );
 }

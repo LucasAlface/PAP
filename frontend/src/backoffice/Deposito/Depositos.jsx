@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import Select from "react-select";
 import useDepositos from "./useDepositos";
 import useTipoDepositos from "../TipoDeposito/useTipoDepositos";
-import {getOperatorOptions} from "../../middleware/options"
+import { getOperatorOptions } from "../../middleware/options"
 
 export default function Depositos({ onNavigate }) {
   const { items: depositos, loading, error, refetch } = useDepositos();
@@ -71,7 +71,7 @@ export default function Depositos({ onNavigate }) {
       {/* Filter Section */}
       <div style={{ margin: "16px 0", padding: 16, background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 10 }}>
         <h3 style={{ marginTop: 0, marginBottom: 16 }}>Filtros</h3>
-        
+
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12, marginBottom: 12 }}>
           <div>
             <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Tipo de Depósito</label>
@@ -227,7 +227,7 @@ export default function Depositos({ onNavigate }) {
                       <td style={{ padding: "12px 8px" }}>
                         {Array.isArray(tipoDepositos)
                           ? tipoDepositos.find((t) => t.id === item.tipoDepositoId)?.tipo ??
-                            "Tipo de depósito não encontrado"
+                          "Tipo de depósito não encontrado"
                           : "Loading..."}
                       </td>
                       <td style={{ padding: "12px 8px" }}>{item.descricao}</td>

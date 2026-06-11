@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import Select from "react-select";
 import useEquipamentos from "./useEquipamentos.js";
-import {getOperatorOptions} from "../../middleware/options"
+import { getOperatorOptions } from "../../middleware/options"
 
 export default function Equipamentos({ onNavigate }) {
   const { items: equipamentos, loading, error, refetch } = useEquipamentos();
@@ -68,7 +68,7 @@ export default function Equipamentos({ onNavigate }) {
       {/* Filter Section */}
       <div style={{ margin: "16px 0", padding: 16, background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 10 }}>
         <h3 style={{ marginTop: 0, marginBottom: 16 }}>Filtros</h3>
-        
+
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12, marginBottom: 12 }}>
           <div>
             <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Código</label>

@@ -3,6 +3,7 @@ import Select from "react-select";
 import { apiRequest } from "../../middleware/request";
 import useEmpresas from "../Empresa/useEmpresas.js";
 import useCargos from "./useCargos.js";
+import FormTemplate from "../FormTemplate.jsx";
 
 export default function UtilizadorForm({ utilizador, onNavigate }) {
   const [nome, setNome] = useState("");
@@ -86,91 +87,74 @@ export default function UtilizadorForm({ utilizador, onNavigate }) {
     }
   }
 
-  if (isEditMode && !utilizador) {
-    return (
-      <div>
-        <h2 style={{ marginTop: 0 }}>Edit Utilizador</h2>
-        <p style={{ color: "#b91c1c" }}>No utilizador selected.</p>
-        <button
-          onClick={() => onNavigate("utilizadores")}
-          style={{ padding: "10px 16px", borderRadius: 6, border: "1px solid #3b82f6", background: "#3b82f6", color: "white", cursor: "pointer" }}
-        >
-          Back to Utilizadores
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <div>
-      <h2 style={{ marginTop: 0 }}>{isEditMode ? "Edit Utilizador" : "Add Utilizador"}</h2>
-      <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12, maxWidth: 520 }}>
-        <label>
-          Nome
-          <input
-            type="text"
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
-            placeholder="Nome"
-            required
-          />
-        </label>
+    <FormTemplate
+      isEditMode={isEditMode}
+      entityName="Utilizador"
+      entityId={utilizador?.id}
+      hasEntity={!!utilizador}
+      onCancel={() => onNavigate("utilizadores")}
+      onSubmit={handleSubmit}
+      status={status}
+      backLabel="Back to Utilizadores"
+      submitLabel={isEditMode ? "Update Utilizador" : "Add Utilizador"}
+    >
+      <label>
+        Nome
+        <input
+          type="text"
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+          placeholder="Nome"
+          required
+        />
+      </label>
 
-        <label>
-          Email
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-            required
-          />
-        </label>
+      <label>
+        Email
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
+          required
+        />
+      </label>
 
-        <label>
-          Password
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder={isEditMode ? "Leave blank to keep current password" : "Password"}
-            {...(!isEditMode ? { required: true } : {})}
-          />
-        </label>
+      <label>
+        Password
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder={isEditMode ? "Leave blank to keep current password" : "Password"}
+          {...(!isEditMode ? { required: true } : {})}
+        />
+      </label>
 
-        <label>
-          Cargo
-          <Select
-            options={cargoOptions}
-            value={cargoId}
-            onChange={setCargoId}
-            isSearchable={true}
-            isClearable={false}
-            placeholder="Select Cargo"
-          />
-        </label>
+      <label>
+        Cargo
+        <Select
+          options={cargoOptions}
+          value={cargoId}
+          onChange={setCargoId}
+          isSearchable={true}
+          isClearable={false}
+          placeholder="Select Cargo"
+        />
+      </label>
 
-        <label>
-          Empresa
-          <Select
-            options={empresaOptions}
-            value={empresaId}
-            onChange={setEmpresaId}
-            isSearchable={true}
-            isClearable={true}
-            placeholder="Select Empresa"
-          />
-        </label>
-
-        <button
-          type="submit"
-          style={{ padding: "10px 16px", borderRadius: 6, border: "1px solid #3b82f6", background: "#3b82f6", color: "white", cursor: "pointer" }}
-        >
-          {isEditMode ? "Update Utilizador" : "Add Utilizador"}
-        </button>
-      </form>
-
-      {status && <p style={{ marginTop: 12 }}>{status}</p>}
-    </div>
+      <label>
+        Empresa
+        <Select
+          options={empresaOptions}
+          value={empresaId}
+          onChange={setEmpresaId}
+          isSearchable={true}
+          isClearable={true}
+          placeholder="Select Empresa"
+        />
+      </label>
+    </FormTemplate>
   );
 }

@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import Select from "react-select";
 import { apiRequest } from "../../middleware/request";
 import useEmpresas from "../Empresa/useEmpresas.js";
+import FormTemplate from "../FormTemplate.jsx";
 
 export default function EquipamentoForm({ equipamento, onNavigate }) {
   const [codigo, setCodigo] = useState("");
@@ -86,96 +87,58 @@ export default function EquipamentoForm({ equipamento, onNavigate }) {
     }
   }
 
-  if (isEditMode && !equipamento) {
-    return (
-      <div>
-        <h2 style={{ marginTop: 0 }}>Edit Equipamento</h2>
-        <p style={{ color: "#b91c1c" }}>No equipamento selected.</p>
-        <button
-          onClick={() => onNavigate("equipamentos")}
-          style={{ padding: "10px 14px", borderRadius: 6, cursor: "pointer" }}
-        >
-          Back to Equipamentos
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <div>
-      {isEditMode ? (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-          <h2 style={{ marginTop: 0 }}>Edit Equipamento #{equipamento.id}</h2>
-          <button
-            onClick={() => onNavigate("equipamentos")}
-            style={{ padding: "10px 14px", borderRadius: 6, border: "none", background: "#3b82f6", color: "white", cursor: "pointer" }}
-          >
-            Cancel
-          </button>
-        </div>
-      ) : (
-        <h2 style={{ marginTop: 0 }}>Add Equipamento</h2>
-      )}
+    <FormTemplate
+      isEditMode={isEditMode}
+      entityName="Equipamento"
+      entityId={equipamento?.id}
+      hasEntity={!!equipamento}
+      onCancel={() => onNavigate("equipamentos")}
+      onSubmit={handleSubmit}
+      status={status}
+    >
+      <label>
+        Código
+        <input
+          value={codigo}
+          onChange={(e) => setCodigo(e.target.value)}
+          placeholder="Equipamento code"
+        />
+      </label>
 
-      <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12, maxWidth: 560 }}>
+      <label>
+        Ativo
+        <Select
+          options={options}
+          value={ativo}
+          onChange={setAtivo}
+          isSearchable={true}
+          isClearable={false}
+        />
+      </label>
+
+      <label>
+        Empresa
+        <Select
+          options={empresaOptions}
+          value={empresaId}
+          onChange={setEmpresaId}
+          isSearchable={true}
+          isClearable={false}
+        />
+      </label>
+
+      {isEditMode && (
         <label>
-          Código
+          Bateria
           <input
-            value={codigo}
-            onChange={(e) => setCodigo(e.target.value)}
-            placeholder="Equipamento code"
+            type="number"
+            value={bateria}
+            onChange={(e) => setBateria(e.target.value)}
+            placeholder="Bateria"
           />
         </label>
-
-        <label>
-          Ativo
-          <Select
-            options={options}
-            value={ativo}
-            onChange={setAtivo}
-            isSearchable={true}
-            isClearable={false}
-          />
-        </label>
-
-        <label>
-          Empresa
-          <Select
-            options={empresaOptions}
-            value={empresaId}
-            onChange={setEmpresaId}
-            isSearchable={true}
-            isClearable={false}
-          />
-        </label>
-
-        {isEditMode && (
-          <label>
-            Bateria
-            <input
-              type="number"
-              value={bateria}
-              onChange={(e) => setBateria(e.target.value)}
-              placeholder="Bateria"
-            />
-          </label>
-        )}
-
-        <button type="submit" style={{ padding: "10px 14px", borderRadius: 6, border: "none", background: "#3b82f6", color: "white", cursor: "pointer" }}>
-          {isEditMode ? "Save Changes" : "Create Equipamento"}
-        </button>
-      </form>
-
-      {status && (
-        <div
-          style={{
-            marginTop: 12,
-            color: status.startsWith("Error") ? "#b91c1c" : "#166534",
-          }}
-        >
-          {status}
-        </div>
       )}
-    </div>
+    </FormTemplate>
   );
 }

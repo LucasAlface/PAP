@@ -3,6 +3,7 @@ import Select from "react-select";
 import { apiRequest } from "../../middleware/request";
 import useTipoDepositos from "../TipoDeposito/useTipoDepositos.js";
 import useEmpresas from "../Empresa/useEmpresas.js";
+import FormTemplate from "../FormTemplate.jsx";
 
 export default function DepositoForm({ deposito, onNavigate }) {
   const { items: tipoDepositos = [] } = useTipoDepositos();
@@ -84,100 +85,64 @@ export default function DepositoForm({ deposito, onNavigate }) {
     }
   }
 
-  if (isEditMode && !deposito) {
-    return (
-      <div>
-        <h2 style={{ marginTop: 0 }}>Edit Depósito</h2>
-        <p style={{ color: "#b91c1c" }}>No depósito selected.</p>
-        <button
-          onClick={() => onNavigate("depositos")}
-          style={{ padding: "10px 14px", borderRadius: 6, cursor: "pointer" }}
-        >
-          Back to Depósitos
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <div>
-      {isEditMode ? (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-          <h2 style={{ marginTop: 0 }}>Edit Depósito #{deposito.id}</h2>
-          <button
-            onClick={() => onNavigate("depositos")}
-            style={{ padding: "10px 14px", borderRadius: 6, cursor: "pointer" }}
-          >
-            Cancel
-          </button>
-        </div>
-      ) : (
-        <h2 style={{ marginTop: 0 }}>Add Depósito</h2>
-      )}
-
-      <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12, maxWidth: 560 }}>
-        <label>
-          Capacidade Total
-          <input
-            type="number"
-            value={capacidadeTotal}
-            onChange={(e) => setCapacidadeTotal(e.target.value)}
-            placeholder="Capacidade total"
-          />
-        </label>
-        <label>
-          Altura
-          <input
-            type="number"
-            value={altura}
-            onChange={(e) => setAltura(e.target.value)}
-            placeholder="Altura"
-          />
-        </label>
-        <label>
-          Empresa
-          <Select
-            options={empresaOptions}
-            value={empresaId}
-            onChange={setEmpresaId}
-            isSearchable={true}
-            isClearable={false}
-          />
-        </label>
-        <label>
-          Tipo Depósito
-          <Select
-            options={tipoDepositoOptions}
-            value={tipoDepositoId}
-            onChange={setTipoDepositoId}
-            isSearchable={true}
-            isClearable={false}
-          />
-        </label>
-        <label>
-          Descrição
-          <textarea
-            value={descricao}
-            onChange={(e) => setDescricao(e.target.value)}
-            placeholder="Descrição"
-            rows={4}
-          />
-        </label>
-        <button type="submit" style={{ padding: "10px 14px", borderRadius: 6, border: "none", background: "#3b82f6", color: "white", cursor: "pointer" }}>
-          {isEditMode ? "Save Changes" : "Create Depósito"}
-        </button>
-      </form>
-
-      {status && (
-        <div
-          style={{
-            marginTop: 12,
-            color: status.startsWith("Error") ? "#b91c1c" : "#166534",
-          }}
-        >
-          {status}
-        </div>
-      )}
-    </div>
+    <FormTemplate
+      isEditMode={isEditMode}
+      entityName="Depósito"
+      entityId={deposito?.id}
+      hasEntity={!!deposito}
+      onCancel={() => onNavigate("depositos")}
+      onSubmit={handleSubmit}
+      status={status}
+      backLabel="Back to Depósitos"
+    >
+      <label>
+        Capacidade Total
+        <input
+          type="number"
+          value={capacidadeTotal}
+          onChange={(e) => setCapacidadeTotal(e.target.value)}
+          placeholder="Capacidade total"
+        />
+      </label>
+      <label>
+        Altura
+        <input
+          type="number"
+          value={altura}
+          onChange={(e) => setAltura(e.target.value)}
+          placeholder="Altura"
+        />
+      </label>
+      <label>
+        Empresa
+        <Select
+          options={empresaOptions}
+          value={empresaId}
+          onChange={setEmpresaId}
+          isSearchable={true}
+          isClearable={false}
+        />
+      </label>
+      <label>
+        Tipo Depósito
+        <Select
+          options={tipoDepositoOptions}
+          value={tipoDepositoId}
+          onChange={setTipoDepositoId}
+          isSearchable={true}
+          isClearable={false}
+        />
+      </label>
+      <label>
+        Descrição
+        <textarea
+          value={descricao}
+          onChange={(e) => setDescricao(e.target.value)}
+          placeholder="Descrição"
+          rows={4}
+        />
+      </label>
+    </FormTemplate>
   );
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { apiRequest } from "../../middleware/request";
+import FormTemplate from "../FormTemplate.jsx";
 
 export default function EmpresasForm({ empresa, onNavigate }) {
   const [nome, setNome] = useState("");
@@ -60,85 +61,58 @@ export default function EmpresasForm({ empresa, onNavigate }) {
     }
   }
 
-  if (isEditMode && !empresa) {
-    return (
-      <div>
-        <h2 style={{ marginTop: 0 }}>Edit Empresa</h2>
-        <p style={{ color: "#b91c1c" }}>No empresa selected.</p>
-        <button
-          onClick={() => onNavigate("empresas")}
-          style={{ padding: "10px 16px", borderRadius: 6, border: "1px solid #3b82f6", background: "#3b82f6", color: "white", cursor: "pointer" }}
-        >
-          Back to Empresas
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <div>
-      {isEditMode ? (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-          <h2 style={{ marginTop: 0 }}>Edit Empresa</h2>
-          <button
-            onClick={() => onNavigate("empresas")}
-            style={{ padding: "10px 14px", borderRadius: 6, border: "none", background: "#3b82f6", color: "white", cursor: "pointer" }}
-          >
-            Cancel
-          </button>
-        </div>
-      ) : (
-        <h2 style={{ marginTop: 0 }}>Add Empresa</h2>
-      )}
-      <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12, maxWidth: 560 }}>
-        <label>
-          Nome:
-          <input
-            type="text"
-            value={nome}
-            onChange={e => setNome(e.target.value)}
-            required
-            style={{ width: "100%", padding: 8, borderRadius: 4, border: "1px solid #d1d5db" }}
-          />
-        </label>
-        <label>
-          NIF:
-          <input
-            type="text"
-            value={nif}
-            onChange={e => setNif(e.target.value)}
-            required
-            style={{ width: "100%", padding: 8, borderRadius: 4, border: "1px solid #d1d5db" }}
-          />
-        </label>
-        <label>
-          Email:
-          <input
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-            style={{ width: "100%", padding: 8, borderRadius: 4, border: "1px solid #d1d5db" }}
-          />
-        </label>
-        <label>
-          Telefone:
-          <input
-            type="text"
-            value={telefone}
-            onChange={e => setTelefone(e.target.value)}
-            required
-            style={{ width: "100%", padding: 8, borderRadius: 4, border: "1px solid #d1d5db" }}
-          />
-        </label>
-        <button
-          type="submit"
-          style={{ padding: "10px 14px", borderRadius: 6, border: "none", background: "#3b82f6", color: "white", cursor: "pointer" }}
-        >
-          {isEditMode ? "Update Empresa" : "Add Empresa"}
-        </button>
-      </form>
-      {status && <p style={{ marginTop: 12 }}>{status}</p>}
-    </div>
+    <FormTemplate
+      isEditMode={isEditMode}
+      entityName="Empresa"
+      entityId={empresa?.id}
+      hasEntity={!!empresa}
+      onCancel={() => onNavigate("empresas")}
+      onSubmit={handleSubmit}
+      status={status}
+      backLabel="Back to Empresas"
+      submitLabel={isEditMode ? "Update Empresa" : "Add Empresa"}
+    >
+      <label>
+        Nome:
+        <input
+          type="text"
+          value={nome}
+          onChange={e => setNome(e.target.value)}
+          required
+          style={{ width: "100%", padding: 8, borderRadius: 4, border: "1px solid #d1d5db" }}
+        />
+      </label>
+      <label>
+        NIF:
+        <input
+          type="text"
+          value={nif}
+          onChange={e => setNif(e.target.value)}
+          required
+          style={{ width: "100%", padding: 8, borderRadius: 4, border: "1px solid #d1d5db" }}
+        />
+      </label>
+      <label>
+        Email:
+        <input
+          type="email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          required
+          style={{ width: "100%", padding: 8, borderRadius: 4, border: "1px solid #d1d5db" }}
+        />
+      </label>
+      <label>
+        Telefone:
+        <input
+          type="text"
+          value={telefone}
+          onChange={e => setTelefone(e.target.value)}
+          required
+          style={{ width: "100%", padding: 8, borderRadius: 4, border: "1px solid #d1d5db" }}
+        />
+      </label>
+    </FormTemplate>
   );
 }

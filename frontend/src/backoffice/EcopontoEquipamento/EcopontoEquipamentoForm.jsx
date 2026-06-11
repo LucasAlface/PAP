@@ -4,6 +4,7 @@ import Select from "react-select";
 import useEcopontos from "../Ecoponto/useEcopontos.js";
 import useEquipamentos from "../Equipamento/useEquipamentos.js";
 import useEmpresas from "../Empresa/useEmpresas.js";
+import FormTemplate from "../FormTemplate.jsx";
 
 export default function EcopontoEquipamentoForm({ ecopontoEquipamento, onNavigate }) {
   const { items: ecopontos = [] } = useEcopontos();
@@ -90,95 +91,58 @@ export default function EcopontoEquipamentoForm({ ecopontoEquipamento, onNavigat
     }
   }
 
-  if (isEditMode && !ecopontoEquipamento) {
-    return (
-      <div>
-        <h2 style={{ marginTop: 0 }}>Edit Ecoponto Equipamento</h2>
-        <p style={{ color: "#b91c1c" }}>No ecoponto equipamento selected.</p>
-        <button
-          onClick={() => onNavigate("ecopontoequipamentos")}
-          style={{ padding: "10px 14px", borderRadius: 6, cursor: "pointer" }}
-        >
-          Back to Ecoponto Equipamentos
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <div>
-      {isEditMode ? (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-          <h2 style={{ marginTop: 0 }}>Edit Ecoponto Equipamento</h2>
-          <button
-            onClick={() => onNavigate("ecopontoequipamentos")}
-            style={{ padding: "10px 14px", borderRadius: 6, cursor: "pointer" }}
-          >
-            Cancel
-          </button>
-        </div>
-      ) : (
-        <h2 style={{ marginTop: 0 }}>Add Ecoponto Equipamento</h2>
-      )}
+    <FormTemplate
+      isEditMode={isEditMode}
+      entityName="Ecoponto Equipamento"
+      entityId={ecopontoEquipamento ? `${ecopontoEquipamento.ecopontoId}-${ecopontoEquipamento.equipamentoId}` : ""}
+      hasEntity={!!ecopontoEquipamento}
+      onCancel={() => onNavigate("ecopontoequipamentos")}
+      onSubmit={handleSubmit}
+      status={status}
+      backLabel="Back to Ecoponto Equipamentos"
+    >
+      <label>
+        Ecoponto
+        <Select
+          options={ecopontoOptions}
+          value={ecopontoId}
+          onChange={setEcopontoId}
+          isSearchable={true}
+          isClearable={false}
+          isDisabled={isEditMode}
+          placeholder="Select Ecoponto"
+        />
+      </label>
 
-      <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12, maxWidth: 560 }}>
-        <label>
-          Ecoponto
-          <Select
-            options={ecopontoOptions}
-            value={ecopontoId}
-            onChange={setEcopontoId}
-            isSearchable={true}
-            isClearable={false}
-            isDisabled={isEditMode}
-            placeholder="Select Ecoponto"
-          />
-        </label>
+      <label>
+        Equipamento
+        <Select
+          options={equipamentoOptions}
+          value={equipamentoId}
+          onChange={setEquipamentoId}
+          isSearchable={true}
+          isClearable={false}
+          isDisabled={isEditMode}
+          placeholder="Select Equipamento"
+        />
+      </label>
 
-        <label>
-          Equipamento
-          <Select
-            options={equipamentoOptions}
-            value={equipamentoId}
-            onChange={setEquipamentoId}
-            isSearchable={true}
-            isClearable={false}
-            isDisabled={isEditMode}
-            placeholder="Select Equipamento"
-          />
-        </label>
+      <label>
+        Empresa
+        <Select
+          options={empresaOptions}
+          value={empresaId}
+          onChange={setEmpresaId}
+          isSearchable={true}
+          isClearable={false}
+        />
+      </label>
 
-        <label>
-          Empresa
-          <Select
-            options={empresaOptions}
-            value={empresaId}
-            onChange={setEmpresaId}
-            isSearchable={true}
-            isClearable={false}
-          />
-        </label>
-
-        <label>
-          Ativo
-          <Select options={options} value={ativo} onChange={setAtivo} isSearchable isClearable={false} />
-        </label>
-
-        <button type="submit" style={{ padding: "10px 14px", borderRadius: 6, cursor: "pointer" }}>
-          {isEditMode ? "Save Changes" : "Create Ecoponto Equipamento"}
-        </button>
-      </form>
-
-      {status && (
-        <div
-          style={{
-            marginTop: 12,
-            color: status.startsWith("Error") ? "#b91c1c" : "#166534",
-          }}
-        >
-          {status}
-        </div>
-      )}
-    </div>
+      <label>
+        Ativo
+        <Select options={options} value={ativo} onChange={setAtivo} isSearchable isClearable={false} />
+      </label>
+    </FormTemplate>
   );
 }

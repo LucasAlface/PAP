@@ -4,6 +4,7 @@ import { apiRequest } from "../../middleware/request";
 import useTipoEcopontos from "../TipoEcoponto/useTipoEcopontos.js";
 import useDepositos from "../Deposito/useDepositos.js";
 import useEmpresas from "../Empresa/useEmpresas.js";
+import FormTemplate from "../FormTemplate.jsx";
 
 export default function EcopontoForm({ ecoponto, onNavigate }) {
   const { items: tipos = [] } = useTipoEcopontos();
@@ -96,124 +97,87 @@ export default function EcopontoForm({ ecoponto, onNavigate }) {
     }
   }
 
-  if (isEditMode && !ecoponto) {
-    return (
-      <div>
-        <h2 style={{ marginTop: 0 }}>Edit Ecoponto</h2>
-        <p style={{ color: "#b91c1c" }}>No ecoponto selected.</p>
-        <button
-          onClick={() => onNavigate("ecopontos")}
-          style={{ padding: "10px 14px", borderRadius: 6, cursor: "pointer" }}
-        >
-          Back to Ecopontos
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <div>
-      {isEditMode ? (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-          <h2 style={{ marginTop: 0 }}>Edit Ecoponto #{ecoponto.id}</h2>
-          <button
-            onClick={() => onNavigate("ecopontos")}
-            style={{ padding: "10px 14px", borderRadius: 6, cursor: "pointer" }}
-          >
-            Cancel
-          </button>
-        </div>
-      ) : (
-        <h2 style={{ marginTop: 0 }}>Add Ecoponto</h2>
-      )}
-
-      <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12, maxWidth: 560 }}>
-        <label>
-          Código
-          <input
-            value={codigo}
-            onChange={(e) => setCodigo(e.target.value)}
-            placeholder="Ecoponto code"
-          />
-        </label>
-        <label>
-          Tipo Ecoponto
-          <Select
-            options={tipoOptions}
-            value={tipoEcopontoId}
-            onChange={setTipoEcopontoId}
-            isSearchable={true}
-            isClearable={false}
-          />
-        </label>
-        <label>
-          Depósito
-          <Select
-            options={depositoOptions}
-            value={depositoId}
-            onChange={setDepositoId}
-            isSearchable={true}
-            isClearable={false}
-          />
-        </label>
-        <label>
-          Empresa
-          <Select
-            options={empresaOptions}
-            value={empresaId}
-            onChange={setEmpresaId}
-            isSearchable={true}
-            isClearable={false}
-          />
-        </label>
-        <label>
-          Capacidade Atual
-          <input
-            value={capacidadeAtual}
-            onChange={(e) => setCapacidadeAtual(e.target.value)}
-            placeholder="Capacidade atual"
-          />
-        </label>
-        <label>
-          Latitude
-          <input
-            value={latitude}
-            onChange={(e) => setLatitude(e.target.value)}
-            placeholder="Latitude"
-          />
-        </label>
-        <label>
-          Longitude
-          <input
-            value={longitude}
-            onChange={(e) => setLongitude(e.target.value)}
-            placeholder="Longitude"
-          />
-        </label>
-        <label>
-          Descrição
-          <textarea
-            value={descricao}
-            onChange={(e) => setDescricao(e.target.value)}
-            placeholder="Descrição"
-            rows={4}
-          />
-        </label>
-        <button type="submit" style={{ padding: "10px 14px", borderRadius: 6, cursor: "pointer" }}>
-          {isEditMode ? "Save Changes" : "Create Ecoponto"}
-        </button>
-      </form>
-
-      {status && (
-        <div
-          style={{
-            marginTop: 12,
-            color: status.startsWith("Error") ? "#b91c1c" : "#166534",
-          }}
-        >
-          {status}
-        </div>
-      )}
-    </div>
+    <FormTemplate
+      isEditMode={isEditMode}
+      entityName="Ecoponto"
+      entityId={ecoponto?.id}
+      hasEntity={!!ecoponto}
+      onCancel={() => onNavigate("ecopontos")}
+      onSubmit={handleSubmit}
+      status={status}
+    >
+      <label>
+        Código
+        <input
+          value={codigo}
+          onChange={(e) => setCodigo(e.target.value)}
+          placeholder="Ecoponto code"
+        />
+      </label>
+      <label>
+        Tipo Ecoponto
+        <Select
+          options={tipoOptions}
+          value={tipoEcopontoId}
+          onChange={setTipoEcopontoId}
+          isSearchable={true}
+          isClearable={false}
+        />
+      </label>
+      <label>
+        Depósito
+        <Select
+          options={depositoOptions}
+          value={depositoId}
+          onChange={setDepositoId}
+          isSearchable={true}
+          isClearable={false}
+        />
+      </label>
+      <label>
+        Empresa
+        <Select
+          options={empresaOptions}
+          value={empresaId}
+          onChange={setEmpresaId}
+          isSearchable={true}
+          isClearable={false}
+        />
+      </label>
+      <label>
+        Capacidade Atual
+        <input
+          value={capacidadeAtual}
+          onChange={(e) => setCapacidadeAtual(e.target.value)}
+          placeholder="Capacidade atual"
+        />
+      </label>
+      <label>
+        Latitude
+        <input
+          value={latitude}
+          onChange={(e) => setLatitude(e.target.value)}
+          placeholder="Latitude"
+        />
+      </label>
+      <label>
+        Longitude
+        <input
+          value={longitude}
+          onChange={(e) => setLongitude(e.target.value)}
+          placeholder="Longitude"
+        />
+      </label>
+      <label>
+        Descrição
+        <textarea
+          value={descricao}
+          onChange={(e) => setDescricao(e.target.value)}
+          placeholder="Descrição"
+          rows={4}
+        />
+      </label>
+    </FormTemplate>
   );
 }

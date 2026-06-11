@@ -4,7 +4,7 @@ import useDepositos from "../Deposito/useDepositos.js";
 import useTipoEcopontos from "../TipoEcoponto/useTipoEcopontos.js";
 import useEcopontos from "./useEcopontos.js";
 import useEmpresas from "../Empresa/useEmpresas.js";
-import {getOperatorOptions} from "../../middleware/options"
+import { getOperatorOptions } from "../../middleware/options"
 
 export default function Ecopontos({ onNavigate }) {
   const { items: depositos } = useDepositos();
@@ -25,7 +25,7 @@ export default function Ecopontos({ onNavigate }) {
   });
 
   // Create options for codigo, tipoEcoponto, and deposito
-  const codigoOptions = useMemo(() => 
+  const codigoOptions = useMemo(() =>
     ecopontos.map(e => ({ value: e.codigo, label: e.codigo })),
     [ecopontos]
   );
@@ -93,7 +93,7 @@ export default function Ecopontos({ onNavigate }) {
       {/* Filter Section */}
       <div style={{ margin: "16px 0", padding: 16, background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 10 }}>
         <h3 style={{ marginTop: 0, marginBottom: 16 }}>Filtros</h3>
-        
+
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12, marginBottom: 12 }}>
           <div>
             <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Código</label>
@@ -277,15 +277,15 @@ export default function Ecopontos({ onNavigate }) {
                       <td style={{ padding: "12px 8px" }}>
                         {Array.isArray(tipoEcopontos)
                           ? tipoEcopontos.find((t) => t.id === item.tipoEcopontoId)?.tipo ??
-                            "Tipo de ecoponto não encontrado"
+                          "Tipo de ecoponto não encontrado"
                           : "Loading..."}
                       </td>
                       <td style={{ padding: "12px 8px" }}>
-                      {Array.isArray(depositos)
-                        ? depositos.find((d) => d.id === item.depositoId)?.descricao ??
+                        {Array.isArray(depositos)
+                          ? depositos.find((d) => d.id === item.depositoId)?.descricao ??
                           "Depósito não encontrado"
-                        : "Loading..."}
-                    </td>
+                          : "Loading..."}
+                      </td>
                       <td style={{ padding: "12px 8px" }}>{item.capacidadeAtual}</td>
                       <td style={{ padding: "12px 8px", display: "flex", gap: 8, flexWrap: "wrap" }}>
                         <button
