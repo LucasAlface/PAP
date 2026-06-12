@@ -7,6 +7,8 @@ export default function EmpresasForm({ empresa, onNavigate }) {
   const [nif, setNif] = useState("");
   const [email, setEmail] = useState("");
   const [telefone, setTelefone] = useState("");
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
   const [status, setStatus] = useState("");
 
   const isEditMode = !!empresa;
@@ -34,6 +36,8 @@ export default function EmpresasForm({ empresa, onNavigate }) {
       nif,
       email,
       telefone,
+      latitude: latitude ? Number(latitude) : null,
+      longitude: longitude ? Number(longitude) : null,
     };
 
     try {
@@ -55,6 +59,8 @@ export default function EmpresasForm({ empresa, onNavigate }) {
         setNif("");
         setEmail("");
         setTelefone("");
+        setLatitude("");
+        setLongitude("");
       }
     } catch (error) {
       setStatus(`Error: ${error.message}`);
@@ -113,6 +119,25 @@ export default function EmpresasForm({ empresa, onNavigate }) {
           style={{ width: "100%", padding: 8, borderRadius: 4, border: "1px solid #d1d5db" }}
         />
       </label>
+      <label>
+        Latitude:
+        <input
+          type="number"
+          value={latitude}
+          onChange={e => setLatitude(e.target.value)}
+          style={{ width: "100%", padding: 8, borderRadius: 4, border: "1px solid #d1d5db" }}
+        />
+      </label>
+      <label>
+        Longitude:
+        <input
+          type="number"
+          value={longitude}
+          onChange={e => setLongitude(e.target.value)}
+          style={{ width: "100%", padding: 8, borderRadius: 4, border: "1px solid #d1d5db" }}
+        />
+      </label>
     </FormTemplate>
   );
 }
+    

@@ -10,6 +10,8 @@ export default function Empresas({ onNavigate }) {
     { key: "nif", label: "NIF" },
     { key: "email", label: "Email" },
     { key: "telefone", label: "Telefone" },
+    { key: "latitude", label: "Latitude" },
+    { key: "longitude", label: "Longitude" }
   ];
 
   return (

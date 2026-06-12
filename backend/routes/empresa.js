@@ -3,12 +3,12 @@ const Empresa = require("../models/empresa")
 const { Op } = require("sequelize");
 const autenticarJWT = require("../middleware/autenticarJWT");
 const { autorizarAcessoBackoffice, carregarUtilizador } = require("../middleware/autorizarAcesso");
+const {whereEmpresa} = require("../functions/functions");
 
 router.use(autenticarJWT);
 router.use(carregarUtilizador);
-router.use(autorizarAcessoBackoffice);
 
-router.post("/inserir", async (req, res) => {
+router.post("/inserir", autorizarAcessoBackoffice, async (req, res) => {
     try {
         const dados = req.body;
         await Empresa.create(dados);
@@ -18,7 +18,7 @@ router.post("/inserir", async (req, res) => {
     }
 });
 
-router.put("/atualizar/:id", async (req, res) => {
+router.put("/atualizar/:id", autorizarAcessoBackoffice, async (req, res) => {
     try {
         const dados = req.body;
         const { id } = req.params;
@@ -34,7 +34,7 @@ router.put("/atualizar/:id", async (req, res) => {
     }
 });
 
-router.delete("/apagar/:id", async (req, res) => {
+router.delete("/apagar/:id", autorizarAcessoBackoffice, async (req, res) => {
     try {
         const { id } = req.params;
         const result = await Empresa.destroy({ where: { id: id } });
@@ -50,7 +50,7 @@ router.delete("/apagar/:id", async (req, res) => {
 
 router.get("/listar", async (req, res) => {
     try {
-        const companies = await Empresa.findAll({ order: [["id", "ASC"]] });
+        const companies = await Empresa.findAll({ where: { id: req.user.empresaId }, order: [["id", "ASC"]] });
         res.json(companies);
     } catch (err) {
         res.status(500).json({ erro: err.message });

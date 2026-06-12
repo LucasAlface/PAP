@@ -12,7 +12,7 @@ export default function DeleteEmpresa({ empresa, onNavigate }) {
     }
 
     try {
-      await apiRequest(`/empresa/deletar/${empresa.id}`, "DELETE");
+      await apiRequest(`/empresa/apagar/${empresa.id}`, "DELETE");
       alert("Empresa deleted successfully.");
       if (onNavigate) onNavigate("empresas");
     } catch (error) {

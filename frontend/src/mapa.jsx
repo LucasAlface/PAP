@@ -10,17 +10,24 @@ import {
 import Routing from "./routing.jsx";
 import { formatCoordinates } from "./middleware/coordinatesHelper.js";
 import { apiRequest } from "./middleware/request.js";
+import useEmpresas from './backoffice/Empresa/useEmpresas.js';
 
 export default function Mapa() {
   const [pontos, setPontos] = useState([]);
   const pontosCheios = pontos.filter((p) => p.percentagem > 70);
-  const coordenadas = formatCoordinates(pontosCheios);
+  const { items: empresas = [] } = useEmpresas();
     useEffect(() => {
       apiRequest("/rotas/coordenadas")
         .then((data) => {
           setPontos(data);
         });
     }, []);
+    pontosCheios.push(...empresas.map((e) => ({
+      latitude: e.latitude,
+      longitude: e.longitude,
+    })));
+    const coordenadas = formatCoordinates(pontosCheios);
+
 
     const handleGoogleMapsRedirect = () => {
       window.open(`https://www.google.com/maps/dir/${coordenadas}`);

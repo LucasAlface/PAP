@@ -4,7 +4,6 @@ const {whereEmpresa} = require("../functions/functions");
 const autenticarJWT = require("../middleware/autenticarJWT");
 const { carregarUtilizador } = require("../middleware/autorizarAcesso");
 
-//router.use(carregarUtilizador);
 router.put("/capacidade", async (req, res) => {
   try {
     const { codigoEquipamento, profundidade } = req.body;

@@ -202,6 +202,27 @@ async function inserirDados() {
 
   ]);
 
+  await Empresa.bulkCreate([
+
+    {
+      nome: "Empresa 1",
+      nif: "123456789",
+      email: "empresa1@gmail.com",
+      telefone: "912345678",
+      latitude: 40.712776,
+      longitude: -7.005974
+    },
+    {
+      nome: "Empresa 2",
+      nif: "987654321",
+      email: "empresa2@gmail.com",
+      telefone: "987654321",
+      latitude: 41.902782,
+      longitude: -6.496366
+    }
+
+  ]);
+
   await Utilizador.bulkCreate([
 
     {
