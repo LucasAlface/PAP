@@ -19,6 +19,6 @@ export function formatCoordinates(pontos) {
       return null;
     })
     .filter(Boolean)
-    .join("/");
+    .join("|");
 }
 

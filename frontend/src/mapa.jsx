@@ -16,6 +16,8 @@ export default function Mapa() {
   const [pontos, setPontos] = useState([]);
   const pontosCheios = pontos.filter((p) => p.percentagem > 70);
   const { items: empresas = [] } = useEmpresas();
+  const empresasComCoordenadas = empresas.filter(e => e.latitude && e.longitude);
+  const sede = formatCoordinates(empresasComCoordenadas);
     useEffect(() => {
       apiRequest("/rotas/coordenadas")
         .then((data) => {
@@ -26,11 +28,11 @@ export default function Mapa() {
       latitude: e.latitude,
       longitude: e.longitude,
     })));
-    const coordenadas = formatCoordinates(pontosCheios);
+    const ecopontos = formatCoordinates(pontosCheios);
 
 
     const handleGoogleMapsRedirect = () => {
-      window.open(`https://www.google.com/maps/dir/${coordenadas}`);
+      window.open(`https://www.google.com/maps/dir/?api=1&destination=${sede}&waypoints=${ecopontos}`, "_blank");
     };
   return (
     <>
