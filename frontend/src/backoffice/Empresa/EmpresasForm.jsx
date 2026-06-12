@@ -38,8 +38,8 @@ export default function EmpresasForm({ empresa, onNavigate }) {
 
     try {
       const endpoint = isEditMode
-        ? `http://localhost:3000/empresa/atualizar/${empresa.id}`
-        : "http://localhost:3000/empresa/inserir";
+        ? `/empresa/atualizar/${empresa.id}`
+        : `/empresa/inserir`;
 
       const method = isEditMode ? "PUT" : "POST";
       const requestData = isEditMode ? payload : payload;

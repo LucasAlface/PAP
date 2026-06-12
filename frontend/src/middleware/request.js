@@ -1,4 +1,6 @@
-export async function apiRequest(url, method = "GET", payload = null) {
+const API = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
+export async function apiRequest(endpoint, method = "GET", payload = null) {
   const options = {
     method,
     credentials: "include",
@@ -9,7 +11,7 @@ export async function apiRequest(url, method = "GET", payload = null) {
     options.body = JSON.stringify(payload);
   }
 
-  const response = await fetch(url, options);
+  const response = await fetch(`${API}${endpoint}`, options);
 
   const contentType = response.headers.get("content-type") || "";
   if (!response.ok) {

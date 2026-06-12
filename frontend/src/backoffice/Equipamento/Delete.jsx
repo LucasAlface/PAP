@@ -5,7 +5,7 @@ export default function DeleteEquipamento({ equipamento, onNavigate }) {
     if (!equipamento?.id) return;
 
     try {
-      await apiRequest(`http://localhost:3000/equipamento/apagar/${equipamento.id}`, "DELETE");
+      await apiRequest(`/equipamento/apagar/${equipamento.id}`, "DELETE");
       onNavigate("equipamentos");
     } catch (error) {
       alert(`Error deleting equipamento: ${error.message}`);

@@ -12,15 +12,15 @@ export default function Login({ onLogin }) {
     setError("");
     setLoading(true);
 
-    try {
-  await apiRequest(
-    "http://localhost:3000/login",
-    "POST",
-    { email, password }
-  );
-
+    try { 
+      const res = await apiRequest(
+     `/login`,
+      "POST",
+      { email, password }
+    );
+    console.log("Login response:", res);
   const user = await apiRequest(
-    "http://localhost:3000/login/me",
+    `/login/me`,
     "GET"
   );
 

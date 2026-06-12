@@ -44,7 +44,7 @@ router.post("/", async (req, res) => {
 
         res.cookie("accessToken", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: false,
             sameSite: "lax",
             maxAge: 60 * 60 * 1000 // 1 hora
         });
@@ -80,5 +80,14 @@ router.get("/me", autenticarJWT, async (req, res) => {
             erro: err.message
         });
     }
+});
+
+router.post("/logout", (req, res) => {
+    res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax"
+    });
+    res.sendStatus(200);
 });
 module.exports = router;

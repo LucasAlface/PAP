@@ -6,6 +6,8 @@ const Empresa = sequelize.define("Empresa", {
   nif: DataTypes.STRING,
   email: DataTypes.STRING,
   telefone: DataTypes.STRING,
+  latitude: DataTypes.FLOAT,
+  longitude: DataTypes.FLOAT
 }, {
   tableName: "empresa",
   timestamps: true

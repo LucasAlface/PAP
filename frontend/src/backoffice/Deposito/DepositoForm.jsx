@@ -61,8 +61,8 @@ export default function DepositoForm({ deposito, onNavigate }) {
 
     try {
       const endpoint = isEditMode
-        ? `http://localhost:3000/deposito/atualizar/${deposito.id}`
-        : "http://localhost:3000/deposito/inserir";
+        ? `/deposito/atualizar/${deposito.id}`
+        : `/deposito/inserir`;
 
       const method = isEditMode ? "PUT" : "POST";
       const requestData = isEditMode ? payload : payload;

@@ -13,7 +13,7 @@ export default function DeleteUtilizador({ utilizador, onNavigate }) {
     }
 
     try {
-      await apiRequest(`http://localhost:3000/utilizador/apagar/${utilizador.id}`, "DELETE");
+      await apiRequest(`/utilizador/apagar/${utilizador.id}`, "DELETE");
       // alert("Utilizador deleted successfully.");
       if (onNavigate) onNavigate("utilizadores");
     } catch (err) {

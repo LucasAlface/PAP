@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
-
+import { apiRequest } from "../middleware/request.js";
 export default function Dashboard() {
   const [stats, setStats] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/ecoponto/total")
+    apiRequest("/ecoponto/total")
       .then((res) => res.json())
       .then((data) => {
         setStats(data);

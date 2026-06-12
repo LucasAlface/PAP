@@ -1,6 +1,10 @@
 const router = require("express").Router();
 const {Equipamento, EcopontoEquipamento, Ecoponto, Deposito} = require("../models/models")
+const {whereEmpresa} = require("../functions/functions");
+const autenticarJWT = require("../middleware/autenticarJWT");
+const { carregarUtilizador } = require("../middleware/autorizarAcesso");
 
+//router.use(carregarUtilizador);
 router.put("/capacidade", async (req, res) => {
   try {
     const { codigoEquipamento, profundidade } = req.body;
@@ -45,9 +49,10 @@ router.put("/capacidade", async (req, res) => {
   }
 });
 
-router.get("/coordenadas", async (req, res) => {
+router.get("/coordenadas", autenticarJWT, carregarUtilizador, async (req, res) => {
   try {
-    const ecopontos = await Ecoponto.findAll();
+    const whereClause = whereEmpresa(req);
+    const ecopontos = await Ecoponto.findAll({ where: whereClause, order: [["id", "ASC"]] });
     const ecopontosCheios = [];
 
     for (const ecoponto of ecopontos) {

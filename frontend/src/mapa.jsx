@@ -9,14 +9,14 @@ import {
 } from "react-leaflet";
 import Routing from "./routing.jsx";
 import { formatCoordinates } from "./middleware/coordinatesHelper.js";
+import { apiRequest } from "./middleware/request.js";
 
 export default function Mapa() {
   const [pontos, setPontos] = useState([]);
   const pontosCheios = pontos.filter((p) => p.percentagem > 70);
   const coordenadas = formatCoordinates(pontosCheios);
     useEffect(() => {
-      fetch("http://localhost:3000/rotas/coordenadas")
-        .then((res) => res.json())
+      apiRequest("/rotas/coordenadas")
         .then((data) => {
           setPontos(data);
         });

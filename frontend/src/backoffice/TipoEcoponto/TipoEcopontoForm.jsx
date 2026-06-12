@@ -32,8 +32,8 @@ export default function TipoEcopontoForm({ tipoEcoponto, onNavigate }) {
 
     try {
       const endpoint = isEditMode
-        ? `http://localhost:3000/tipoecoponto/atualizar/${tipoEcoponto.id}`
-        : "http://localhost:3000/tipoecoponto/inserir";
+        ? `/tipoecoponto/atualizar/${tipoEcoponto.id}`
+        : `/tipoecoponto/inserir`;
 
       const method = isEditMode ? "PUT" : "POST";
       const requestData = isEditMode ? payload : payload;

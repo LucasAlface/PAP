@@ -32,8 +32,8 @@ export default function TipoDepositoForm({ tipoDeposito, onNavigate }) {
 
     try {
       const endpoint = isEditMode
-        ? `http://localhost:3000/tipodeposito/atualizar/${tipoDeposito.id}`
-        : "http://localhost:3000/tipodeposito/inserir";
+        ? `/tipodeposito/atualizar/${tipoDeposito.id}`
+        : `/tipodeposito/inserir`;
 
       const method = isEditMode ? "PUT" : "POST";
       const requestData = isEditMode ? payload : payload;

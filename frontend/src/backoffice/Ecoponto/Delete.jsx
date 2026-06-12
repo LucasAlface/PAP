@@ -5,7 +5,7 @@ export default function DeleteEcoponto({ ecoponto, onNavigate }) {
     if (!ecoponto?.id) return;
 
     try {
-      await apiRequest(`http://localhost:3000/ecoponto/apagar/${ecoponto.id}`, "DELETE");
+      await apiRequest(`/ecoponto/apagar/${ecoponto.id}`, "DELETE");
       onNavigate("ecopontos");
     } catch (error) {
       alert(`Error deleting ecoponto: ${error.message}`);

@@ -68,8 +68,8 @@ export default function EcopontoEquipamentoForm({ ecopontoEquipamento, onNavigat
         ;
 
     const endpoint = isEditMode
-      ? `http://localhost:3000/ecopontoequipamento/atualizar/${ecopontoEquipamento.ecopontoId}/${ecopontoEquipamento.equipamentoId}`
-      : "http://localhost:3000/ecopontoequipamento/inserir";
+      ? `/ecopontoequipamento/atualizar/${ecopontoEquipamento.ecopontoId}/${ecopontoEquipamento.equipamentoId}`
+      : `/ecopontoequipamento/inserir`;
 
     const method = isEditMode ? "PUT" : "POST";
 

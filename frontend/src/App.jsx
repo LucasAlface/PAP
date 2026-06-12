@@ -4,11 +4,19 @@ import Backoffice from "./backoffice/Backoffice.jsx";
 import Login from "./Login.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 import Sidebar from "./backoffice/Sidebar.jsx";
+import {
+  UserRound,
+  ChevronDown,
+  Map,
+  LayoutDashboard
+} from "lucide-react";
 
 export default function App() {
   const [view, setView] = useState("map");
   const [page, setPage] = useState("dashboard");
   const [selectedItem, setSelectedItem] = useState(null);
+  const [openUserMenu, setOpenUserMenu] =
+  useState(false);
   const { authUser, loading, login, logout } = useAuth();
   const isAdmin = authUser?.cargo === 1 || authUser?.cargo === 2;
 
@@ -36,10 +44,16 @@ export default function App() {
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
 
-      <header style={{ padding: 12, background: "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div>
-          <h1 style={{ margin: 0, fontSize: 18 }}>PAP - Admin</h1>
-          <div style={{ fontSize: 13, color: "#555" }}>
+        <header className="bg-slate-900 text-white">      
+          <div>
+  <h1 className="text-2xl font-bold">
+    EcoTrack
+  </h1>
+
+  <p className="text-slate-400 text-sm">
+    Gestão Inteligente de Ecopontos
+  </p>
+  <div style={{ fontSize: 13, color: "#555" }}>
             Entrou como {authUser?.nome ?? authUser?.email}
           </div>
         </div>
@@ -58,13 +72,19 @@ export default function App() {
               Backoffice
             </button>
           )}
-          <button
+            <button 
+            onClick={() => setOpenUserMenu(!openUserMenu)} className="flex items-center gap-2">
+              <UserRound />
+              <span>{authUser.nome}</span>
+              <ChevronDown />
+            </button>
+             <button
             onClick={handleLogout}
             style={{ padding: "8px 12px", borderRadius: 6, border: "1px solid #ccc", cursor: "pointer", background: "#ff5858", color: "#fff" }}
           >
             Sair
           </button>
-        </div>
+          </div>
       </header>
 
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>

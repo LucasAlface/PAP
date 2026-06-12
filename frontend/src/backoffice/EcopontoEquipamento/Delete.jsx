@@ -6,7 +6,7 @@ export default function DeleteEcopontoEquipamento({ ecopontoEquipamento, onNavig
 
     try {
       await apiRequest(
-        `http://localhost:3000/ecopontoequipamento/apagar/${ecopontoEquipamento.ecopontoId}/${ecopontoEquipamento.equipamentoId}`,
+        `/ecopontoequipamento/apagar/${ecopontoEquipamento.ecopontoId}/${ecopontoEquipamento.equipamentoId}`,
         "DELETE"
       );
       onNavigate("ecopontoequipamentos");

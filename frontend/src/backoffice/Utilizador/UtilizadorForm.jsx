@@ -64,8 +64,8 @@ export default function UtilizadorForm({ utilizador, onNavigate }) {
 
     try {
       const endpoint = isEditMode
-        ? `http://localhost:3000/utilizador/atualizar/${utilizador.id}`
-        : "http://localhost:3000/utilizador/inserir";
+        ? `/utilizador/atualizar/${utilizador.id}`
+        : `/utilizador/inserir`;
       const method = isEditMode ? "PUT" : "POST";
       const requestData = isEditMode ? payload : payload;
 

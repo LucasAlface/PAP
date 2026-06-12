@@ -5,7 +5,7 @@ export default function DeleteDeposito({ deposito, onNavigate }) {
     if (!deposito?.id) return;
 
     try {
-      await apiRequest(`http://localhost:3000/deposito/apagar/${deposito.id}`, "DELETE");
+      await apiRequest(`/deposito/apagar/${deposito.id}`, "DELETE");
       onNavigate("depositos");
     } catch (error) {
       alert(`Error deleting depósito: ${error.message}`);

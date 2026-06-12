@@ -12,7 +12,16 @@ export default function Sidebar({ page, onNavigate }) {
   });
 
   return (
-    <aside style={{ width: 220, borderRight: "1px solid #eee", paddingTop: 12 }}>
+    <aside className="
+      w-64
+      bg-slate-900
+      text-white
+      border-r
+      border-slate-800
+      h-full
+      flex
+      flex-col
+    ">
       <div style={{ padding: "0 16px 12px 16px", fontWeight: 600 }}>Backoffice</div>
       <div>
         <div style={itemStyle(page === "dashboard")} onClick={() => onNavigate("dashboard")}>

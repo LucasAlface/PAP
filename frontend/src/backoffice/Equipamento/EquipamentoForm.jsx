@@ -64,8 +64,8 @@ export default function EquipamentoForm({ equipamento, onNavigate }) {
 
     try {
       const endpoint = isEditMode
-        ? `http://localhost:3000/equipamento/atualizar/${equipamento.id}`
-        : "http://localhost:3000/equipamento/inserir";
+        ? `/equipamento/atualizar/${equipamento.id}`
+        : `/equipamento/inserir`;
 
       const method = isEditMode ? "PUT" : "POST";
       const requestData = isEditMode ? payload : payload;

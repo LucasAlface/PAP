@@ -12,7 +12,7 @@ export default function useModel(modelName, filters = null) {
         setLoading(true);
         setError(null);
 
-        let url = `http://localhost:3000/${modelName}/listar`;
+        let endpoint = `/${modelName}/listar`;
 
         if (filtersToUse && Object.keys(filtersToUse).length > 0) {
           const params = new URLSearchParams();
@@ -21,10 +21,10 @@ export default function useModel(modelName, filters = null) {
               params.append(key, value);
             }
           });
-          url = `http://localhost:3000/${modelName}/listar/filtro?${params.toString()}`;
+          endpoint = `/${modelName}/listar/filtro?${params.toString()}`;
         }
 
-        const data = await apiRequest(url, "GET");
+        const data = await apiRequest(endpoint, "GET");
         setModel(data);
       } catch (err) {
         setError(err.message);

@@ -14,7 +14,7 @@ export function AuthProvider({ children }) {
   const checkAuth = async () => {
     try {
       const user = await apiRequest(
-        "http://localhost:3000/login/me",
+        "/login/me",
         "GET"
       );
       setAuthUser(user);
@@ -32,7 +32,7 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     try {
       await apiRequest(
-        "http://localhost:3000/auth/logout",
+        "/login/logout",
         "POST"
       );
     } catch {}
