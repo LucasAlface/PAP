@@ -1,3 +1,5 @@
+import { Filter, Pencil, Plus, Search, Trash2, X } from "lucide-react";
+
 export default function ListTemplate({
   title,
   addLabel,
@@ -18,110 +20,108 @@ export default function ListTemplate({
   onClearFilters,
 }) {
   return (
-    <div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-        <h2 style={{ marginTop: 0 }}>{title}</h2>
+    <div className="list-template">
+      <div className="template-header">
+        <div>
+          <span className="template-kicker">Listagem</span>
+          <h2>{title}</h2>
+        </div>
         {onAdd && (
-          <button
-            onClick={onAdd}
-            style={{ padding: "10px 16px", borderRadius: 6, border: "1px solid #3b82f6", background: "#3b82f6", color: "white", cursor: "pointer" }}
-          >
+          <button type="button" onClick={onAdd} className="bo-btn bo-btn-primary">
+            <Plus size={16} />
             {addLabel || `Add ${title}`}
           </button>
         )}
       </div>
 
-      {/* Filter Section */}
       {filterSection && (
-        <div style={{ margin: "16px 0", padding: 16, background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 10 }}>
-          <h3 style={{ marginTop: 0, marginBottom: 16 }}>Filtros</h3>
+        <div className="filter-card">
+          <div className="filter-title">
+            <Filter size={16} />
+            <h3>Filtros</h3>
+          </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12, marginBottom: 12 }}>
+          <div className="filter-grid">
             {filterSection}
           </div>
 
-          <div style={{ display: "flex", gap: 8 }}>
+          <div className="filter-actions">
             <button
+              type="button"
               onClick={onApplyFilters}
               disabled={loading}
-              style={{
-                padding: "8px 16px",
-                borderRadius: 6,
-                border: "none",
-                background: "#3b82f6",
-                color: "white",
-                cursor: loading ? "not-allowed" : "pointer",
-                opacity: loading ? 0.5 : 1
-              }}
+              className="bo-btn bo-btn-primary"
             >
-              {loading ? "Carregando..." : "Aplicar Filtros"}
+              <Search size={15} />
+              {loading ? "A carregar..." : "Aplicar filtros"}
             </button>
             <button
+              type="button"
               onClick={onClearFilters}
-              style={{
-                padding: "8px 16px",
-                borderRadius: 6,
-                border: "1px solid #d1d5db",
-                background: "white",
-                color: "#374151",
-                cursor: "pointer"
-              }}
+              className="bo-btn bo-btn-ghost"
             >
-              Limpar Filtros
+              <X size={15} />
+              Limpar filtros
             </button>
           </div>
         </div>
       )}
 
-      {loading && <p>Loading {title.toLowerCase()}...</p>}
-      {error && <p style={{ color: "#b91c1c" }}>Error loading {title.toLowerCase()}: {error}</p>}
+      {loading && <p className="template-muted">A carregar {title.toLowerCase()}...</p>}
+      {error && <p className="template-error">Erro ao carregar {title.toLowerCase()}: {error}</p>}
 
       {!loading && !error && (
         <>
-          <div style={{ margin: "16px 0", padding: 16, background: "#fff", border: "1px solid #eee", borderRadius: 10, maxWidth: 320 }}>
-            <div style={{ color: "#666", fontSize: 14 }}>{totalLabel || `Total de ${title.toLowerCase()}`}</div>
-            <div style={{ fontSize: 28, fontWeight: 700 }}>{items.length}</div>
+          <div className="total-card">
+            <div>{totalLabel || `Total de ${title.toLowerCase()}`}</div>
+            <strong>{items.length}</strong>
           </div>
 
           {items.length === 0 ? (
-            <p>{emptyMessage || `No ${title.toLowerCase()} found.`}</p>
+            <p className="template-muted">{emptyMessage || `No ${title.toLowerCase()} found.`}</p>
           ) : (
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 720 }}>
+            <div className="table-wrap">
+              <table className="data-table">
                 <thead>
-                  <tr style={{ textAlign: "left", borderBottom: "1px solid #ddd" }}>
+                  <tr>
                     {columns.map((col) => (
-                      <th key={col.key} style={{ padding: "12px 8px" }}>{col.label}</th>
+                      <th key={col.key}>{col.label}</th>
                     ))}
-                    {(onEdit || onDelete) && <th style={{ padding: "12px 8px" }}>Ações</th>}
+                    {(onEdit || onDelete) && <th>Ações</th>}
                   </tr>
                 </thead>
                 <tbody>
                   {items.map((item) => (
-                    <tr key={getRowKey(item)} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                    <tr key={getRowKey(item)}>
                       {columns.map((col) => (
-                        <td key={col.key} style={{ padding: "12px 8px" }}>
+                        <td key={col.key}>
                           {col.render ? col.render(item) : item[col.key]}
                         </td>
                       ))}
                       {(onEdit || onDelete) && (
-                        <td style={{ padding: "12px 8px", display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <td>
+                          <div className="table-actions">
                           {onEdit && (
                             <button
+                              type="button"
                               onClick={() => onEdit(item)}
-                              style={{ padding: "8px 10px", borderRadius: 6, cursor: "pointer" }}
+                              className="icon-btn"
+                              title={editLabel}
                             >
-                              {editLabel}
+                              <Pencil size={15} />
                             </button>
                           )}
                           {onDelete && (
                             <button
+                              type="button"
                               onClick={() => onDelete(item)}
-                              style={{ padding: "8px 10px", borderRadius: 6, background: "#dc2626", color: "white", cursor: "pointer" }}
+                              className="icon-btn icon-btn-danger"
+                              title={deleteLabel}
                             >
-                              {deleteLabel}
+                              <Trash2 size={15} />
                             </button>
                           )}
+                          </div>
                         </td>
                       )}
                     </tr>

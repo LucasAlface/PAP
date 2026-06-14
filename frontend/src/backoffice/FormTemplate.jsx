@@ -1,3 +1,5 @@
+import { ArrowLeft, Pencil, Plus, Save, X } from "lucide-react";
+
 export default function FormTemplate({
   isEditMode,
   entityName,
@@ -12,16 +14,21 @@ export default function FormTemplate({
   children,
 }) {
   const resolvedBackLabel = backLabel || `Back to ${entityName}s`;
+  const title = isEditMode ? `Editar ${entityName} #${entityId}` : `Adicionar ${entityName}`;
+  const ButtonIcon = isEditMode ? Save : Plus;
 
   if (isEditMode && !hasEntity) {
     return (
-      <div>
-        <h2 style={{ marginTop: 0 }}>Edit {entityName}</h2>
-        <p style={{ color: "#b91c1c" }}>No {entityName.toLowerCase()} selected.</p>
-        <button
-          onClick={onCancel}
-          style={{ padding: "10px 14px", borderRadius: 6, border: "none", background: "#3b82f6", color: "white", cursor: "pointer" }}
-        >
+      <div className="form-template">
+        <div className="template-header">
+          <div>
+            <span className="template-kicker">Seleção em falta</span>
+            <h2>Editar {entityName}</h2>
+          </div>
+        </div>
+        <p className="template-error">Nenhum {entityName.toLowerCase()} selecionado.</p>
+        <button type="button" onClick={onCancel} className="bo-btn bo-btn-primary">
+          <ArrowLeft size={16} />
           {resolvedBackLabel}
         </button>
       </div>
@@ -29,35 +36,33 @@ export default function FormTemplate({
   }
 
   return (
-    <div>
-      {isEditMode ? (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-          <h2 style={{ marginTop: 0 }}>Edit {entityName} #{entityId}</h2>
-          <button
-            onClick={onCancel}
-            style={{ padding: "10px 14px", borderRadius: 6, border: "none", background: "#3b82f6", color: "white", cursor: "pointer" }}
-          >
+    <div className="form-template">
+      <div className="template-header">
+        <div>
+          <span className="template-kicker">{isEditMode ? "Editar registo" : "Novo registo"}</span>
+          <h2>{title}</h2>
+        </div>
+        {isEditMode && (
+          <button type="button" onClick={onCancel} className="bo-btn bo-btn-ghost">
+            <X size={16} />
             {cancelLabel}
           </button>
-        </div>
-      ) : (
-        <h2 style={{ marginTop: 0 }}>Add {entityName}</h2>
-      )}
+        )}
+      </div>
 
-      <form onSubmit={onSubmit} style={{ display: "grid", gap: 12, maxWidth: 560 }}>
+      <form onSubmit={onSubmit} className="bo-form">
         {children}
-        <button type="submit" style={{ padding: "10px 14px", borderRadius: 6, border: "none", background: "#3b82f6", color: "white", cursor: "pointer" }}>
-          {submitLabel || (isEditMode ? "Save Changes" : `Create ${entityName}`)}
+        <button type="submit" className="bo-btn bo-btn-primary bo-submit">
+          <ButtonIcon size={16} />
+          {submitLabel || (isEditMode ? "Guardar alterações" : `Criar ${entityName}`)}
         </button>
       </form>
 
       {status && (
         <div
-          style={{
-            marginTop: 12,
-            color: status.startsWith("Error") ? "#b91c1c" : "#166534",
-          }}
+          className={`template-status ${status.startsWith("Error") ? "is-error" : "is-success"}`}
         >
+          {status.startsWith("Error") ? <X size={16} /> : <Pencil size={16} />}
           {status}
         </div>
       )}

@@ -6,17 +6,15 @@ import { useAuth } from "./context/AuthContext.jsx";
 import Sidebar from "./backoffice/Sidebar.jsx";
 import {
   UserRound,
-  ChevronDown,
   Map,
-  LayoutDashboard
+  LayoutDashboard,
+  LogOut
 } from "lucide-react";
 
 export default function App() {
   const [view, setView] = useState("map");
   const [page, setPage] = useState("dashboard");
   const [selectedItem, setSelectedItem] = useState(null);
-  const [openUserMenu, setOpenUserMenu] =
-  useState(false);
   const { authUser, loading, login, logout } = useAuth();
   const isAdmin = authUser?.cargo === 1 || authUser?.cargo === 2;
 
@@ -34,7 +32,7 @@ export default function App() {
   };
 
   if (loading) {
-    return <div>A carregar...</div>;
+    return <div className="app-loading">A carregar...</div>;
   }
 
   if (!authUser) {
@@ -42,77 +40,65 @@ export default function App() {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-
-        <header className="bg-slate-900 text-white">      
+    <div className="app-shell">
+      <header className="app-header">
+        <div className="app-brand">
+          <div className="app-brand-mark">
+            <Map size={20} />
+          </div>
           <div>
-  <h1 className="text-2xl font-bold">
-    EcoTrack
-  </h1>
-
-  <p className="text-slate-400 text-sm">
-    Gestão Inteligente de Ecopontos
-  </p>
-  <div style={{ fontSize: 13, color: "#555" }}>
-            Entrou como {authUser?.nome ?? authUser?.email}
+            <h1>EcoTrack</h1>
+            <p>Gestão Inteligente de Ecopontos</p>
           </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+
+        <div className="app-header-actions">
           <button
             onClick={() => setView("map")}
-            style={{ padding: "8px 12px", borderRadius: 6, border: "1px solid #ccc", cursor: "pointer", background: view === "map" ? "#e6f0ff" : undefined }}
+            className={`header-btn ${view === "map" ? "is-active" : ""}`}
           >
+            <Map size={16} />
             Mapa
           </button>
           {isAdmin && (
             <button
               onClick={() => setView("backoffice")}
-              style={{ padding: "8px 12px", borderRadius: 6, border: "1px solid #ccc", cursor: "pointer", background: view === "backoffice" ? "#e6f0ff" : undefined }}
+              className={`header-btn ${view === "backoffice" ? "is-active" : ""}`}
             >
+              <LayoutDashboard size={16} />
               Backoffice
             </button>
           )}
-            <button 
-            onClick={() => setOpenUserMenu(!openUserMenu)} className="flex items-center gap-2">
-              <UserRound />
-              <span>{authUser.nome}</span>
-              <ChevronDown />
-            </button>
-             <button
+          <div className="user-chip" title={authUser?.email}>
+            <UserRound size={17} />
+            <span>{authUser?.nome ?? authUser?.email}</span>
+          </div>
+          <button
             onClick={handleLogout}
-            style={{ padding: "8px 12px", borderRadius: 6, border: "1px solid #ccc", cursor: "pointer", background: "#ff5858", color: "#fff" }}
+            className="header-btn header-btn-danger"
           >
+            <LogOut size={16} />
             Sair
           </button>
-          </div>
+        </div>
       </header>
 
-      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+      <div className="app-body">
         {isAdmin && (
-          <Sidebar page={view === "backoffice" ? page : null} onNavigate={navigate} />
+          <Sidebar page={page} onNavigate={navigate} />
         )}
 
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-          {/* Map always visible */}
-          <div style={{ flex: view === "backoffice" ? "0 0 45%" : "1", position: "relative", minHeight: 200 }}>
+        <main className="main-stage">
+          <section className={`map-region ${view === "backoffice" ? "map-region-with-backoffice" : "map-region-full"}`}>
             <Mapa />
-          </div>
+          </section>
 
-          {/* Backoffice panel at the bottom */}
-          {view === "backoffice" && (
-            <div style={{ flex: 1, borderTop: "2px solid #e5e7eb", overflow: "auto", background: "#fff" }}>
-              <div style={{ display: "flex", justifyContent: "flex-end", padding: "8px 12px 0" }}>
-                <button
-                  onClick={() => setView("map")}
-                  style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #d1d5db", background: "#f9fafb", cursor: "pointer", fontSize: 13 }}
-                >
-                  ✕ Fechar
-                </button>
-              </div>
+          {isAdmin && view === "backoffice" && (
+            <section className="backoffice-dock">
               <Backoffice page={page} selectedItem={selectedItem} onNavigate={navigate} />
-            </div>
+            </section>
           )}
-        </div>
+        </main>
       </div>
     </div>
   );

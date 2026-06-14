@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Leaf, LockKeyhole, LogIn, Mail } from "lucide-react";
 import { apiRequest } from "./middleware/request.js";
 
 export default function Login({ onLogin }) {
@@ -34,98 +35,55 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        background: "#f2f7ff",
-        padding: 20,
-      }}
-    >
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          width: 360,
-          background: "#ffffff",
-          borderRadius: 16,
-          padding: 28,
-          boxShadow: "0 18px 40px rgba(50, 75, 120, 0.12)",
-          display: "flex",
-          flexDirection: "column",
-          gap: 18,
-        }}
-      >
-        <h2 style={{ margin: 0, fontSize: 24, color: "#1f2a44" }}>Entrar</h2>
-        <p style={{ margin: 0, color: "#5f6f8d" }}>
-          Faça login para aceder ao backoffice.
-        </p>
-
-        <label style={{ display: "flex", flexDirection: "column", gap: 8, color: "#344767" }}>
-          Email
-          <input
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            required
-            style={{
-              width: "100%",
-              padding: "12px 14px",
-              borderRadius: 10,
-              border: "1px solid #d1d7e4",
-              outline: "none",
-              fontSize: 14,
-            }}
-          />
-        </label>
-
-        <label style={{ display: "flex", flexDirection: "column", gap: 8, color: "#344767" }}>
-          Palavra-passe
-          <input
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            required
-            style={{
-              width: "100%",
-              padding: "12px 14px",
-              borderRadius: 10,
-              border: "1px solid #d1d7e4",
-              outline: "none",
-              fontSize: 14,
-            }}
-          />
-        </label>
-
-        {error && (
-          <div style={{ color: "#d32f2f", fontSize: 14, lineHeight: 1.4 }}>
-            {error}
+    <div className="login-screen">
+      <form className="login-card" onSubmit={handleSubmit}>
+        <div className="login-brand">
+          <div className="login-logo">
+            <Leaf size={24} />
           </div>
-        )}
+          <div>
+            <h1>EcoTrack</h1>
+            <p>Backoffice de gestão ambiental</p>
+          </div>
+        </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            width: "100%",
-            height: 48,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "12px 14px",
-            borderRadius: 10,
-            border: "none",
-            background: "#2f6bff",
-            color: "#ffffff",
-            cursor: loading ? "not-allowed" : "pointer",
-            opacity: loading ? 0.7 : 1,
-            pointerEvents: loading ? "none" : "auto",
-            fontWeight: 600,
-            fontSize: 15,
-            lineHeight: "20px",
-          }}
-        >
+        <div className="login-heading">
+          <h2>Entrar</h2>
+          <p>Inicie sessão para gerir ecopontos, depósitos e equipamentos.</p>
+        </div>
+
+        <label className="login-field">
+          <span>Email</span>
+          <div className="login-input-wrap">
+            <Mail size={18} />
+            <input
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              autoComplete="email"
+              required
+            />
+          </div>
+        </label>
+
+        <label className="login-field">
+          <span>Palavra-passe</span>
+          <div className="login-input-wrap">
+            <LockKeyhole size={18} />
+            <input
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              autoComplete="current-password"
+              required
+            />
+          </div>
+        </label>
+
+        {error && <div className="login-error">{error}</div>}
+
+        <button className="login-submit" type="submit" disabled={loading}>
+          <LogIn size={18} />
           {loading ? "A iniciar sessão..." : "Entrar"}
         </button>
       </form>

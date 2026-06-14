@@ -1,57 +1,90 @@
-import React from "react";
 import { useAuth } from "../context/AuthContext.jsx";
+import {
+  Archive,
+  Building2,
+  Cpu,
+  Database,
+  LayoutDashboard,
+  Leaf,
+  Link2,
+  Recycle,
+  ShieldCheck,
+  Tags,
+  Users
+} from "lucide-react";
+
+const pageGroups = {
+  dashboard: ["dashboard"],
+  ecopontos: ["ecopontos", "add-ecoponto", "edit-ecoponto", "delete-ecoponto"],
+  equipamentos: ["equipamentos", "add-equipamento", "edit-equipamento", "delete-equipamento"],
+  depositos: ["depositos", "add-deposito", "edit-deposito", "delete-deposito"],
+  tipoecopontos: ["tipoecopontos", "add-tipoecoponto", "edit-tipoecoponto", "delete-tipoecoponto"],
+  tipodepositos: ["tipodepositos", "add-tipodeposito", "edit-tipodeposito", "delete-tipodeposito"],
+  ecopontoequipamentos: [
+    "ecopontoequipamentos",
+    "add-ecopontoequipamento",
+    "edit-ecopontoequipamento",
+    "delete-ecopontoequipamento",
+  ],
+  empresas: ["empresas", "add-empresa", "edit-empresa", "delete-empresa"],
+  utilizadores: ["utilizadores", "add-utilizador", "edit-utilizador", "delete-utilizador"],
+};
+
+const navItems = [
+  { page: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { page: "ecopontos", label: "Ecopontos", icon: Recycle },
+  { page: "equipamentos", label: "Equipamentos", icon: Cpu },
+  { page: "depositos", label: "Depósitos", icon: Archive },
+  { page: "tipoecopontos", label: "Tipo Ecopontos", icon: Tags },
+  { page: "tipodepositos", label: "Tipo Depósitos", icon: Database },
+  { page: "ecopontoequipamentos", label: "Ecoponto Equip.", icon: Link2 },
+  { page: "empresas", label: "Empresas", icon: Building2, adminOnly: true },
+  { page: "utilizadores", label: "Utilizadores", icon: Users },
+];
 
 export default function Sidebar({ page, onNavigate }) {
   const { authUser } = useAuth();
   const isAdmin = authUser?.cargo === 1;
-  const itemStyle = (active) => ({
-    padding: "12px 16px",
-    cursor: "pointer",
-    background: active ? "#f0f6ff" : undefined,
-    borderLeft: active ? "4px solid #3b82f6" : "4px solid transparent",
-  });
+  const visibleItems = navItems.filter((item) => !item.adminOnly || isAdmin);
 
   return (
-    <aside className="
-      w-64
-      bg-slate-900
-      text-white
-      border-r
-      border-slate-800
-      h-full
-      flex
-      flex-col
-    ">
-      <div style={{ padding: "0 16px 12px 16px", fontWeight: 600 }}>Backoffice</div>
-      <div>
-        <div style={itemStyle(page === "dashboard")} onClick={() => onNavigate("dashboard")}>
-          Dashboard
+    <aside className="sidebar">
+      <div className="sidebar-brand">
+        <div className="sidebar-brand-icon">
+          <Leaf size={19} />
         </div>
-        <div style={itemStyle(page === "ecopontos")} onClick={() => onNavigate("ecopontos")}>
-          Ecopontos
+        <div>
+          <strong>Backoffice</strong>
+          <span>Gestão operacional</span>
         </div>
-        <div style={itemStyle(page === "equipamentos")} onClick={() => onNavigate("equipamentos")}>
-          Equipamentos
+      </div>
+
+      <nav className="sidebar-nav" aria-label="Backoffice">
+        {visibleItems.map(({ page: itemPage, label, icon: Icon }) => {
+          const active = pageGroups[itemPage]?.includes(page);
+
+          return (
+            <button
+              key={itemPage}
+              type="button"
+              className={`sidebar-link ${active ? "is-active" : ""}`}
+              onClick={() => onNavigate(itemPage)}
+              title={label}
+            >
+              <Icon size={18} />
+              <span>{label}</span>
+            </button>
+          );
+        })}
+      </nav>
+
+      <div className="sidebar-user">
+        <div className="sidebar-user-avatar">
+          <ShieldCheck size={18} />
         </div>
-        <div style={itemStyle(page === "depositos")} onClick={() => onNavigate("depositos")}>
-          Depósitos
-        </div>
-        <div style={itemStyle(page === "tipoecopontos")} onClick={() => onNavigate("tipoecopontos")}>
-          Tipo Ecopontos
-        </div>
-        <div style={itemStyle(page === "tipodepositos")} onClick={() => onNavigate("tipodepositos")}>
-          Tipo Depósitos
-        </div>
-        <div style={itemStyle(page === "ecopontoequipamentos")} onClick={() => onNavigate("ecopontoequipamentos")}>
-          Ecoponto Equipamentos
-        </div>
-        {isAdmin && (
-          <div style={itemStyle(page === "empresas")} onClick={() => onNavigate("empresas")}>
-            Empresas
-          </div>
-        )}
-        <div style={itemStyle(page === "utilizadores")} onClick={() => onNavigate("utilizadores")}>
-          Utilizadores
+        <div>
+          <strong>{authUser?.nome ?? "Administrador"}</strong>
+          <span>{isAdmin ? "Super Admin" : "Administrador"}</span>
         </div>
       </div>
     </aside>
