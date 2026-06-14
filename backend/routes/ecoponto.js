@@ -1,6 +1,5 @@
 const router = require("express").Router();
-const Ecoponto = require("../models/ecoponto")
-const Utilizador = require("../models/utilizador")
+const { Ecoponto, Deposito } = require("../models/models")
 const { Op } = require("sequelize");
 const autenticarJWT = require("../middleware/autenticarJWT");
 const { autorizarAcessoBackoffice, carregarUtilizador } = require("../middleware/autorizarAcesso");
@@ -69,12 +68,16 @@ router.get("/listar/filtro", async (req, res) => {
             tipoEcopontoId,
             depositoId,
             capacidadeAtual,
-            operadorCapacidade,
+            capacidadeAtualMin,
+            capacidadeAtualMax,
+            capacidadeTotalMin,
+            capacidadeTotalMax,
             empresaId,
             descricao
         } = req.query;
 
         const filtros = {};
+        const filtrosDeposito = {};
 
         // Igual
         if (codigo) filtros.codigo = codigo;
@@ -95,46 +98,36 @@ router.get("/listar/filtro", async (req, res) => {
             };
         }
 
-        // Capacidade com operador
-        if (capacidadeAtual) {
+        if (capacidadeAtualMin || capacidadeAtualMax) {
+            filtros.capacidadeAtual = {};
 
-            switch (operadorCapacidade) {
-
-                case "maior":
-                    filtros.capacidadeAtual = {
-                        [Op.gt]: capacidadeAtual
-                    };
-                    break;
-
-                case "menor":
-                    filtros.capacidadeAtual = {
-                        [Op.lt]: capacidadeAtual
-                    };
-                    break;
-
-                case "igual":
-                default:
-                    filtros.capacidadeAtual = {
-                        [Op.eq]: capacidadeAtual
-                    };
-                    break;
-                    
-                case "maior_igual":
-                    filtros.capacidadeAtual = {
-                        [Op.gte]: capacidadeAtual
-                    };
-                    break;
-
-                case "menor_igual":
-                    filtros.capacidadeAtual = {
-                        [Op.lte]: capacidadeAtual
-                    };
-                    break;
-            }
+            if (capacidadeAtualMin) filtros.capacidadeAtual[Op.gte] = capacidadeAtualMin;
+            if (capacidadeAtualMax) filtros.capacidadeAtual[Op.lte] = capacidadeAtualMax;
+        } else if (capacidadeAtual) {
+            filtros.capacidadeAtual = { [Op.eq]: capacidadeAtual };
         }
+
+        if (capacidadeTotalMin || capacidadeTotalMax) {
+            filtrosDeposito.capacidadeTotal = {};
+
+            if (capacidadeTotalMin) filtrosDeposito.capacidadeTotal[Op.gte] = capacidadeTotalMin;
+            if (capacidadeTotalMax) filtrosDeposito.capacidadeTotal[Op.lte] = capacidadeTotalMax;
+        }
+
         const whereClause = whereEmpresa(req);
+        const include = Object.keys(filtrosDeposito).length > 0
+            ? [{
+                model: Deposito,
+                attributes: [],
+                where: filtrosDeposito,
+                required: true
+            }]
+            : [];
+
         const ecopontos = await Ecoponto.findAll({
-            where: { ...filtros, ...whereClause }
+            where: { ...filtros, ...whereClause },
+            include,
+            order: [["id", "ASC"]]
         });
 
         res.json(ecopontos);

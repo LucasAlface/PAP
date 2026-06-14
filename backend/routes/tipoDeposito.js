@@ -57,38 +57,5 @@ router.get('/listar', async (req, res) => {
   }
 });
 
-router.get('/listar/filtro', async (req, res) => {
-  try {
-    const {
-      tipo,
-      descricao
-    } = req.query;
-
-    const filtros = {};
-
-    if (tipo) {
-      filtros.tipo = {
-        [Op.like]: `%${tipo}%`
-      };
-    }
-
-    if (descricao) {
-      filtros.descricao = {
-        [Op.like]: `%${descricao}%`
-      };
-    }
-
-    const tipos = await TipoDeposito.findAll({
-      where: filtros
-    });
-
-    res.json(tipos);
-
-  } catch (err) {
-    res.status(500).json({
-      erro: err.message
-    });
-  }
-});
 
 module.exports = router;

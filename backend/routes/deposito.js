@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const Deposito = require("../models/deposito")
-const { Op, where } = require("sequelize");
+const { Op } = require("sequelize");
 const autenticarJWT = require("../middleware/autenticarJWT");
 const { autorizarAcessoBackoffice, carregarUtilizador } = require("../middleware/autorizarAcesso");
 const {whereEmpresa, setEmpresaId} = require("../functions/functions");
@@ -8,6 +8,20 @@ const {whereEmpresa, setEmpresaId} = require("../functions/functions");
 router.use(autenticarJWT);
 router.use(carregarUtilizador);
 router.use(autorizarAcessoBackoffice);
+
+function whereDepositoEmpresa(req, extraWhere = {}) {
+    if (req.user.superAdmin) {
+        return extraWhere;
+    }
+
+    return {
+        ...extraWhere,
+        [Op.or]: [
+            { empresaId: req.user.empresaId },
+            { empresaId: null }
+        ]
+    };
+}
 
 router.post("/inserir", async (req, res) => {
     try {
@@ -57,13 +71,7 @@ router.delete("/apagar/:id", async (req, res) => {
 
 router.get("/listar", async (req, res) => {
     try {
-        const whereClause = {
-            [Op.or]: [
-                { empresaId: req.user.empresaId },
-                { empresaId: null }
-            ]
-        };
-        console.log(whereClause);
+        const whereClause = whereDepositoEmpresa(req);
         const depositos = await Deposito.findAll({ where: whereClause ,order: [["id", "ASC"]] });
         res.json(depositos);
     } catch (err) {
@@ -75,10 +83,10 @@ router.get("/listar/filtro", async (req, res) => {
     try {
         const {
             tipoDepositoId,
-            capacidadeTotal,
-            operadorCapacidade,
-            altura,
-            operaadorAltura,
+            capacidadeTotalMin,
+            capacidadeTotalMax,
+            alturaMin,
+            alturaMax,
             descricao
         } = req.query;
 
@@ -93,64 +101,21 @@ router.get("/listar/filtro", async (req, res) => {
             };
         }
 
-        if (capacidadeTotal) {
-            switch (operadorCapacidade) {
-                case "maior":
-                    filtros.capacidadeTotal = {
-                        [Op.gt]: capacidadeTotal
-                    };
-                    break;
+        if (capacidadeTotalMin || capacidadeTotalMax) {
+            filtros.capacidadeTotal = {};
 
-                case "menor":
-                    filtros.capacidadeTotal = {
-                        [Op.lt]: capacidadeTotal
-                    };
-                    break;
-
-                case "igual":
-                default:
-                    filtros.capacidadeTotal = {
-                        [Op.eq]: capacidadeTotal
-                    };
-                    break;
-            }
+            if (capacidadeTotalMin) filtros.capacidadeTotal[Op.gte] = capacidadeTotalMin;
+            if (capacidadeTotalMax) filtros.capacidadeTotal[Op.lte] = capacidadeTotalMax;
         }
 
-        if (altura) {
-            switch (operaadorAltura) {
-                case "maior":
-                    filtros.altura = {
-                        [Op.gt]: altura
-                    };
-                    break;
+        if (alturaMin || alturaMax) {
+            filtros.altura = {};
 
-                case "menor":
-                    filtros.altura = {
-                        [Op.lt]: altura
-                    };
-                    break;
-
-                case "igual":
-                default:
-                    filtros.altura = {
-                        [Op.eq]: altura
-                    };
-                    break;
-                case "maior_igual":
-                    filtros.altura = {
-                        [Op.gte]: altura
-                    };
-                    break;
-
-                case "menor_igual":
-                    filtros.altura = {
-                        [Op.lte]: altura
-                    };
-                    break;
-            }
+            if (alturaMin) filtros.altura[Op.gte] = alturaMin;
+            if (alturaMax) filtros.altura[Op.lte] = alturaMax;
         }
 
-        const whereClause = whereEmpresa(req);
+        const whereClause = whereDepositoEmpresa(req);
         const depositos = await Deposito.findAll({
             where: { ...filtros, ...whereClause }
         });

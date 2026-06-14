@@ -94,4 +94,28 @@ router.get("/listar", async (req, res) => {
     }
 });
 
+router.get("/listar/filtro", async (req, res) => {
+    const isSuperAdmin = req.user.superAdmin;
+    try {
+        const { nome, email, cargoId, empresaId } = req.query;
+        const filtros = {};
+
+        if (nome) filtros.nome = { [Op.like]: `%${nome}%` };
+        if (email) filtros.email = { [Op.like]: `%${email}%` };
+        if (cargoId) filtros.cargoId = cargoId;
+        if (empresaId) filtros.empresaId = empresaId;
+
+        const whereClause = whereEmpresa(req);
+
+        const utilizadores = await Utilizador.findAll({
+            order: [["id", "ASC"]],
+            where: { ...filtros, ...whereClause }
+        });
+
+        res.json(utilizadores);
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+});
+
 module.exports = router;

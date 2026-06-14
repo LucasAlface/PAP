@@ -1,18 +1,18 @@
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Select from "react-select";
 import useDepositos from "../Deposito/useDepositos.js";
 import useTipoEcopontos from "../TipoEcoponto/useTipoEcopontos.js";
 import useEcopontos from "./useEcopontos.js";
 import useEmpresas from "../Empresa/useEmpresas.js";
-import { getOperatorOptions } from "../../middleware/options";
 import ListTemplate from "../ListTemplate.jsx";
+import RangeSliderFilter, { getNextMaxLimit } from "../RangeSliderFilter.jsx";
 
 const selectStyles = {
   control: (base) => ({
     ...base,
     borderRadius: 6,
     borderColor: "#d1d5db",
-    minHeight: 38
+    minHeight: 30
   })
 };
 
@@ -21,8 +21,8 @@ export default function Ecopontos({ onNavigate }) {
   const { items: tipoEcopontos } = useTipoEcopontos();
   const { items: empresas } = useEmpresas();
   const { items: ecopontos, loading, error, refetch } = useEcopontos();
-
-  const operators = getOperatorOptions();
+  const [capacidadeAtualMaxLimit, setCapacidadeAtualMaxLimit] = useState(0);
+  const [capacidadeTotalMaxLimit, setCapacidadeTotalMaxLimit] = useState(0);
 
   const [filters, setFilters] = useState({
     codigo: null,
@@ -30,8 +30,10 @@ export default function Ecopontos({ onNavigate }) {
     depositoId: null,
     empresaId: null,
     descricao: "",
-    capacidadeAtual: "",
-    operadorCapacidade: "igual"
+    capacidadeAtualMin: "",
+    capacidadeAtualMax: "",
+    capacidadeTotalMin: "",
+    capacidadeTotalMax: ""
   });
 
   const codigoOptions = useMemo(() =>
@@ -54,6 +56,18 @@ export default function Ecopontos({ onNavigate }) {
     [empresas]
   );
 
+  useEffect(() => {
+    setCapacidadeAtualMaxLimit((currentLimit) =>
+      getNextMaxLimit(currentLimit, ecopontos, "capacidadeAtual")
+    );
+  }, [ecopontos]);
+
+  useEffect(() => {
+    setCapacidadeTotalMaxLimit((currentLimit) =>
+      getNextMaxLimit(currentLimit, depositos, "capacidadeTotal")
+    );
+  }, [depositos]);
+
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({
       ...prev,
@@ -62,13 +76,30 @@ export default function Ecopontos({ onNavigate }) {
   };
 
   const handleApplyFilters = () => {
+    const capacidadeAtualMin = Number(filters.capacidadeAtualMin) > 0
+      ? filters.capacidadeAtualMin
+      : null;
+    const capacidadeAtualMax = filters.capacidadeAtualMax &&
+      Number(filters.capacidadeAtualMax) < capacidadeAtualMaxLimit
+        ? filters.capacidadeAtualMax
+        : null;
+    const capacidadeTotalMin = Number(filters.capacidadeTotalMin) > 0
+      ? filters.capacidadeTotalMin
+      : null;
+    const capacidadeTotalMax = filters.capacidadeTotalMax &&
+      Number(filters.capacidadeTotalMax) < capacidadeTotalMaxLimit
+        ? filters.capacidadeTotalMax
+        : null;
+
     const filterValues = {
       codigo: filters.codigo?.value || null,
       tipoEcopontoId: filters.tipoEcopontoId?.value || null,
       depositoId: filters.depositoId?.value || null,
       descricao: filters.descricao,
-      capacidadeAtual: filters.capacidadeAtual,
-      operadorCapacidade: filters.operadorCapacidade,
+      capacidadeAtualMin,
+      capacidadeAtualMax,
+      capacidadeTotalMin,
+      capacidadeTotalMax,
       empresaId: filters.empresaId?.value || null
     };
     refetch(filterValues);
@@ -81,8 +112,10 @@ export default function Ecopontos({ onNavigate }) {
       depositoId: null,
       empresaId: null,
       descricao: "",
-      capacidadeAtual: "",
-      operadorCapacidade: "igual"
+      capacidadeAtualMin: "",
+      capacidadeAtualMax: "",
+      capacidadeTotalMin: "",
+      capacidadeTotalMax: ""
     });
     refetch(null);
   };
@@ -105,7 +138,15 @@ export default function Ecopontos({ onNavigate }) {
           ? depositos.find((d) => d.id === item.depositoId)?.descricao ?? "Depósito não encontrado"
           : "Loading..."
     },
-    { key: "capacidadeAtual", label: "Capacidade" },
+    {
+      key: "capacidadeTotal",
+      label: "Capacidade total",
+      render: (item) =>
+        Array.isArray(depositos)
+          ? depositos.find((d) => d.id === item.depositoId)?.capacidadeTotal ?? "-"
+          : "Loading..."
+    },
+    { key: "capacidadeAtual", label: "Capacidade ocupada" },
   ];
 
   return (
@@ -127,7 +168,7 @@ export default function Ecopontos({ onNavigate }) {
       filterSection={
         <>
           <div>
-            <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Código</label>
+            <label>Código</label>
             <Select
               options={codigoOptions}
               value={filters.codigo}
@@ -140,7 +181,7 @@ export default function Ecopontos({ onNavigate }) {
           </div>
 
           <div>
-            <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Tipo de Ecoponto</label>
+            <label>Tipo de Ecoponto</label>
             <Select
               options={tipoOptions}
               value={filters.tipoEcopontoId}
@@ -153,7 +194,7 @@ export default function Ecopontos({ onNavigate }) {
           </div>
 
           <div>
-            <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Depósito</label>
+            <label>Depósito</label>
             <Select
               options={depositoOptions}
               value={filters.depositoId}
@@ -166,7 +207,7 @@ export default function Ecopontos({ onNavigate }) {
           </div>
 
           <div>
-            <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Empresa</label>
+            <label>Empresa</label>
             <Select
               options={empresaOptions}
               value={filters.empresaId}
@@ -179,36 +220,32 @@ export default function Ecopontos({ onNavigate }) {
           </div>
 
           <div>
-            <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Descrição</label>
+            <label>Descrição</label>
             <input
               type="text"
               value={filters.descricao}
               onChange={(e) => handleFilterChange("descricao", e.target.value)}
               placeholder="Pesquisar por descrição"
-              style={{ width: "100%", padding: "8px 12px", borderRadius: 6, border: "1px solid #d1d5db", boxSizing: "border-box" }}
             />
           </div>
 
-          <div>
-            <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Capacidade</label>
-            <div style={{ display: "flex", gap: 8 }}>
-              <Select
-                options={operators}
-                value={filters.operadorCapacidade}
-                onChange={(option) => handleFilterChange("operadorCapacidade", option)}
-                placeholder="Selecionar operador"
-                isClearable
-                styles={selectStyles}
-              />
-              <input
-                type="number"
-                value={filters.capacidadeAtual}
-                onChange={(e) => handleFilterChange("capacidadeAtual", e.target.value)}
-                placeholder="Valor"
-                style={{ flex: 1, padding: "8px 12px", borderRadius: 6, border: "1px solid #d1d5db" }}
-              />
-            </div>
-          </div>
+          <RangeSliderFilter
+            label="Capacidade restante"
+            minValue={filters.capacidadeAtualMin}
+            maxValue={filters.capacidadeAtualMax}
+            maxLimit={capacidadeAtualMaxLimit}
+            onMinChange={(value) => handleFilterChange("capacidadeAtualMin", value)}
+            onMaxChange={(value) => handleFilterChange("capacidadeAtualMax", value)}
+          />
+
+          <RangeSliderFilter
+            label="Capacidade total"
+            minValue={filters.capacidadeTotalMin}
+            maxValue={filters.capacidadeTotalMax}
+            maxLimit={capacidadeTotalMaxLimit}
+            onMinChange={(value) => handleFilterChange("capacidadeTotalMin", value)}
+            onMaxChange={(value) => handleFilterChange("capacidadeTotalMax", value)}
+          />
         </>
       }
     />

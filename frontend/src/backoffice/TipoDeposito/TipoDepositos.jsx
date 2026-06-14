@@ -8,7 +8,7 @@ const selectStyles = {
     ...base,
     borderRadius: 6,
     borderColor: "#d1d5db",
-    minHeight: 38
+    minHeight: 30
   })
 };
 
@@ -69,33 +69,7 @@ export default function TipoDepositos({ onNavigate }) {
       onDelete={(item) => onNavigate("delete-tipodeposito", item)}
       onApplyFilters={handleApplyFilters}
       onClearFilters={handleClearFilters}
-      filterSection={
-        <>
-          <div>
-            <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Tipo</label>
-            <Select
-              options={tipoOptions}
-              value={filters.tipo}
-              onChange={(option) => handleFilterChange("tipo", option)}
-              placeholder="Pesquisar por tipo"
-              isClearable
-              isSearchable
-              styles={selectStyles}
-            />
-          </div>
-
-          <div>
-            <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Descrição</label>
-            <input
-              type="text"
-              value={filters.descricao}
-              onChange={(e) => handleFilterChange("descricao", e.target.value)}
-              placeholder="Pesquisar por descrição"
-              style={{ width: "100%", padding: "8px 12px", borderRadius: 6, border: "1px solid #d1d5db", boxSizing: "border-box" }}
-            />
-          </div>
-        </>
-      }
+      
     />
   );
 }

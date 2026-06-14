@@ -3,7 +3,6 @@ const Empresa = require("../models/empresa")
 const { Op } = require("sequelize");
 const autenticarJWT = require("../middleware/autenticarJWT");
 const { autorizarAcessoBackoffice, carregarUtilizador } = require("../middleware/autorizarAcesso");
-const {whereEmpresa} = require("../functions/functions");
 
 router.use(autenticarJWT);
 router.use(carregarUtilizador);
@@ -52,6 +51,27 @@ router.get("/listar", async (req, res) => {
     try {
         const whereClause = req.user.superAdmin ? {} : { id: req.user.empresaId };
         const companies = await Empresa.findAll({ where: whereClause, order: [["id", "ASC"]] });
+        res.json(companies);
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+});
+
+router.get("/listar/filtro", async (req, res) => {
+    try {
+        const { nome, nif, email, telefone } = req.query;
+        const filtros = {};
+
+        if (nome) filtros.nome = { [Op.like]: `%${nome}%` };
+        if (nif) filtros.nif = { [Op.like]: `%${nif}%` };
+        if (email) filtros.email = { [Op.like]: `%${email}%` };
+        if (telefone) filtros.telefone = { [Op.like]: `%${telefone}%` };
+
+        const companies = await Empresa.findAll({
+            where: { ...filtros },
+            order: [["id", "ASC"]]
+        });
+
         res.json(companies);
     } catch (err) {
         res.status(500).json({ erro: err.message });

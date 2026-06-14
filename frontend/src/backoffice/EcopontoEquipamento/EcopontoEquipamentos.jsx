@@ -10,7 +10,7 @@ const selectStyles = {
     ...base,
     borderRadius: 6,
     borderColor: "#d1d5db",
-    minHeight: 38
+    minHeight: 30
   })
 };
 
@@ -108,7 +108,7 @@ export default function EcopontoEquipamentos({ onNavigate }) {
       filterSection={
         <>
           <div>
-            <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Ecoponto</label>
+            <label>Ecoponto</label>
             <Select
               options={ecopontoOptions}
               value={filters.ecopontoId}
@@ -121,7 +121,7 @@ export default function EcopontoEquipamentos({ onNavigate }) {
           </div>
 
           <div>
-            <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Equipamento</label>
+            <label>Equipamento</label>
             <Select
               options={equipamentoOptions}
               value={filters.equipamentoId}
@@ -134,7 +134,7 @@ export default function EcopontoEquipamentos({ onNavigate }) {
           </div>
 
           <div>
-            <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Status</label>
+            <label>Status</label>
             <Select
               options={ativoOptions}
               value={filters.ativo}

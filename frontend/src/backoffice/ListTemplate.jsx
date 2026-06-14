@@ -23,12 +23,11 @@ export default function ListTemplate({
     <div className="list-template">
       <div className="template-header">
         <div>
-          <span className="template-kicker">Listagem</span>
           <h2>{title}</h2>
         </div>
         {onAdd && (
-          <button type="button" onClick={onAdd} className="bo-btn bo-btn-primary">
-            <Plus size={16} />
+          <button type="button" onClick={onAdd} className="bo-btn bo-btn-primary template-add-btn">
+            <Plus size={12} />
             {addLabel || `Add ${title}`}
           </button>
         )}

@@ -517,13 +517,20 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .template-header h2 {
-  font-size: 20px;
+  font-size: 14px;
   line-height: 1.15;
+}
+
+.template-add-btn {
+  min-height: 28px;
+  gap: 4px;
+  padding: 4px 7px;
+  font-size: 12px;
 }
 
 .template-kicker {
@@ -538,8 +545,8 @@ h3 {
 
 .filter-card,
 .total-card {
-  margin: 14px 0;
-  padding: 14px;
+  margin: 8px 0;
+  padding: 8px;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--surface-2);
@@ -548,32 +555,32 @@ h3 {
 .filter-title {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 6px;
+  margin-bottom: 6px;
   color: var(--green);
 }
 
 .filter-title h3 {
-  font-size: 15px;
+  font-size: 13px;
 }
 
 .filter-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 6px;
 }
 
 .filter-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 12px;
+  gap: 5px;
+  margin-top: 6px;
 }
 
 .total-card {
   width: min(280px, 100%);
   display: grid;
-  gap: 4px;
+  gap: 2px;
 }
 
 .total-card div,
@@ -584,7 +591,7 @@ h3 {
 
 .total-card strong {
   color: var(--text);
-  font-size: 30px;
+  font-size: 24px;
   line-height: 1;
 }
 
@@ -665,10 +672,147 @@ h3 {
 .bo-form label,
 .filter-grid label {
   display: grid;
-  gap: 7px;
+  gap: 3px;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
+}
+
+.range-filter-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.backoffice .filter-card input,
+.backoffice .filter-card select {
+  min-height: 30px !important;
+  padding: 5px 8px !important;
+  font-size: 13px !important;
+}
+
+.backoffice .filter-card [class*="-control"] {
+  min-height: 30px !important;
+}
+
+.backoffice .filter-card [class*="-valueContainer"] {
+  padding: 0 7px !important;
+}
+
+.backoffice .filter-card .bo-btn {
+  min-height: 30px;
+  padding: 5px 9px;
+  font-size: 12px;
+}
+
+.range-slider-filter {
+  display: grid;
+  gap: 3px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.range-slider-values,
+.range-slider-limits {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.range-slider-values {
+  color: var(--text);
+  font-size: 12px;
+}
+
+.range-slider-limits {
+  color: var(--muted-2);
+  font-size: 11px;
+}
+
+.range-slider-track {
+  --range-start: 0%;
+  --range-end: 100%;
+  position: relative;
+  height: 20px;
+}
+
+.range-slider-track::before,
+.range-slider-track::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  height: 4px;
+  border-radius: 999px;
+  transform: translateY(-50%);
+}
+
+.range-slider-track::before {
+  left: 0;
+  right: 0;
+  background: #25382d;
+}
+
+.range-slider-track::after {
+  left: var(--range-start);
+  right: calc(100% - var(--range-end));
+  background: var(--green);
+}
+
+.range-slider-track input[type="range"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  min-height: 20px !important;
+  margin: 0;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  pointer-events: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.range-slider-track input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  background: transparent;
+}
+
+.range-slider-track input[type="range"]::-moz-range-track {
+  height: 4px;
+  background: transparent;
+}
+
+.range-slider-track input[type="range"]::-webkit-slider-thumb {
+  width: 16px;
+  height: 16px;
+  margin-top: -6px;
+  border: 2px solid #061008;
+  border-radius: 50%;
+  background: var(--green);
+  cursor: grab;
+  pointer-events: auto;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.range-slider-track input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #061008;
+  border-radius: 50%;
+  background: var(--green);
+  cursor: grab;
+  pointer-events: auto;
+}
+
+.range-slider-track input[type="range"]:active::-webkit-slider-thumb {
+  cursor: grabbing;
+}
+
+.range-slider-track input[type="range"]:active::-moz-range-thumb {
+  cursor: grabbing;
 }
 
 .backoffice input,
@@ -1263,6 +1407,10 @@ h3 {
 
   .template-header .bo-btn {
     width: 100%;
+  }
+
+  .template-header .template-add-btn {
+    width: auto;
   }
 
   .filter-grid {

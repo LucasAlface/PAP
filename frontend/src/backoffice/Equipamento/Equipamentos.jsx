@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import Select from "react-select";
 import useEquipamentos from "./useEquipamentos.js";
-import { getOperatorOptions } from "../../middleware/options";
 import ListTemplate from "../ListTemplate.jsx";
 
 const selectStyles = {
@@ -9,7 +8,7 @@ const selectStyles = {
     ...base,
     borderRadius: 6,
     borderColor: "#d1d5db",
-    minHeight: 38
+    minHeight: 30
   })
 };
 
@@ -20,8 +19,6 @@ export default function Equipamentos({ onNavigate }) {
     codigo: null,
     ativo: null,
   });
-
-  const operators = getOperatorOptions();
 
   const codigoOptions = useMemo(() =>
     equipamentos.map(e => ({ value: e.codigo, label: e.codigo })),
@@ -84,7 +81,7 @@ export default function Equipamentos({ onNavigate }) {
       filterSection={
         <>
           <div>
-            <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Código</label>
+            <label>Código</label>
             <Select
               options={codigoOptions}
               value={filters.codigo}
@@ -97,7 +94,7 @@ export default function Equipamentos({ onNavigate }) {
           </div>
 
           <div>
-            <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Status</label>
+            <label>Status</label>
             <Select
               options={ativoOptions}
               value={filters.ativo}

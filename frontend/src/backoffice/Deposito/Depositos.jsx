@@ -1,38 +1,47 @@
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Select from "react-select";
 import useDepositos from "./useDepositos";
 import useTipoDepositos from "../TipoDeposito/useTipoDepositos";
-import { getOperatorOptions } from "../../middleware/options";
 import ListTemplate from "../ListTemplate.jsx";
+import RangeSliderFilter, { getNextMaxLimit } from "../RangeSliderFilter.jsx";
 
 const selectStyles = {
   control: (base) => ({
     ...base,
     borderRadius: 6,
     borderColor: "#d1d5db",
-    minHeight: 38
+    minHeight: 30
   })
 };
 
 export default function Depositos({ onNavigate }) {
   const { items: depositos, loading, error, refetch } = useDepositos();
   const { items: tipoDepositos } = useTipoDepositos();
+  const [capacidadeTotalMaxLimit, setCapacidadeTotalMaxLimit] = useState(0);
+  const [alturaMaxLimit, setAlturaMaxLimit] = useState(0);
 
   const [filters, setFilters] = useState({
     tipoDepositoId: null,
     descricao: "",
-    capacidadeTotal: "",
-    operadorCapacidade: "igual",
-    altura: "",
-    operadorAltura: "igual"
+    capacidadeTotalMin: "",
+    capacidadeTotalMax: "",
+    alturaMin: "",
+    alturaMax: ""
   });
-
-  const operators = getOperatorOptions();
 
   const tipoOptions = useMemo(() =>
     Array.isArray(tipoDepositos) ? tipoDepositos.map(t => ({ value: t.id, label: t.tipo })) : [],
     [tipoDepositos]
   );
+
+  useEffect(() => {
+    setCapacidadeTotalMaxLimit((currentLimit) =>
+      getNextMaxLimit(currentLimit, depositos, "capacidadeTotal")
+    );
+    setAlturaMaxLimit((currentLimit) =>
+      getNextMaxLimit(currentLimit, depositos, "altura")
+    );
+  }, [depositos]);
 
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({
@@ -42,13 +51,28 @@ export default function Depositos({ onNavigate }) {
   };
 
   const handleApplyFilters = () => {
+    const capacidadeTotalMin = Number(filters.capacidadeTotalMin) > 0
+      ? filters.capacidadeTotalMin
+      : null;
+    const capacidadeTotalMax = filters.capacidadeTotalMax &&
+      Number(filters.capacidadeTotalMax) < capacidadeTotalMaxLimit
+        ? filters.capacidadeTotalMax
+        : null;
+    const alturaMin = Number(filters.alturaMin) > 0
+      ? filters.alturaMin
+      : null;
+    const alturaMax = filters.alturaMax &&
+      Number(filters.alturaMax) < alturaMaxLimit
+        ? filters.alturaMax
+        : null;
+
     const filterValues = {
       tipoDepositoId: filters.tipoDepositoId?.value || null,
       descricao: filters.descricao,
-      capacidadeTotal: filters.capacidadeTotal,
-      operadorCapacidade: filters.operadorCapacidade,
-      altura: filters.altura,
-      operadorAltura: filters.operadorAltura
+      capacidadeTotalMin,
+      capacidadeTotalMax,
+      alturaMin,
+      alturaMax
     };
     refetch(filterValues);
   };
@@ -57,10 +81,10 @@ export default function Depositos({ onNavigate }) {
     setFilters({
       tipoDepositoId: null,
       descricao: "",
-      capacidadeTotal: "",
-      operadorCapacidade: "igual",
-      altura: "",
-      operadorAltura: "igual"
+      capacidadeTotalMin: "",
+      capacidadeTotalMax: "",
+      alturaMin: "",
+      alturaMax: ""
     });
     refetch(null);
   };
@@ -98,7 +122,7 @@ export default function Depositos({ onNavigate }) {
       filterSection={
         <>
           <div>
-            <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Tipo de Depósito</label>
+            <label>Tipo de Depósito</label>
             <Select
               options={tipoOptions}
               value={filters.tipoDepositoId}
@@ -111,57 +135,32 @@ export default function Depositos({ onNavigate }) {
           </div>
 
           <div>
-            <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Descrição</label>
+            <label>Descrição</label>
             <input
               type="text"
               value={filters.descricao}
               onChange={(e) => handleFilterChange("descricao", e.target.value)}
               placeholder="Pesquisar por descrição"
-              style={{ width: "100%", padding: "8px 12px", borderRadius: 6, border: "1px solid #d1d5db", boxSizing: "border-box" }}
             />
           </div>
 
-          <div>
-            <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Capacidade Total</label>
-            <div style={{ display: "flex", gap: 8 }}>
-              <Select
-                options={operators}
-                value={filters.operadorCapacidade}
-                onChange={(option) => handleFilterChange("operadorCapacidade", option)}
-                placeholder="Selecionar operador"
-                isClearable
-                styles={selectStyles}
-              />
-              <input
-                type="number"
-                value={filters.capacidadeTotal}
-                onChange={(e) => handleFilterChange("capacidadeTotal", e.target.value)}
-                placeholder="Valor"
-                style={{ flex: 1, padding: "8px 12px", borderRadius: 6, border: "1px solid #d1d5db" }}
-              />
-            </div>
-          </div>
+          <RangeSliderFilter
+            label="Capacidade Total"
+            minValue={filters.capacidadeTotalMin}
+            maxValue={filters.capacidadeTotalMax}
+            maxLimit={capacidadeTotalMaxLimit}
+            onMinChange={(value) => handleFilterChange("capacidadeTotalMin", value)}
+            onMaxChange={(value) => handleFilterChange("capacidadeTotalMax", value)}
+          />
 
-          <div>
-            <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Altura</label>
-            <div style={{ display: "flex", gap: 8 }}>
-              <Select
-                options={operators}
-                value={filters.operadorAltura}
-                onChange={(option) => handleFilterChange("operadorAltura", option)}
-                placeholder="Selecionar operador"
-                isClearable
-                styles={selectStyles}
-              />
-              <input
-                type="number"
-                value={filters.altura}
-                onChange={(e) => handleFilterChange("altura", e.target.value)}
-                placeholder="Valor"
-                style={{ flex: 1, padding: "8px 12px", borderRadius: 6, border: "1px solid #d1d5db" }}
-              />
-            </div>
-          </div>
+          <RangeSliderFilter
+            label="Altura"
+            minValue={filters.alturaMin}
+            maxValue={filters.alturaMax}
+            maxLimit={alturaMaxLimit}
+            onMinChange={(value) => handleFilterChange("alturaMin", value)}
+            onMaxChange={(value) => handleFilterChange("alturaMax", value)}
+          />
         </>
       }
     />
