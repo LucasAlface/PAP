@@ -889,12 +889,82 @@ h3 {
   background: #eff6ff;
 }
 
+.map-search-control {
+  position: absolute;
+  top: 62px;
+  left: 50px;
+  z-index: 1000;
+  width: min(360px, calc(100% - 60px));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px;
+  padding: 7px;
+  border: 2px solid #2563eb;
+  border-radius: 7px;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+}
+
+.map-search-control input {
+  min-width: 0;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid rgba(37, 99, 235, 0.34);
+  border-radius: 5px;
+  outline: 0;
+  color: #0f172a;
+  background: #fff;
+  font-size: 13px;
+}
+
+.map-search-control input:focus {
+  border-color: #2563eb;
+}
+
+.map-search-control button {
+  height: 34px;
+  padding: 0 11px;
+  border-radius: 5px;
+  color: #fff;
+  background: #2563eb;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.map-search-control span {
+  grid-column: 1 / -1;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .ecoponto-group-popup {
+  position: relative;
   width: min(68vw, 360px);
   max-width: 100%;
+  padding-top: 34px;
   color: #061008;
   font-weight: 700;
   text-align: center;
+}
+
+.ecoponto-popup-add {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-height: 28px;
+  padding: 5px 9px;
+  border-radius: 5px;
+  color: #061008;
+  background: var(--green);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.ecoponto-popup-add:hover {
+  background: #74df83;
 }
 
 .ecoponto-group-items {
@@ -1128,6 +1198,17 @@ h3 {
     flex: 1 1 0;
     padding: 7px 9px;
     font-size: 12px;
+  }
+
+  .map-search-control {
+    top: 56px;
+    left: 8px;
+    width: calc(100% - 16px);
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .map-search-control button {
+    width: 100%;
   }
 
   .map-region-with-backoffice {

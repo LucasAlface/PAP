@@ -7,6 +7,8 @@ import {
   Marker,
   Popup,
   Tooltip,
+  useMap,
+  useMapEvents,
 } from "react-leaflet";
 import { renderToStaticMarkup } from "react-dom/server";
 import { Building2, Database, Recycle } from "lucide-react";
@@ -59,7 +61,7 @@ function getPointCoordinates(ponto) {
 }
 
 function getPercentagem(ponto) {
-  const percentagem = Number(Number(ponto.percentagem).toFixed(1));
+  const percentagem = 100 - Number(Number(ponto.percentagem).toFixed(1));
   return Number.isFinite(percentagem) ? percentagem : 0;
 }
 
@@ -79,6 +81,91 @@ function getEcopontoIcon(ponto) {
   return matchesDepositoType(ponto, "subterraneo")
     ? ecopontoSubterraneoIcon
     : ecopontoIcon;
+}
+
+function formatMapCoordinate(value) {
+  return Number(value).toFixed(7);
+}
+
+function MapClickPicker({ enabled, onPick }) {
+  useMapEvents({
+    click(event) {
+      if (!enabled || !onPick) return;
+
+      onPick({
+        latitude: formatMapCoordinate(event.latlng.lat),
+        longitude: formatMapCoordinate(event.latlng.lng),
+      });
+    },
+  });
+
+  return null;
+}
+
+function MapSearchControl() {
+  const map = useMap();
+  const [query, setQuery] = useState("");
+  const [status, setStatus] = useState("");
+
+  const stopMapInteraction = (event) => {
+    event.stopPropagation();
+  };
+
+  const handleSearch = async (event) => {
+    event.preventDefault();
+    const trimmedQuery = query.trim();
+
+    if (!trimmedQuery) return;
+
+    setStatus("A procurar...");
+
+    try {
+      const params = new URLSearchParams({
+        format: "json",
+        limit: "1",
+        q: trimmedQuery,
+      });
+
+      const response = await fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`);
+
+      if (!response.ok) {
+        throw new Error("Não foi possível pesquisar essa localização.");
+      }
+
+      const results = await response.json();
+      const [result] = results;
+
+      if (!result) {
+        setStatus("Sem resultados.");
+        return;
+      }
+
+      map.setView([Number(result.lat), Number(result.lon)], 16);
+      setStatus("");
+    } catch (error) {
+      setStatus(error.message);
+    }
+  };
+
+  return (
+    <form
+      className="map-search-control leaflet-control"
+      onSubmit={handleSearch}
+      onClick={stopMapInteraction}
+      onDoubleClick={stopMapInteraction}
+      onMouseDown={stopMapInteraction}
+      onTouchStart={stopMapInteraction}
+    >
+      <input
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+        placeholder="Pesquisar no OpenStreetMap"
+        aria-label="Pesquisar localização no OpenStreetMap"
+      />
+      <button type="submit">Pesquisar</button>
+      {status && <span>{status}</span>}
+    </form>
+  );
 }
 
 function groupNearbyEcopontos(pontos, tolerance = ECOPONTO_GROUP_TOLERANCE_METERS) {
@@ -120,7 +207,11 @@ function groupNearbyEcopontos(pontos, tolerance = ECOPONTO_GROUP_TOLERANCE_METER
   });
 }
 
-export default function Mapa() {
+export default function Mapa({
+  canPickEcopontoCoordinates = false,
+  onCoordinatesSelected,
+  onAddEcopontoAt,
+}) {
   const [pontos, setPontos] = useState([]);
   const [selectedDepositoType, setSelectedDepositoType] = useState("superficie");
   const ecopontoGroups = useMemo(() => groupNearbyEcopontos(pontos), [pontos]);
@@ -195,6 +286,8 @@ export default function Mapa() {
       zoom={7}
       style={{ height: "100%", width: "100%" }}
     >
+      <MapSearchControl />
+      <MapClickPicker enabled={canPickEcopontoCoordinates} onPick={onCoordinatesSelected} />
       <TileLayer
         attribution="&copy; OpenStreetMap contributors"
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -212,6 +305,21 @@ export default function Mapa() {
         >
           <Popup>
             <div className="ecoponto-group-popup">
+              {onAddEcopontoAt && (
+                <button
+                  type="button"
+                  className="ecoponto-popup-add"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onAddEcopontoAt({
+                      latitude: formatMapCoordinate(group.latitude),
+                      longitude: formatMapCoordinate(group.longitude),
+                    });
+                  }}
+                >
+                  Adicionar ecoponto
+                </button>
+              )}
               <div className="ecoponto-group-items">
                 {group.ecopontos.map((ponto, index) => (
                   <div className="ecoponto-group-item" key={`popup-${ponto.codigo}`}>

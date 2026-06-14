@@ -7,7 +7,7 @@ import useEmpresas from "../Empresa/useEmpresas.js";
 import FormTemplate from "../FormTemplate.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
 
-export default function EcopontoForm({ ecoponto, onNavigate }) {
+export default function EcopontoForm({ ecoponto, onNavigate, mapCoordinates }) {
   const { items: tipos = [] } = useTipoEcopontos();
   const { items: depositos = [] } = useDepositos();
   const { items: empresas = [] } = useEmpresas();
@@ -52,6 +52,13 @@ export default function EcopontoForm({ ecoponto, onNavigate }) {
       setEmpresaId(e || null);
     }
   }, [tipoOptions, depositoOptions, empresaOptions, ecoponto, isEditMode]);
+
+  useEffect(() => {
+    if (!mapCoordinates) return;
+
+    setLatitude(String(mapCoordinates.latitude ?? ""));
+    setLongitude(String(mapCoordinates.longitude ?? ""));
+  }, [mapCoordinates]);
 
   async function handleSubmit(event) {
     event.preventDefault();

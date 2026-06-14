@@ -15,6 +15,7 @@ export default function App() {
   const [view, setView] = useState("map");
   const [page, setPage] = useState("dashboard");
   const [selectedItem, setSelectedItem] = useState(null);
+  const [ecopontoMapCoordinates, setEcopontoMapCoordinates] = useState(null);
   const { authUser, loading, login, logout } = useAuth();
   const isAdmin = authUser?.cargo === 1 || authUser?.cargo === 2;
 
@@ -44,11 +45,31 @@ export default function App() {
       return;
     }
 
+    if (options.ecopontoCoordinates) {
+      setEcopontoMapCoordinates({
+        ...options.ecopontoCoordinates,
+        version: Date.now(),
+      });
+    } else if (newPage === "ecopontos" || newPage === "add-ecoponto" || newPage === "edit-ecoponto") {
+      setEcopontoMapCoordinates(null);
+    }
+
     setSelectedItem(item);
     setPage(newPage);
     if (view !== "backoffice") {
       setView("backoffice");
     }
+  };
+
+  const handleMapCoordinatesSelected = (coordinates) => {
+    setEcopontoMapCoordinates({
+      ...coordinates,
+      version: Date.now(),
+    });
+  };
+
+  const handleAddEcopontoAt = (coordinates) => {
+    navigate("add-ecoponto", null, { ecopontoCoordinates: coordinates });
   };
 
   if (loading) {
@@ -93,12 +114,25 @@ export default function App() {
 
         <main className="main-stage">
           <section className={`map-region ${view === "backoffice" ? "map-region-with-backoffice" : "map-region-full"}`}>
-            <Mapa />
+            <Mapa
+              canPickEcopontoCoordinates={
+                isAdmin &&
+                view === "backoffice" &&
+                (page === "ecopontos" || page === "add-ecoponto" || page === "edit-ecoponto")
+              }
+              onCoordinatesSelected={handleMapCoordinatesSelected}
+              onAddEcopontoAt={isAdmin ? handleAddEcopontoAt : undefined}
+            />
           </section>
 
           {isAdmin && view === "backoffice" && (
             <section className="backoffice-dock">
-              <Backoffice page={page} selectedItem={selectedItem} onNavigate={navigate} />
+              <Backoffice
+                page={page}
+                selectedItem={selectedItem}
+                onNavigate={navigate}
+                ecopontoMapCoordinates={ecopontoMapCoordinates}
+              />
             </section>
           )}
         </main>

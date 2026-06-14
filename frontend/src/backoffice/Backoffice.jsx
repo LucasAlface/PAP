@@ -31,8 +31,12 @@ const sections = [
     edit: "edit-ecoponto",
     delete: "delete-ecoponto",
     List: Ecopontos,
-    renderAdd: (onNavigate) => <EcopontoForm onNavigate={onNavigate} />,
-    renderEdit: (selectedItem, onNavigate) => <EcopontoForm ecoponto={selectedItem} onNavigate={onNavigate} />,
+    renderAdd: (onNavigate, ecopontoMapCoordinates) => (
+      <EcopontoForm onNavigate={onNavigate} mapCoordinates={ecopontoMapCoordinates} />
+    ),
+    renderEdit: (selectedItem, onNavigate, ecopontoMapCoordinates) => (
+      <EcopontoForm ecoponto={selectedItem} onNavigate={onNavigate} mapCoordinates={ecopontoMapCoordinates} />
+    ),
     renderDelete: (selectedItem, onNavigate) => <DeleteEcoponto ecoponto={selectedItem} onNavigate={onNavigate} />,
   },
   {
@@ -117,7 +121,7 @@ function getSection(page) {
   );
 }
 
-export default function Backoffice({ page, selectedItem, onNavigate }) {
+export default function Backoffice({ page, selectedItem, onNavigate, ecopontoMapCoordinates }) {
   const { authUser } = useAuth();
 
   if (authUser?.cargo !== 1 && authUser?.cargo !== 2) {
@@ -128,10 +132,10 @@ export default function Backoffice({ page, selectedItem, onNavigate }) {
   const List = section.List;
   const action =
     page === section.edit
-      ? section.renderEdit(selectedItem, onNavigate)
+      ? section.renderEdit(selectedItem, onNavigate, ecopontoMapCoordinates)
       : page === section.delete
         ? section.renderDelete(selectedItem, onNavigate)
-        : section.renderAdd(onNavigate);
+        : section.renderAdd(onNavigate, ecopontoMapCoordinates);
 
   return (
     <div className="backoffice backoffice-grid">
