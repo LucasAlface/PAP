@@ -4,6 +4,10 @@ export default function DeleteEquipamento({ equipamento, onNavigate }) {
   const handleDelete = async () => {
     if (!equipamento?.id) return;
 
+    if (!window.confirm(`Are you sure you want to delete equipamento "${equipamento.codigo}"?`)) {
+      return;
+    }
+
     try {
       await apiRequest(`/equipamento/apagar/${equipamento.id}`, "DELETE");
       onNavigate("equipamentos");
@@ -28,16 +32,16 @@ export default function DeleteEquipamento({ equipamento, onNavigate }) {
     <div>
       <h2 style={{ marginTop: 0 }}>Delete Equipamento #{equipamento.id}</h2>
       <p>Are you sure you want to delete this equipamento?</p>
-      <div style={{ marginBottom: 16, padding: 16, background: "#fff", border: "1px solid #eee", borderRadius: 10, maxWidth: 560 }}>
-        <div><strong>Código:</strong> {equipamento.codigo}</div>
-        <div><strong>Ativo:</strong> {equipamento.ativo ? "Sim" : "Não"}</div>
-        <div><strong>Bateria:</strong> {equipamento.bateria}</div>
-      </div>
+      <ul>
+        <li><strong>Código:</strong> {equipamento.codigo}</li>
+        <li><strong>Ativo:</strong> {equipamento.ativo ? "Sim" : "Não"}</li>
+        <li><strong>Bateria:</strong> {equipamento.bateria}</li>
+      </ul>
       <div style={{ display: "flex", gap: 12 }}>
-        <button onClick={handleDelete} style={{ padding: "10px 14px", borderRadius: 6, background: "#dc2626", color: "white", cursor: "pointer" }}>
+        <button onClick={handleDelete} className="bo-btn header-btn-danger">
           Delete Equipamento
         </button>
-        <button onClick={() => onNavigate("equipamentos")} style={{ padding: "10px 14px", borderRadius: 6, cursor: "pointer" }}>
+        <button onClick={() => onNavigate("equipamentos")} className="bo-btn bo-btn-ghost">
           Cancel
         </button>
       </div>

@@ -4,6 +4,10 @@ export default function DeleteTipoDeposito({ tipoDeposito, onNavigate }) {
   const handleDelete = async () => {
     if (!tipoDeposito?.id) return;
 
+    if (!window.confirm(`Are you sure you want to delete tipo depósito "${tipoDeposito.tipo}"?`)) {
+      return;
+    }
+
     try {
       await apiRequest(`/tipodeposito/apagar/${tipoDeposito.id}`, "DELETE");
       onNavigate("tipodepositos");
@@ -28,15 +32,15 @@ export default function DeleteTipoDeposito({ tipoDeposito, onNavigate }) {
     <div>
       <h2 style={{ marginTop: 0 }}>Delete Tipo Depósito #{tipoDeposito.id}</h2>
       <p>Are you sure you want to delete this tipo depósito?</p>
-      <div style={{ marginBottom: 16, padding: 16, background: "#fff", border: "1px solid #eee", borderRadius: 10, maxWidth: 560 }}>
-        <div><strong>Tipo:</strong> {tipoDeposito.tipo}</div>
-        <div><strong>Descrição:</strong> {tipoDeposito.descricao}</div>
-      </div>
+      <ul>
+        <li><strong>Tipo:</strong> {tipoDeposito.tipo}</li>
+        <li><strong>Descrição:</strong> {tipoDeposito.descricao}</li>
+      </ul>
       <div style={{ display: "flex", gap: 12 }}>
-        <button onClick={handleDelete} style={{ padding: "10px 14px", borderRadius: 6, background: "#dc2626", color: "white", cursor: "pointer" }}>
+        <button onClick={handleDelete} className="bo-btn header-btn-danger">
           Delete Tipo Depósito
         </button>
-        <button onClick={() => onNavigate("tipodepositos")} style={{ padding: "10px 14px", borderRadius: 6, cursor: "pointer" }}>
+        <button onClick={() => onNavigate("tipodepositos")} className="bo-btn bo-btn-ghost">
           Cancel
         </button>
       </div>

@@ -42,14 +42,12 @@ export default function Login({ onLogin }) {
             <Leaf size={24} />
           </div>
           <div>
-            <h1>EcoTrack</h1>
-            <p>Backoffice de gestão ambiental</p>
+            <h1>EcoSensor</h1>
           </div>
         </div>
 
         <div className="login-heading">
           <h2>Entrar</h2>
-          <p>Inicie sessão para gerir ecopontos, depósitos e equipamentos.</p>
         </div>
 
         <label className="login-field">

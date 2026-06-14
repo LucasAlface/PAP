@@ -49,7 +49,6 @@ export default function TipoEcopontos({ onNavigate }) {
   };
 
   const columns = [
-    { key: "id", label: "ID" },
     { key: "tipo", label: "Tipo" },
     { key: "descricao", label: "Descrição" },
   ];

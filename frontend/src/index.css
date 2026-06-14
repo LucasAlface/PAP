@@ -349,6 +349,24 @@ h3 {
   flex: 0 0 auto;
 }
 
+.combined-sidebar-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.combined-sidebar-icon svg {
+  position: absolute;
+  inset: 0;
+}
+
+.combined-sidebar-icon svg:last-child {
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+}
+
 .sidebar-user {
   display: flex;
   align-items: center;
@@ -697,8 +715,43 @@ h3 {
   color: var(--text) !important;
 }
 
+.backoffice [class*="-container"] input,
+.backoffice [class*="-control"] input,
+.backoffice [class*="-valueContainer"] input,
+.backoffice [class*="-input"] input {
+  width: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+  color: var(--text) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.backoffice [class*="-valueContainer"] {
+  padding: 2px 10px !important;
+}
+
 .backoffice [class*="-placeholder"] {
   opacity: 0.58;
+}
+
+.backoffice [class*="-singleValue"] {
+  color: var(--text) !important;
+  opacity: 1 !important;
+}
+
+.backoffice [class*="-control"] [class*="-singleValue"],
+.backoffice [class*="-control"] [class*="-placeholder"],
+.backoffice [class*="-control"] [class*="-input"] {
+  opacity: 1 !important;
+}
+
+.backoffice [aria-disabled="true"],
+.backoffice [aria-disabled="true"] * {
+  opacity: 1 !important;
 }
 
 .backoffice [class*="-menu"] {
@@ -769,6 +822,119 @@ h3 {
   display: none !important;
 }
 
+.ecoponto-map-marker,
+.empresa-map-marker {
+  width: 38px !important;
+  height: 38px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(6, 16, 8, 0.72);
+  border-radius: 50%;
+  color: #061008;
+  background: linear-gradient(135deg, var(--green), #a8f071);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.36), 0 0 0 4px rgba(85, 197, 104, 0.2);
+}
+
+.empresa-map-marker {
+  background: linear-gradient(135deg, #edf8f0, var(--green));
+}
+
+.ecoponto-subterraneo-map-marker {
+  background: linear-gradient(135deg, #facc15, #fef08a);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.36), 0 0 0 4px rgba(250, 204, 21, 0.24);
+}
+
+.ecoponto-map-marker svg,
+.empresa-map-marker svg {
+  display: block;
+}
+
+.map-route-type-toggle {
+  position: absolute;
+  top: 10px;
+  left: 50px;
+  z-index: 1000;
+  display: inline-flex;
+  overflow: hidden;
+  border: 2px solid #2563eb;
+  border-radius: 7px;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+}
+
+
+.map-route-type-toggle button {
+  min-width: 112px;
+  min-height: 40px;
+  padding: 8px 13px;
+  cursor: pointer;
+  color: #1d4ed8;
+  background: #fff;
+  border-right: 1px solid rgba(37, 99, 235, 0.3);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.map-route-type-toggle button:last-child {
+  border-right: 0;
+}
+
+.map-route-type-toggle button.is-active {
+  color: #fff;
+  background: #2563eb;
+}
+
+.map-route-type-toggle button:not(.is-active):hover {
+  background: #eff6ff;
+}
+
+.ecoponto-group-popup {
+  width: min(68vw, 360px);
+  max-width: 100%;
+  color: #061008;
+  font-weight: 700;
+  text-align: center;
+}
+
+.ecoponto-group-items {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ecoponto-group-item {
+  min-width: 92px;
+  max-width: 150px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 3px;
+}
+
+.ecoponto-group-code {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  line-height: 1.2;
+}
+
+.ecoponto-group-value {
+  grid-column: 1;
+  color: var(--green-strong);
+  line-height: 1.1;
+  text-align: center;
+}
+
+.ecoponto-group-item strong {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  color: #061008;
+}
+
 @media (max-width: 1180px) {
   .backoffice-grid {
     grid-template-columns: minmax(0, 1fr);
@@ -816,7 +982,7 @@ h3 {
 
   .sidebar-brand div:last-child,
   .sidebar-user div:last-child,
-  .sidebar-link span {
+  .sidebar-link > span:not(.combined-sidebar-icon) {
     display: none;
   }
 
@@ -949,6 +1115,19 @@ h3 {
 
   .map-region {
     min-height: 180px;
+  }
+
+  .map-route-type-toggle {
+    top: 8px;
+    left: 8px;
+    max-width: calc(100% - 16px);
+  }
+
+  .map-route-type-toggle button {
+    min-width: 0;
+    flex: 1 1 0;
+    padding: 7px 9px;
+    font-size: 12px;
   }
 
   .map-region-with-backoffice {

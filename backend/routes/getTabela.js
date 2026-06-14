@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const {Equipamento, EcopontoEquipamento, Ecoponto, Deposito} = require("../models/models")
+const {Equipamento, EcopontoEquipamento, Ecoponto, Deposito, TipoDeposito} = require("../models/models")
 const {whereEmpresa} = require("../functions/functions");
 const autenticarJWT = require("../middleware/autenticarJWT");
 const { carregarUtilizador } = require("../middleware/autorizarAcesso");
@@ -51,25 +51,40 @@ router.put("/capacidade", async (req, res) => {
 router.get("/coordenadas", autenticarJWT, carregarUtilizador, async (req, res) => {
   try {
     const whereClause = whereEmpresa(req);
-    const ecopontos = await Ecoponto.findAll({ where: whereClause, order: [["id", "ASC"]] });
-    const ecopontosCheios = [];
+    const ecopontos = await Ecoponto.findAll({
+      where: whereClause,
+      order: [["id", "ASC"]],
+      include: [
+        {
+          model: Deposito,
+          required: true,
+          attributes: ["id", "capacidadeTotal", "tipoDepositoId"],
+          include: [
+            {
+              model: TipoDeposito,
+              attributes: ["id", "tipo"]
+            }
+          ]
+        }
+      ]
+    });
 
-    for (const ecoponto of ecopontos) {
-      const deposito = await Deposito.findByPk(ecoponto.depositoId);
-
-      if (!deposito) continue;
-
+    const coordenadas = ecopontos.map((ecoponto) => {
+      const deposito = ecoponto.Deposito;
       const percentagem = ecoponto.capacidadeAtual / deposito.capacidadeTotal * 100;
 
-      ecopontosCheios.push({
+      return {
         codigo: ecoponto.codigo,
         percentagem: percentagem,
         latitude: ecoponto.latitude,
-        longitude: ecoponto.longitude
-      });
-    }
+        longitude: ecoponto.longitude,
+        depositoId: deposito.id,
+        tipoDepositoId: deposito.tipoDepositoId,
+        tipoDeposito: deposito.TipoDeposito?.tipo
+      };
+    });
 
-    res.json(ecopontosCheios);
+    res.json(coordenadas);
 
   } catch (error) {
     console.error(error);

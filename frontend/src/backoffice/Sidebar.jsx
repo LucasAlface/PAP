@@ -1,20 +1,16 @@
 import { useAuth } from "../context/AuthContext.jsx";
 import {
-  Archive,
+  Cylinder,
   Building2,
   Cpu,
   Database,
   LayoutDashboard,
-  Leaf,
-  Link2,
   Recycle,
-  ShieldCheck,
   Tags,
   Users
 } from "lucide-react";
 
 const pageGroups = {
-  dashboard: ["dashboard"],
   ecopontos: ["ecopontos", "add-ecoponto", "edit-ecoponto", "delete-ecoponto"],
   equipamentos: ["equipamentos", "add-equipamento", "edit-equipamento", "delete-equipamento"],
   depositos: ["depositos", "add-deposito", "edit-deposito", "delete-deposito"],
@@ -30,15 +26,27 @@ const pageGroups = {
   utilizadores: ["utilizadores", "add-utilizador", "edit-utilizador", "delete-utilizador"],
 };
 
+function RecycleCpuIcon({ size = 18 }) {
+  return (
+    <span
+      className="combined-sidebar-icon"
+      style={{ width: size, height: size }}
+      aria-hidden="true"
+    >
+      <Recycle size={size} strokeWidth={2.2} />
+      <Cpu size={Math.max(10, Math.round(size * 0.58))} strokeWidth={2.4} />
+    </span>
+  );
+}
+
 const navItems = [
-  { page: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { page: "tipoecopontos", label: "Tipo Ecopontos", icon: Tags, adminOnly: true },
+  { page: "tipodepositos", label: "Tipo Depósitos", icon: Database, adminOnly: true },
+  { page: "empresas", label: "Empresas", icon: Building2, adminOnly: true },
+  { page: "depositos", label: "Depósitos", icon: Cylinder },
   { page: "ecopontos", label: "Ecopontos", icon: Recycle },
   { page: "equipamentos", label: "Equipamentos", icon: Cpu },
-  { page: "depositos", label: "Depósitos", icon: Archive },
-  { page: "tipoecopontos", label: "Tipo Ecopontos", icon: Tags },
-  { page: "tipodepositos", label: "Tipo Depósitos", icon: Database },
-  { page: "ecopontoequipamentos", label: "Ecoponto Equip.", icon: Link2 },
-  { page: "empresas", label: "Empresas", icon: Building2, adminOnly: true },
+  { page: "ecopontoequipamentos", label: "Ecoponto Equip.", icon: RecycleCpuIcon },
   { page: "utilizadores", label: "Utilizadores", icon: Users },
 ];
 
@@ -49,15 +57,6 @@ export default function Sidebar({ page, onNavigate }) {
 
   return (
     <aside className="sidebar">
-      <div className="sidebar-brand">
-        <div className="sidebar-brand-icon">
-          <Leaf size={19} />
-        </div>
-        <div>
-          <strong>Backoffice</strong>
-          <span>Gestão operacional</span>
-        </div>
-      </div>
 
       <nav className="sidebar-nav" aria-label="Backoffice">
         {visibleItems.map(({ page: itemPage, label, icon: Icon }) => {
@@ -68,7 +67,7 @@ export default function Sidebar({ page, onNavigate }) {
               key={itemPage}
               type="button"
               className={`sidebar-link ${active ? "is-active" : ""}`}
-              onClick={() => onNavigate(itemPage)}
+              onClick={() => onNavigate(itemPage, null, { toggleIfActive: true })}
               title={label}
             >
               <Icon size={18} />
@@ -77,16 +76,6 @@ export default function Sidebar({ page, onNavigate }) {
           );
         })}
       </nav>
-
-      <div className="sidebar-user">
-        <div className="sidebar-user-avatar">
-          <ShieldCheck size={18} />
-        </div>
-        <div>
-          <strong>{authUser?.nome ?? "Administrador"}</strong>
-          <span>{isAdmin ? "Super Admin" : "Administrador"}</span>
-        </div>
-      </div>
     </aside>
   );
 }

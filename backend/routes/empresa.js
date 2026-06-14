@@ -50,7 +50,8 @@ router.delete("/apagar/:id", autorizarAcessoBackoffice, async (req, res) => {
 
 router.get("/listar", async (req, res) => {
     try {
-        const companies = await Empresa.findAll({ where: { id: req.user.empresaId }, order: [["id", "ASC"]] });
+        const whereClause = req.user.superAdmin ? {} : { id: req.user.empresaId };
+        const companies = await Empresa.findAll({ where: whereClause, order: [["id", "ASC"]] });
         res.json(companies);
     } catch (err) {
         res.status(500).json({ erro: err.message });

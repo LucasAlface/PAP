@@ -20,7 +20,6 @@ export default function Utilizadores({ onNavigate }) {
   );
 
   const columns = [
-    { key: "id", label: "ID" },
     { key: "nome", label: "Nome" },
     { key: "email", label: "Email" },
     {

@@ -4,6 +4,7 @@ import { apiRequest } from "../../middleware/request";
 import useTipoDepositos from "../TipoDeposito/useTipoDepositos.js";
 import useEmpresas from "../Empresa/useEmpresas.js";
 import FormTemplate from "../FormTemplate.jsx";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 export default function DepositoForm({ deposito, onNavigate }) {
   const { items: tipoDepositos = [] } = useTipoDepositos();
@@ -20,6 +21,8 @@ export default function DepositoForm({ deposito, onNavigate }) {
   const [empresaId, setEmpresaId] = useState(null);
 
   const isEditMode = !!deposito;
+  const { authUser } = useAuth();
+  const isAdmin = authUser?.cargo === 1;
 
   useEffect(() => {
     if (isEditMode && deposito) {
@@ -114,6 +117,7 @@ export default function DepositoForm({ deposito, onNavigate }) {
           placeholder="Altura"
         />
       </label>
+      {isAdmin && (
       <label>
         Empresa
         <Select
@@ -124,6 +128,7 @@ export default function DepositoForm({ deposito, onNavigate }) {
           isClearable={false}
         />
       </label>
+      )}
       <label>
         Tipo Depósito
         <Select

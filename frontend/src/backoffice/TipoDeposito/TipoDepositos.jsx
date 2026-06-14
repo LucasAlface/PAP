@@ -49,7 +49,6 @@ export default function TipoDepositos({ onNavigate }) {
   };
 
   const columns = [
-    { key: "id", label: "ID" },
     { key: "tipo", label: "Tipo" },
     { key: "descricao", label: "Descrição" },
   ];

@@ -4,6 +4,10 @@ export default function DeleteEcoponto({ ecoponto, onNavigate }) {
   const handleDelete = async () => {
     if (!ecoponto?.id) return;
 
+    if (!window.confirm(`Are you sure you want to delete ecoponto "${ecoponto.codigo}"?`)) {
+      return;
+    }
+
     try {
       await apiRequest(`/ecoponto/apagar/${ecoponto.id}`, "DELETE");
       onNavigate("ecopontos");
@@ -28,20 +32,20 @@ export default function DeleteEcoponto({ ecoponto, onNavigate }) {
     <div>
       <h2 style={{ marginTop: 0 }}>Delete Ecoponto #{ecoponto.id}</h2>
       <p>Are you sure you want to delete this ecoponto?</p>
-      <div style={{ marginBottom: 16, padding: 16, background: "#fff", border: "1px solid #eee", borderRadius: 10, maxWidth: 560 }}>
-        <div><strong>Código:</strong> {ecoponto.codigo}</div>
-        <div><strong>Tipo Ecoponto ID:</strong> {ecoponto.tipoEcopontoId}</div>
-        <div><strong>Depósito ID:</strong> {ecoponto.depositoId}</div>
-        <div><strong>Capacidade Atual:</strong> {ecoponto.capacidadeAtual}</div>
-        <div><strong>Latitude:</strong> {ecoponto.latitude}</div>
-        <div><strong>Longitude:</strong> {ecoponto.longitude}</div>
-        <div><strong>Descrição:</strong> {ecoponto.descricao}</div>
-      </div>
+      <ul>
+        <li><strong>Código:</strong> {ecoponto.codigo}</li>
+        <li><strong>Tipo Ecoponto ID:</strong> {ecoponto.tipoEcopontoId}</li>
+        <li><strong>Depósito ID:</strong> {ecoponto.depositoId}</li>
+        <li><strong>Capacidade Atual:</strong> {ecoponto.capacidadeAtual}</li>
+        <li><strong>Latitude:</strong> {ecoponto.latitude}</li>
+        <li><strong>Longitude:</strong> {ecoponto.longitude}</li>
+        <li><strong>Descrição:</strong> {ecoponto.descricao}</li>
+      </ul>
       <div style={{ display: "flex", gap: 12 }}>
-        <button onClick={handleDelete} style={{ padding: "10px 14px", borderRadius: 6, background: "#dc2626", color: "white", cursor: "pointer" }}>
+        <button onClick={handleDelete} className="bo-btn header-btn-danger">
           Delete Ecoponto
         </button>
-        <button onClick={() => onNavigate("ecopontos")} style={{ padding: "10px 14px", borderRadius: 6, cursor: "pointer" }}>
+        <button onClick={() => onNavigate("ecopontos")} className="bo-btn bo-btn-ghost">
           Cancel
         </button>
       </div>

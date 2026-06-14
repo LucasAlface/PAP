@@ -4,6 +4,14 @@ export default function DeleteEcopontoEquipamento({ ecopontoEquipamento, onNavig
   const handleDelete = async () => {
     if (!ecopontoEquipamento?.ecopontoId || !ecopontoEquipamento?.equipamentoId) return;
 
+    if (
+      !window.confirm(
+        `Are you sure you want to delete ecoponto equipamento ${ecopontoEquipamento.ecopontoId}-${ecopontoEquipamento.equipamentoId}?`
+      )
+    ) {
+      return;
+    }
+
     try {
       await apiRequest(
         `/ecopontoequipamento/apagar/${ecopontoEquipamento.ecopontoId}/${ecopontoEquipamento.equipamentoId}`,
@@ -31,16 +39,16 @@ export default function DeleteEcopontoEquipamento({ ecopontoEquipamento, onNavig
     <div>
       <h2 style={{ marginTop: 0 }}>Delete Ecoponto Equipamento</h2>
       <p>Are you sure you want to delete this ecoponto equipamento?</p>
-      <div style={{ marginBottom: 16, padding: 16, background: "#fff", border: "1px solid #eee", borderRadius: 10, maxWidth: 560 }}>
-        <div><strong>Ecoponto ID:</strong> {ecopontoEquipamento.ecopontoId}</div>
-        <div><strong>Equipamento ID:</strong> {ecopontoEquipamento.equipamentoId}</div>
-        <div><strong>Ativo:</strong> {ecopontoEquipamento.ativo ? "Sim" : "Não"}</div>
-      </div>
+      <ul>
+        <li><strong>Ecoponto ID:</strong> {ecopontoEquipamento.ecopontoId}</li>
+        <li><strong>Equipamento ID:</strong> {ecopontoEquipamento.equipamentoId}</li>
+        <li><strong>Ativo:</strong> {ecopontoEquipamento.ativo ? "Sim" : "Não"}</li>
+      </ul>
       <div style={{ display: "flex", gap: 12 }}>
-        <button onClick={handleDelete} style={{ padding: "10px 14px", borderRadius: 6, background: "#dc2626", color: "white", cursor: "pointer" }}>
+        <button onClick={handleDelete} className="bo-btn header-btn-danger">
           Delete Ecoponto Equipamento
         </button>
-        <button onClick={() => onNavigate("ecopontoequipamentos")} style={{ padding: "10px 14px", borderRadius: 6, cursor: "pointer" }}>
+        <button onClick={() => onNavigate("ecopontoequipamentos")} className="bo-btn bo-btn-ghost">
           Cancel
         </button>
       </div>

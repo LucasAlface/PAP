@@ -1,5 +1,4 @@
 import { useAuth } from "../context/AuthContext.jsx";
-import Dashboard from "./Dashboard.jsx";
 import Ecopontos from "./Ecoponto/Ecopontos.jsx";
 import EcopontoForm from "./Ecoponto/EcopontoForm.jsx";
 import DeleteEcoponto from "./Ecoponto/Delete.jsx";
@@ -123,14 +122,6 @@ export default function Backoffice({ page, selectedItem, onNavigate }) {
 
   if (authUser?.cargo !== 1 && authUser?.cargo !== 2) {
     return <div className="backoffice-access-denied">Acesso negado. Apenas administradores podem aceder a esta secção.</div>;
-  }
-
-  if (page === "dashboard") {
-    return (
-      <div className="backoffice backoffice-single">
-        <Dashboard />
-      </div>
-    );
   }
 
   const section = getSection(page) || sections[0];

@@ -5,7 +5,6 @@ export default function Empresas({ onNavigate }) {
   const { items: empresas, loading, error } = useEmpresas();
 
   const columns = [
-    { key: "id", label: "ID" },
     { key: "nome", label: "Nome" },
     { key: "nif", label: "NIF" },
     { key: "email", label: "Email" },

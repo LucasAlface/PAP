@@ -23,7 +23,27 @@ export default function App() {
     setView("map");
   };
 
-  const navigate = (newPage, item = null) => {
+  const getBasePage = (currentPage) => {
+    if (currentPage === "dashboard") return "dashboard";
+    if (currentPage.includes("empresa")) return "empresas";
+    if (currentPage.includes("utilizador")) return "utilizadores";
+    if (currentPage.includes("ecopontoequipamento")) return "ecopontoequipamentos";
+    if (currentPage.includes("tipoecoponto")) return "tipoecopontos";
+    if (currentPage.includes("tipodeposito")) return "tipodepositos";
+    if (currentPage.includes("ecoponto")) return "ecopontos";
+    if (currentPage.includes("equipamento")) return "equipamentos";
+    if (currentPage.includes("deposito")) return "depositos";
+    return currentPage;
+  };
+
+  const navigate = (newPage, item = null, options = {}) => {
+    if (options.toggleIfActive && view === "backoffice" && getBasePage(page) === newPage) {
+      setSelectedItem(null);
+      setPage(newPage);
+      setView("map");
+      return;
+    }
+
     setSelectedItem(item);
     setPage(newPage);
     if (view !== "backoffice") {
@@ -47,28 +67,11 @@ export default function App() {
             <Map size={20} />
           </div>
           <div>
-            <h1>EcoTrack</h1>
-            <p>Gestão Inteligente de Ecopontos</p>
+            <h1>EcoSensor</h1>
           </div>
         </div>
 
         <div className="app-header-actions">
-          <button
-            onClick={() => setView("map")}
-            className={`header-btn ${view === "map" ? "is-active" : ""}`}
-          >
-            <Map size={16} />
-            Mapa
-          </button>
-          {isAdmin && (
-            <button
-              onClick={() => setView("backoffice")}
-              className={`header-btn ${view === "backoffice" ? "is-active" : ""}`}
-            >
-              <LayoutDashboard size={16} />
-              Backoffice
-            </button>
-          )}
           <div className="user-chip" title={authUser?.email}>
             <UserRound size={17} />
             <span>{authUser?.nome ?? authUser?.email}</span>

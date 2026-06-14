@@ -96,8 +96,8 @@ async function inserirDados() {
       depositoId: 1,
       empresaId: 1,
       capacidadeAtual: 2.5,
-      latitude: 40.4380986,
-      longitude: -3.844343,
+      latitude: 38.7441392,
+      longitude: -9.2009353,
       descricao: "um papelão superficial em Madrid"
     },
 

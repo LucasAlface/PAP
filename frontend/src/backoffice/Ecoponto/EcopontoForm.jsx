@@ -5,6 +5,7 @@ import useTipoEcopontos from "../TipoEcoponto/useTipoEcopontos.js";
 import useDepositos from "../Deposito/useDepositos.js";
 import useEmpresas from "../Empresa/useEmpresas.js";
 import FormTemplate from "../FormTemplate.jsx";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 export default function EcopontoForm({ ecoponto, onNavigate }) {
   const { items: tipos = [] } = useTipoEcopontos();
@@ -20,7 +21,10 @@ export default function EcopontoForm({ ecoponto, onNavigate }) {
   const [descricao, setDescricao] = useState("");
   const [status, setStatus] = useState("");
   const [empresaId, setEmpresaId] = useState(null);
+
   const isEditMode = !!ecoponto;
+  const { authUser } = useAuth();
+  const isAdmin = authUser?.cargo === 1;
 
   useEffect(() => {
     if (isEditMode && ecoponto) {
@@ -135,16 +139,18 @@ export default function EcopontoForm({ ecoponto, onNavigate }) {
           isClearable={false}
         />
       </label>
-      <label>
-        Empresa
-        <Select
-          options={empresaOptions}
-          value={empresaId}
-          onChange={setEmpresaId}
-          isSearchable={true}
-          isClearable={false}
-        />
-      </label>
+      {isAdmin && (
+        <label>
+          Empresa
+          <Select
+            options={empresaOptions}
+            value={empresaId}
+            onChange={setEmpresaId}
+            isSearchable={true}
+            isClearable={false}
+          />
+        </label>
+      )}
       <label>
         Capacidade Atual
         <input

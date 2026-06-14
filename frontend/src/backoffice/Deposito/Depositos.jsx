@@ -66,7 +66,6 @@ export default function Depositos({ onNavigate }) {
   };
 
   const columns = [
-    { key: "id", label: "ID" },
     { key: "capacidadeTotal", label: "Capacidade Total" },
     { key: "altura", label: "Altura" },
     {
