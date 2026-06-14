@@ -70,8 +70,6 @@ router.get("/listar/filtro", async (req, res) => {
         const {
             codigo,
             ativo,
-            bateria,
-            operadorBateria
         } = req.query;
 
         const filtros = {};
@@ -82,41 +80,6 @@ router.get("/listar/filtro", async (req, res) => {
 
         if (ativo !== undefined && ativo !== "") {
             filtros.ativo = ativo === "true";
-        }
-
-        if (bateria) {
-            switch (operadorBateria) {
-                case "maior":
-                    filtros.bateria = {
-                        [Op.gt]: bateria
-                    };
-                    break;
-
-                case "menor":
-                    filtros.bateria = {
-                        [Op.lt]: bateria
-                    };
-                    break;
-
-                case "igual":
-                default:
-                    filtros.bateria = {
-                        [Op.eq]: bateria
-                    };
-                    break;
-
-                case "maior_igual":
-                    filtros.bateria = {
-                        [Op.gte]: bateria
-                    };
-                    break;
-
-                case "menor_igual":
-                    filtros.bateria = {
-                        [Op.lte]: bateria
-                    };
-                    break;
-            }
         }
 
         const whereClause = whereEmpresa(req);

@@ -35,7 +35,6 @@ export default function DeleteEquipamento({ equipamento, onNavigate }) {
       <ul>
         <li><strong>Código:</strong> {equipamento.codigo}</li>
         <li><strong>Ativo:</strong> {equipamento.ativo ? "Sim" : "Não"}</li>
-        <li><strong>Bateria:</strong> {equipamento.bateria}</li>
       </ul>
       <div style={{ display: "flex", gap: 12 }}>
         <button onClick={handleDelete} className="bo-btn header-btn-danger">

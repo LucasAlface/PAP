@@ -19,8 +19,6 @@ export default function Equipamentos({ onNavigate }) {
   const [filters, setFilters] = useState({
     codigo: null,
     ativo: null,
-    bateria: "",
-    operadorBateria: "igual"
   });
 
   const operators = getOperatorOptions();
@@ -46,8 +44,6 @@ export default function Equipamentos({ onNavigate }) {
     const filterValues = {
       codigo: filters.codigo?.value || null,
       ativo: filters.ativo?.value || null,
-      bateria: filters.bateria,
-      operadorBateria: filters.operadorBateria
     };
     refetch(filterValues);
   };
@@ -56,19 +52,12 @@ export default function Equipamentos({ onNavigate }) {
     setFilters({
       codigo: null,
       ativo: null,
-      bateria: "",
-      operadorBateria: "igual"
     });
     refetch(null);
   };
 
   const columns = [
     { key: "codigo", label: "Código" },
-    {
-      key: "bateria",
-      label: "Bateria",
-      render: (item) => `${item.bateria}%`
-    },
     {
       key: "ativo",
       label: "Status",
@@ -118,27 +107,6 @@ export default function Equipamentos({ onNavigate }) {
               isSearchable
               styles={selectStyles}
             />
-          </div>
-
-          <div>
-            <label style={{ display: "block", marginBottom: 4, fontSize: 14, fontWeight: 500 }}>Bateria</label>
-            <div style={{ display: "flex", gap: 8 }}>
-              <Select
-                options={operators}
-                value={filters.operadorBateria}
-                onChange={(option) => handleFilterChange("operadorBateria", option)}
-                placeholder="Selecionar operador"
-                isClearable
-                styles={selectStyles}
-              />
-              <input
-                type="number"
-                value={filters.bateria}
-                onChange={(e) => handleFilterChange("bateria", e.target.value)}
-                placeholder="Valor"
-                style={{ flex: 1, padding: "8px 12px", borderRadius: 6, border: "1px solid #d1d5db" }}
-              />
-            </div>
           </div>
         </>
       }

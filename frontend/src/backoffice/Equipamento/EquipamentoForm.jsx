@@ -3,11 +3,14 @@ import Select from "react-select";
 import { apiRequest } from "../../middleware/request";
 import useEmpresas from "../Empresa/useEmpresas.js";
 import FormTemplate from "../FormTemplate.jsx";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 export default function EquipamentoForm({ equipamento, onNavigate }) {
+  const { authUser } = useAuth();
+  const isAdmin = authUser?.cargo === 1;
+
   const [codigo, setCodigo] = useState("");
   const [ativo, setAtivo] = useState({ value: "true", label: "Sim" });
-  const [bateria, setBateria] = useState("");
   const [status, setStatus] = useState("");
   const { items: empresas = [] } = useEmpresas();
   const [empresaId, setEmpresaId] = useState(null);
@@ -27,7 +30,6 @@ export default function EquipamentoForm({ equipamento, onNavigate }) {
           ? { value: "true", label: "Sim" }
           : { value: "false", label: "Não" }
       );
-      setBateria(equipamento.bateria ?? "");
       setEmpresaId(null);
     }
   }, [equipamento, isEditMode]);
@@ -53,7 +55,6 @@ export default function EquipamentoForm({ equipamento, onNavigate }) {
       ? {
           codigo,
           ativo: ativo?.value === "true",
-          bateria: bateria ? Number(bateria) : null,
           empresaId: empresaId ? Number(empresaId.value) : null,
         }
       : {
@@ -79,8 +80,7 @@ export default function EquipamentoForm({ equipamento, onNavigate }) {
         setStatus("Equipamento added successfully.");
         setCodigo("");
         setAtivo({ value: "true", label: "Sim" });
-        setBateria("");
-          setEmpresaId(null);
+        setEmpresaId(null);
       }
     } catch (error) {
       setStatus(`Error: ${error.message}`);
@@ -117,6 +117,7 @@ export default function EquipamentoForm({ equipamento, onNavigate }) {
         />
       </label>
 
+      {isAdmin &&(
       <label>
         Empresa
         <Select
@@ -127,17 +128,6 @@ export default function EquipamentoForm({ equipamento, onNavigate }) {
           isClearable={false}
         />
       </label>
-
-      {isEditMode && (
-        <label>
-          Bateria
-          <input
-            type="number"
-            value={bateria}
-            onChange={(e) => setBateria(e.target.value)}
-            placeholder="Bateria"
-          />
-        </label>
       )}
     </FormTemplate>
   );

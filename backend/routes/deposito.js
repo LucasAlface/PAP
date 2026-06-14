@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const Deposito = require("../models/deposito")
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 const autenticarJWT = require("../middleware/autenticarJWT");
 const { autorizarAcessoBackoffice, carregarUtilizador } = require("../middleware/autorizarAcesso");
 const {whereEmpresa, setEmpresaId} = require("../functions/functions");
@@ -57,8 +57,14 @@ router.delete("/apagar/:id", async (req, res) => {
 
 router.get("/listar", async (req, res) => {
     try {
-        const whereClause = whereEmpresa(req);
-        const depositos = await Deposito.findAll({ where: whereClause, order: [["id", "ASC"]] });
+        const whereClause = {
+            [Op.or]: [
+                { empresaId: req.user.empresaId },
+                { empresaId: null }
+            ]
+        };
+        console.log(whereClause);
+        const depositos = await Deposito.findAll({ where: whereClause ,order: [["id", "ASC"]] });
         res.json(depositos);
     } catch (err) {
         res.status(500).json({ erro: err.message });

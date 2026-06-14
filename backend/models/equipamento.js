@@ -6,7 +6,6 @@ const Equipamento = sequelize.define("Equipamento", {
   empresaId: DataTypes.INTEGER,
   codigo: { type: DataTypes.TEXT, unique: true },
   ativo: { type: DataTypes.BOOLEAN, defaultValue: false },
-  bateria: DataTypes.DECIMAL,
 }, {
   tableName: "equipamento",
   timestamps: false

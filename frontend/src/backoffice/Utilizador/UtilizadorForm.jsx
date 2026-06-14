@@ -4,8 +4,12 @@ import { apiRequest } from "../../middleware/request";
 import useEmpresas from "../Empresa/useEmpresas.js";
 import useCargos from "./useCargos.js";
 import FormTemplate from "../FormTemplate.jsx";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 export default function UtilizadorForm({ utilizador, onNavigate }) {
+  const {authUser} = useAuth();
+  const isAdmin = authUser?.cargo === 1;
+
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -144,6 +148,7 @@ export default function UtilizadorForm({ utilizador, onNavigate }) {
         />
       </label>
 
+      {isAdmin && (
       <label>
         Empresa
         <Select
@@ -155,6 +160,7 @@ export default function UtilizadorForm({ utilizador, onNavigate }) {
           placeholder="Select Empresa"
         />
       </label>
+      )}
     </FormTemplate>
   );
 }
