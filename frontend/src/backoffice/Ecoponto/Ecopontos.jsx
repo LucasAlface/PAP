@@ -146,7 +146,7 @@ export default function Ecopontos({ onNavigate }) {
           ? depositos.find((d) => d.id === item.depositoId)?.capacidadeTotal ?? "-"
           : "Loading..."
     },
-    { key: "capacidadeAtual", label: "Capacidade ocupada" },
+    { key: "capacidadeAtual", label: "Capacidade restante" },
   ];
 
   return (

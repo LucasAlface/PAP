@@ -984,6 +984,12 @@ h3 {
   background: linear-gradient(135deg, #edf8f0, var(--green));
 }
 
+.empresa-map-marker-unselected {
+  color: #fff;
+  background: linear-gradient(135deg, #ef4444, #991b1b);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.36), 0 0 0 4px rgba(239, 68, 68, 0.22);
+}
+
 .ecoponto-subterraneo-map-marker {
   background: linear-gradient(135deg, #facc15, #fef08a);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.36), 0 0 0 4px rgba(250, 204, 21, 0.24);

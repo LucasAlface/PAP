@@ -16,6 +16,7 @@ import Routing from "./routing.jsx";
 import { formatCoordinates, getDistance } from "./middleware/coordinatesHelper.js";
 import { apiRequest } from "./middleware/request.js";
 import useEmpresas from './backoffice/Empresa/useEmpresas.js';
+import { useAuth } from "./context/AuthContext.jsx";
 
 const ECOPONTO_GROUP_TOLERANCE_METERS = 5;
 const DEPOSITO_ROUTE_OPTIONS = [
@@ -43,6 +44,14 @@ const ecopontoSubterraneoIcon = L.divIcon({
 
 const empresaIcon = L.divIcon({
   className: "empresa-map-marker",
+  html: renderToStaticMarkup(<Building2 size={21} strokeWidth={2.4} />),
+  iconSize: [38, 38],
+  iconAnchor: [19, 19],
+  popupAnchor: [0, -20],
+});
+
+const empresaUnselectedIcon = L.divIcon({
+  className: "empresa-map-marker empresa-map-marker-unselected",
   html: renderToStaticMarkup(<Building2 size={21} strokeWidth={2.4} />),
   iconSize: [38, 38],
   iconAnchor: [19, 19],
@@ -209,11 +218,16 @@ function groupNearbyEcopontos(pontos, tolerance = ECOPONTO_GROUP_TOLERANCE_METER
 
 export default function Mapa({
   canPickEcopontoCoordinates = false,
-  onCoordinatesSelected,
+  canPickEmpresaCoordinates = false,
+  onEcopontoCoordinatesSelected,
+  onEmpresaCoordinatesSelected,
   onAddEcopontoAt,
 }) {
   const [pontos, setPontos] = useState([]);
   const [selectedDepositoType, setSelectedDepositoType] = useState("superficie");
+  const [selectedEmpresaId, setSelectedEmpresaId] = useState(null);
+  const { authUser } = useAuth();
+  const isSuperAdmin = authUser?.cargo === 1;
   const ecopontoGroups = useMemo(() => groupNearbyEcopontos(pontos), [pontos]);
   const pontosCheios = useMemo(() =>
     ecopontoGroups
@@ -234,20 +248,50 @@ export default function Mapa({
     [ecopontoGroups, selectedDepositoType]
   );
   const { items: empresas = [] } = useEmpresas();
-  const empresasComCoordenadas = empresas.filter(e => e.latitude && e.longitude);
-  const sede = formatCoordinates(empresasComCoordenadas);
-    useEffect(() => {
-      apiRequest("/rotas/coordenadas") 
-        .then((data) => {
-          setPontos(data);
-        });
-    }, []);
-    const ecopontos = formatCoordinates(pontosCheios);
+  const empresasComCoordenadas = useMemo(() =>
+    empresas.filter(e => Number.isFinite(Number(e.latitude)) && Number.isFinite(Number(e.longitude))),
+    [empresas]
+  );
+  const selectedEmpresa = useMemo(() => {
+    if (empresasComCoordenadas.length === 0) return null;
 
+    return empresasComCoordenadas.find((empresa) => String(empresa.id) === String(selectedEmpresaId)) ||
+      empresasComCoordenadas[0];
+  }, [empresasComCoordenadas, selectedEmpresaId]);
 
-    const handleGoogleMapsRedirect = () => {
-      window.open(`https://www.google.com/maps/dir/?api=1&destination=${sede}&waypoints=${ecopontos}`, "_blank");
-    };
+  const sede = selectedEmpresa ? formatCoordinates([selectedEmpresa]) : "";
+  const ecopontos = formatCoordinates(pontosCheios);
+  const pontosRota = selectedEmpresa
+    ? [...pontosCheios, selectedEmpresa]
+    : pontosCheios;
+
+  useEffect(() => {
+    apiRequest("/rotas/coordenadas")
+      .then((data) => {
+        setPontos(data);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (empresasComCoordenadas.length === 0) {
+      setSelectedEmpresaId(null);
+      return;
+    }
+
+    setSelectedEmpresaId((currentId) => {
+      if (currentId && empresasComCoordenadas.some((empresa) => String(empresa.id) === String(currentId))) {
+        return currentId;
+      }
+
+      return empresasComCoordenadas[0].id;
+    });
+  }, [empresasComCoordenadas]);
+
+  const handleGoogleMapsRedirect = () => {
+    if (!sede) return;
+
+    window.open(`https://www.google.com/maps/dir/?api=1&destination=${sede}&waypoints=${ecopontos}`, "_blank");
+  };
   return (
     <>
       <div className="map-route-type-toggle" aria-label="Tipo de depósito para rota">
@@ -287,7 +331,10 @@ export default function Mapa({
       style={{ height: "100%", width: "100%" }}
     >
       <MapSearchControl />
-      <MapClickPicker enabled={canPickEcopontoCoordinates} onPick={onCoordinatesSelected} />
+      <MapClickPicker
+        enabled={canPickEcopontoCoordinates || canPickEmpresaCoordinates}
+        onPick={canPickEmpresaCoordinates ? onEmpresaCoordinatesSelected : onEcopontoCoordinatesSelected}
+      />
       <TileLayer
         attribution="&copy; OpenStreetMap contributors"
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -343,14 +390,21 @@ export default function Mapa({
             Number(empresa.latitude),
             Number(empresa.longitude),
           ]}
-          icon={empresaIcon}
+          icon={String(selectedEmpresa?.id) === String(empresa.id) ? empresaIcon : empresaUnselectedIcon}
+          eventHandlers={{
+            click: () => {
+              if (isSuperAdmin) {
+                setSelectedEmpresaId(empresa.id);
+              }
+            },
+          }}
         >
           <Popup>
             <div>{empresa.nome}</div>
           </Popup>
         </Marker>
       ))}
-      <Routing pontos={pontosCheios} />
+      <Routing pontos={pontosRota} />
     </MapContainer>
     </>
   );

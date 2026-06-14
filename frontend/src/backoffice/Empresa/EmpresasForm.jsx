@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { apiRequest } from "../../middleware/request";
 import FormTemplate from "../FormTemplate.jsx";
 
-export default function EmpresasForm({ empresa, onNavigate }) {
+export default function EmpresasForm({ empresa, onNavigate, mapCoordinates }) {
   const [nome, setNome] = useState("");
   const [nif, setNif] = useState("");
   const [email, setEmail] = useState("");
@@ -19,8 +19,17 @@ export default function EmpresasForm({ empresa, onNavigate }) {
       setNif(empresa.nif ?? "");
       setEmail(empresa.email ?? "");
       setTelefone(empresa.telefone ?? "");
+      setLatitude(empresa.latitude ?? "");
+      setLongitude(empresa.longitude ?? "");
     }
   }, [empresa, isEditMode]);
+
+  useEffect(() => {
+    if (!mapCoordinates) return;
+
+    setLatitude(String(mapCoordinates.latitude ?? ""));
+    setLongitude(String(mapCoordinates.longitude ?? ""));
+  }, [mapCoordinates]);
 
   async function handleSubmit(event) {
     event.preventDefault();

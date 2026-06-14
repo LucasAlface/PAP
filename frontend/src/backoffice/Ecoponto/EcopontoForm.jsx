@@ -15,7 +15,7 @@ export default function EcopontoForm({ ecoponto, onNavigate, mapCoordinates }) {
   const [codigo, setCodigo] = useState("");
   const [tipoEcopontoId, setTipoEcopontoId] = useState(null);
   const [depositoId, setDepositoId] = useState(null);
-  const [capacidadeAtual, setCapacidadeAtual] = useState("");
+  const [capacidadeRestante, setCapacidadeRestante] = useState("");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
   const [descricao, setDescricao] = useState("");
@@ -31,7 +31,7 @@ export default function EcopontoForm({ ecoponto, onNavigate, mapCoordinates }) {
       setCodigo(ecoponto.codigo ?? "");
       setTipoEcopontoId(null);
       setDepositoId(null);
-      setCapacidadeAtual(ecoponto.capacidadeAtual ?? "");
+      setCapacidadeRestante(ecoponto.capacidadeRestante ?? "");
       setLatitude(ecoponto.latitude ?? "");
       setLongitude(ecoponto.longitude ?? "");
       setDescricao(ecoponto.descricao ?? "");
@@ -73,7 +73,7 @@ export default function EcopontoForm({ ecoponto, onNavigate, mapCoordinates }) {
       codigo,
       tipoEcopontoId: tipoEcopontoId ? Number(tipoEcopontoId.value) : null,
       depositoId: depositoId ? Number(depositoId.value) : null,
-      capacidadeAtual: capacidadeAtual ? Number(capacidadeAtual) : null,
+      capacidadeAtual: capacidadeRestante ? Number(capacidadeRestante) : null,
       latitude: latitude ? Number(latitude) : null,
       longitude: longitude ? Number(longitude) : null,
       descricao,
@@ -98,7 +98,7 @@ export default function EcopontoForm({ ecoponto, onNavigate, mapCoordinates }) {
         setCodigo("");
         setTipoEcopontoId(null);
         setDepositoId(null);
-        setCapacidadeAtual("");
+        setCapacidadeRestante("");
         setLatitude("");
         setLongitude("");
         setDescricao("");
@@ -159,11 +159,11 @@ export default function EcopontoForm({ ecoponto, onNavigate, mapCoordinates }) {
         </label>
       )}
       <label>
-        Capacidade Atual
+        Capacidade restante
         <input
-          value={capacidadeAtual}
-          onChange={(e) => setCapacidadeAtual(e.target.value)}
-          placeholder="Capacidade atual"
+          value={capacidadeRestante}
+          onChange={(e) => setCapacidadeRestante(e.target.value)}
+          placeholder="Capacidade Restante"
         />
       </label>
       <label>

@@ -99,8 +99,12 @@ const sections = [
     edit: "edit-empresa",
     delete: "delete-empresa",
     List: Empresas,
-    renderAdd: (onNavigate) => <EmpresasForm onNavigate={onNavigate} />,
-    renderEdit: (selectedItem, onNavigate) => <EmpresasForm empresa={selectedItem} onNavigate={onNavigate} />,
+    renderAdd: (onNavigate, _ecopontoMapCoordinates, empresaMapCoordinates) => (
+      <EmpresasForm onNavigate={onNavigate} mapCoordinates={empresaMapCoordinates} />
+    ),
+    renderEdit: (selectedItem, onNavigate, _ecopontoMapCoordinates, empresaMapCoordinates) => (
+      <EmpresasForm empresa={selectedItem} onNavigate={onNavigate} mapCoordinates={empresaMapCoordinates} />
+    ),
     renderDelete: (selectedItem, onNavigate) => <DeleteEmpresa empresa={selectedItem} onNavigate={onNavigate} />,
   },
   {
@@ -121,7 +125,7 @@ function getSection(page) {
   );
 }
 
-export default function Backoffice({ page, selectedItem, onNavigate, ecopontoMapCoordinates }) {
+export default function Backoffice({ page, selectedItem, onNavigate, ecopontoMapCoordinates, empresaMapCoordinates }) {
   const { authUser } = useAuth();
 
   if (authUser?.cargo !== 1 && authUser?.cargo !== 2) {
@@ -132,10 +136,10 @@ export default function Backoffice({ page, selectedItem, onNavigate, ecopontoMap
   const List = section.List;
   const action =
     page === section.edit
-      ? section.renderEdit(selectedItem, onNavigate, ecopontoMapCoordinates)
+      ? section.renderEdit(selectedItem, onNavigate, ecopontoMapCoordinates, empresaMapCoordinates)
       : page === section.delete
         ? section.renderDelete(selectedItem, onNavigate)
-        : section.renderAdd(onNavigate, ecopontoMapCoordinates);
+        : section.renderAdd(onNavigate, ecopontoMapCoordinates, empresaMapCoordinates);
 
   return (
     <div className="backoffice backoffice-grid">

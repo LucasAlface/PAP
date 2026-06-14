@@ -16,6 +16,7 @@ export default function App() {
   const [page, setPage] = useState("dashboard");
   const [selectedItem, setSelectedItem] = useState(null);
   const [ecopontoMapCoordinates, setEcopontoMapCoordinates] = useState(null);
+  const [empresaMapCoordinates, setEmpresaMapCoordinates] = useState(null);
   const { authUser, loading, login, logout } = useAuth();
   const isAdmin = authUser?.cargo === 1 || authUser?.cargo === 2;
 
@@ -50,8 +51,15 @@ export default function App() {
         ...options.ecopontoCoordinates,
         version: Date.now(),
       });
+    } else if (options.empresaCoordinates) {
+      setEmpresaMapCoordinates({
+        ...options.empresaCoordinates,
+        version: Date.now(),
+      });
     } else if (newPage === "ecopontos" || newPage === "add-ecoponto" || newPage === "edit-ecoponto") {
       setEcopontoMapCoordinates(null);
+    } else if (newPage === "empresas" || newPage === "add-empresa" || newPage === "edit-empresa") {
+      setEmpresaMapCoordinates(null);
     }
 
     setSelectedItem(item);
@@ -61,8 +69,15 @@ export default function App() {
     }
   };
 
-  const handleMapCoordinatesSelected = (coordinates) => {
+  const handleEcopontoMapCoordinatesSelected = (coordinates) => {
     setEcopontoMapCoordinates({
+      ...coordinates,
+      version: Date.now(),
+    });
+  };
+
+  const handleEmpresaMapCoordinatesSelected = (coordinates) => {
+    setEmpresaMapCoordinates({
       ...coordinates,
       version: Date.now(),
     });
@@ -120,7 +135,13 @@ export default function App() {
                 view === "backoffice" &&
                 (page === "ecopontos" || page === "add-ecoponto" || page === "edit-ecoponto")
               }
-              onCoordinatesSelected={handleMapCoordinatesSelected}
+              canPickEmpresaCoordinates={
+                isAdmin &&
+                view === "backoffice" &&
+                (page === "empresas" || page === "add-empresa" || page === "edit-empresa")
+              }
+              onEcopontoCoordinatesSelected={handleEcopontoMapCoordinatesSelected}
+              onEmpresaCoordinatesSelected={handleEmpresaMapCoordinatesSelected}
               onAddEcopontoAt={isAdmin ? handleAddEcopontoAt : undefined}
             />
           </section>
@@ -132,6 +153,7 @@ export default function App() {
                 selectedItem={selectedItem}
                 onNavigate={navigate}
                 ecopontoMapCoordinates={ecopontoMapCoordinates}
+                empresaMapCoordinates={empresaMapCoordinates}
               />
             </section>
           )}
