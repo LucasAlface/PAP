@@ -21,7 +21,7 @@ export default function Ecopontos({ onNavigate }) {
   const { items: tipoEcopontos } = useTipoEcopontos();
   const { items: empresas } = useEmpresas();
   const { items: ecopontos, loading, error, refetch } = useEcopontos();
-  const [capacidadeAtualMaxLimit, setCapacidadeAtualMaxLimit] = useState(0);
+  const [capacidadeOcupadaMaxLimit, setCapacidadeOcupadaMaxLimit] = useState(0);
   const [capacidadeTotalMaxLimit, setCapacidadeTotalMaxLimit] = useState(0);
 
   const [filters, setFilters] = useState({
@@ -30,8 +30,8 @@ export default function Ecopontos({ onNavigate }) {
     depositoId: null,
     empresaId: null,
     descricao: "",
-    capacidadeAtualMin: "",
-    capacidadeAtualMax: "",
+    capacidadeOcupadaMin: "",
+    capacidadeOcupadaMax: "",
     capacidadeTotalMin: "",
     capacidadeTotalMax: ""
   });
@@ -57,7 +57,7 @@ export default function Ecopontos({ onNavigate }) {
   );
 
   useEffect(() => {
-    setCapacidadeAtualMaxLimit((currentLimit) =>
+    setCapacidadeOcupadaMaxLimit((currentLimit) =>
       getNextMaxLimit(currentLimit, ecopontos, "capacidadeAtual")
     );
   }, [ecopontos]);
@@ -76,12 +76,12 @@ export default function Ecopontos({ onNavigate }) {
   };
 
   const handleApplyFilters = () => {
-    const capacidadeAtualMin = Number(filters.capacidadeAtualMin) > 0
-      ? filters.capacidadeAtualMin
+    const capacidadeOcupadaMin = Number(filters.capacidadeOcupadaMin) > 0
+      ? filters.capacidadeOcupadaMin
       : null;
-    const capacidadeAtualMax = filters.capacidadeAtualMax &&
-      Number(filters.capacidadeAtualMax) < capacidadeAtualMaxLimit
-        ? filters.capacidadeAtualMax
+    const capacidadeOcupadaMax = filters.capacidadeOcupadaMax &&
+      Number(filters.capacidadeOcupadaMax) < capacidadeOcupadaMaxLimit
+        ? filters.capacidadeOcupadaMax
         : null;
     const capacidadeTotalMin = Number(filters.capacidadeTotalMin) > 0
       ? filters.capacidadeTotalMin
@@ -96,8 +96,8 @@ export default function Ecopontos({ onNavigate }) {
       tipoEcopontoId: filters.tipoEcopontoId?.value || null,
       depositoId: filters.depositoId?.value || null,
       descricao: filters.descricao,
-      capacidadeAtualMin,
-      capacidadeAtualMax,
+      capacidadeAtualMin: capacidadeOcupadaMin,
+      capacidadeAtualMax: capacidadeOcupadaMax,
       capacidadeTotalMin,
       capacidadeTotalMax,
       empresaId: filters.empresaId?.value || null
@@ -112,8 +112,8 @@ export default function Ecopontos({ onNavigate }) {
       depositoId: null,
       empresaId: null,
       descricao: "",
-      capacidadeAtualMin: "",
-      capacidadeAtualMax: "",
+      capacidadeOcupadaMin: "",
+      capacidadeOcupadaMax: "",
       capacidadeTotalMin: "",
       capacidadeTotalMax: ""
     });
@@ -146,7 +146,7 @@ export default function Ecopontos({ onNavigate }) {
           ? depositos.find((d) => d.id === item.depositoId)?.capacidadeTotal ?? "-"
           : "Loading..."
     },
-    { key: "capacidadeAtual", label: "Capacidade restante" },
+    { key: "capacidadeAtual", label: "Capacidade ocupada" },
   ];
 
   return (
@@ -230,12 +230,12 @@ export default function Ecopontos({ onNavigate }) {
           </div>
 
           <RangeSliderFilter
-            label="Capacidade restante"
-            minValue={filters.capacidadeAtualMin}
-            maxValue={filters.capacidadeAtualMax}
-            maxLimit={capacidadeAtualMaxLimit}
-            onMinChange={(value) => handleFilterChange("capacidadeAtualMin", value)}
-            onMaxChange={(value) => handleFilterChange("capacidadeAtualMax", value)}
+            label="Capacidade ocupada"
+            minValue={filters.capacidadeOcupadaMin}
+            maxValue={filters.capacidadeOcupadaMax}
+            maxLimit={capacidadeOcupadaMaxLimit}
+            onMinChange={(value) => handleFilterChange("capacidadeOcupadaMin", value)}
+            onMaxChange={(value) => handleFilterChange("capacidadeOcupadaMax", value)}
           />
 
           <RangeSliderFilter

@@ -70,7 +70,7 @@ function getPointCoordinates(ponto) {
 }
 
 function getPercentagem(ponto) {
-  const percentagem = 100 - Number(Number(ponto.percentagem).toFixed(1));
+  const percentagem = Number(Number(ponto.percentagem).toFixed(1));
   return Number.isFinite(percentagem) ? percentagem : 0;
 }
 

@@ -36,8 +36,15 @@ router.put("/capacidade", async (req, res) => {
     const capacidadeTotal = deposito.capacidadeTotal;
     const altura = deposito.altura;
 
-    const percentagem = profundidade / 100 / altura;
-    const capacidadeAtual = percentagem * capacidadeTotal;
+    const m = profundidade / 100;
+    if (m > altura) {
+      await ecoponto.update({ capacidadeAtual: 0 });
+      return res.status(404).json({erro: "Medição superior à capacidade do depósito;"})
+    }
+
+    const percentagem = m / altura;
+    const capacidadeRestante = percentagem * capacidadeTotal;
+    const capacidadeAtual = capacidadeTotal - capacidadeRestante;
 
     await ecoponto.update({ capacidadeAtual: capacidadeAtual }); 
 
