@@ -1,5 +1,5 @@
 import "leaflet/dist/leaflet.css";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import L from "leaflet";
 import {
   MapContainer,
@@ -266,7 +266,7 @@ export default function Mapa({
     ? [...pontosCheios, selectedEmpresa]
     : pontosCheios;
 
-  useEffect(() => {
+  const fetchPontos = useCallback(() => {
     if (isSuperAdmin && !selectedEmpresaIdForRequest) {
       setPontos([]);
       return;
@@ -280,6 +280,24 @@ export default function Mapa({
       setPontos(data);
     });
   }, [isSuperAdmin, selectedEmpresaIdForRequest]);
+
+  useEffect(() => {
+    fetchPontos();
+  }, [fetchPontos]);
+
+  useEffect(() => {
+    const handleModelChanged = (event) => {
+      if (event.detail?.modelName === "ecoponto") {
+        fetchPontos();
+      }
+    };
+
+    window.addEventListener("model:changed", handleModelChanged);
+
+    return () => {
+      window.removeEventListener("model:changed", handleModelChanged);
+    };
+  }, [fetchPontos]);
 
   useEffect(() => {
     if (empresasComCoordenadas.length === 0) {
@@ -381,7 +399,7 @@ export default function Mapa({
                   <div className="ecoponto-group-item" key={`popup-${ponto.codigo}`}>
                     <span className="ecoponto-group-code">Ecoponto {ponto.codigo}</span>
                     <span className="ecoponto-group-value">{getPercentagem(ponto)}%</span>
-                    {index < group.ecopontos.length - 1 && <strong>//</strong>}
+                    {index < group.ecopontos.length - 1}
                   </div>
                 ))}
               </div>

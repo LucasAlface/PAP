@@ -39,6 +39,20 @@ export default function useModel(modelName, filters = null) {
     fetchModel(filters);
   }, [fetchModel, filters]);
 
+  useEffect(() => {
+    const handleModelChanged = (event) => {
+      if (event.detail?.modelName === modelName) {
+        fetchModel(filters);
+      }
+    };
+
+    window.addEventListener("model:changed", handleModelChanged);
+
+    return () => {
+      window.removeEventListener("model:changed", handleModelChanged);
+    };
+  }, [fetchModel, filters, modelName]);
+
   return {
     model,
     loading,
