@@ -178,7 +178,7 @@ export default function App() {
         )}
 
         <main className={`main-stage main-stage-${isAdmin ? view : "map"}`}>
-          {isAdmin && view === "dashboard" && <Dashboard />}
+          {isAdmin && view === "dashboard" && <Dashboard onNavigate={navigate} />}
 
           {(!isAdmin || view === "map") && (
             <section className="map-region map-region-fullscreen">

@@ -71,7 +71,7 @@ router.put("/capacidade", async (req, res) => {
     const capacidadeAtual = capacidadeTotal - capacidadeRestante.toPrecision(2);
 
     await ecoponto.update({ capacidadeAtual: capacidadeAtual, ultimaLeitura: new Date() }); 
-    const mensagem = `Equipamento: ${codigoEquipamento}\n Medição: ${profundidade}cm\n Ecoponto: ${ecoponto.codigo}\n Ocupação: ${capacidadeAtual}m3\n Percentagem: ${100-percentagem.toFixed(2)*100}%`;
+    const mensagem = `Equipamento: ${codigoEquipamento}\n Medição: ${profundidade}cm\n Ecoponto: ${ecoponto.codigo}\n Ocupação: ${capacidadeAtual.toFixed(1)} m³\n Percentagem: ${100-percentagem.toFixed(2)*100}%`;
       await EcopontoLogs.create({
         codigoEquipamento: codigoEquipamento,
         codigoEcoponto: ecoponto.codigo,
