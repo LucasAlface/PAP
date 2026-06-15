@@ -44,7 +44,7 @@ router.put("/capacidade", async (req, res) => {
 
     const percentagem = m / altura;
     const capacidadeRestante = percentagem * capacidadeTotal;
-    const capacidadeAtual = capacidadeTotal - capacidadeRestante;
+    const capacidadeAtual = capacidadeTotal - capacidadeRestante.toPrecision(2);
 
     await ecoponto.update({ capacidadeAtual: capacidadeAtual }); 
 
@@ -55,9 +55,15 @@ router.put("/capacidade", async (req, res) => {
   }
 });
 
-router.get("/coordenadas", autenticarJWT, carregarUtilizador, async (req, res) => {
+async function enviarCoordenadas(req, res) {
   try {
     const whereClause = whereEmpresa(req);
+    const empresaId = req.body?.empresaId || req.query?.empresaId;
+
+    if (req.user.superAdmin && empresaId) {
+      whereClause.empresaId = empresaId;
+    }
+
     const ecopontos = await Ecoponto.findAll({
       where: whereClause,
       order: [["id", "ASC"]],
@@ -82,6 +88,7 @@ router.get("/coordenadas", autenticarJWT, carregarUtilizador, async (req, res) =
 
       return {
         codigo: ecoponto.codigo,
+        empresaId: ecoponto.empresaId,
         percentagem: percentagem,
         latitude: ecoponto.latitude,
         longitude: ecoponto.longitude,
@@ -99,5 +106,9 @@ router.get("/coordenadas", autenticarJWT, carregarUtilizador, async (req, res) =
       erro: "Erro ao obter coordenadas"
     });
   }
-});
+}
+
+router.get("/coordenadas", autenticarJWT, carregarUtilizador, enviarCoordenadas);
+router.post("/coordenadas", autenticarJWT, carregarUtilizador, enviarCoordenadas);
+
 module.exports = router;

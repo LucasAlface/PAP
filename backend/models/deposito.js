@@ -10,7 +10,7 @@ const Deposito = sequelize.define("Deposito", {
   descricao: DataTypes.TEXT,
 }, {
   tableName: "deposito",
-  timestamps: false
+  timestamps: true
 });
 
 

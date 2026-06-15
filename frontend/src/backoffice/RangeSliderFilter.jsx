@@ -10,10 +10,12 @@ function formatValue(value) {
 export function getMaxValue(items, key) {
   if (!Array.isArray(items) || items.length === 0) return 0;
 
-  return items.reduce((max, item) => {
+  const maxValue = items.reduce((max, item) => {
     const value = Number(item?.[key]);
     return Number.isFinite(value) && value > max ? value : max;
   }, 0);
+
+  return Math.ceil(maxValue);
 }
 
 export function getNextMaxLimit(currentLimit, items, key) {

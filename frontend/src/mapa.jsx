@@ -258,6 +258,7 @@ export default function Mapa({
     return empresasComCoordenadas.find((empresa) => String(empresa.id) === String(selectedEmpresaId)) ||
       empresasComCoordenadas[0];
   }, [empresasComCoordenadas, selectedEmpresaId]);
+  const selectedEmpresaIdForRequest = isSuperAdmin ? selectedEmpresaId : null;
 
   const sede = selectedEmpresa ? formatCoordinates([selectedEmpresa]) : "";
   const ecopontos = formatCoordinates(pontosCheios);
@@ -266,11 +267,19 @@ export default function Mapa({
     : pontosCheios;
 
   useEffect(() => {
-    apiRequest("/rotas/coordenadas")
-      .then((data) => {
-        setPontos(data);
-      });
-  }, []);
+    if (isSuperAdmin && !selectedEmpresaIdForRequest) {
+      setPontos([]);
+      return;
+    }
+
+    const request = isSuperAdmin
+      ? apiRequest("/rotas/coordenadas", "POST", { empresaId: selectedEmpresaIdForRequest })
+      : apiRequest("/rotas/coordenadas");
+
+    request.then((data) => {
+      setPontos(data);
+    });
+  }, [isSuperAdmin, selectedEmpresaIdForRequest]);
 
   useEffect(() => {
     if (empresasComCoordenadas.length === 0) {

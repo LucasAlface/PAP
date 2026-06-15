@@ -8,7 +8,7 @@ const Equipamento = sequelize.define("Equipamento", {
   ativo: { type: DataTypes.BOOLEAN, defaultValue: false },
 }, {
   tableName: "equipamento",
-  timestamps: false
+  timestamps: true
 });
 
 module.exports = Equipamento;

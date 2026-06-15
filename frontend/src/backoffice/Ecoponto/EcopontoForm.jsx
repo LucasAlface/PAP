@@ -73,12 +73,15 @@ export default function EcopontoForm({ ecoponto, onNavigate, mapCoordinates }) {
       codigo,
       tipoEcopontoId: tipoEcopontoId ? Number(tipoEcopontoId.value) : null,
       depositoId: depositoId ? Number(depositoId.value) : null,
-      capacidadeAtual: capacidadeRestante ? Number(capacidadeRestante) : null,
       latitude: latitude ? Number(latitude) : null,
       longitude: longitude ? Number(longitude) : null,
       descricao,
       empresaId: empresaId ? Number(empresaId.value) : null,
     };
+
+    if (isEditMode) {
+      payload.capacidadeAtual = capacidadeRestante ? Number(capacidadeRestante) : null;
+    }
 
     try {
       const endpoint = isEditMode
@@ -98,9 +101,9 @@ export default function EcopontoForm({ ecoponto, onNavigate, mapCoordinates }) {
         setCodigo("");
         setTipoEcopontoId(null);
         setDepositoId(null);
-        setCapacidadeRestante("");
-        setLatitude("");
-        setLongitude("");
+        setCapacidadeRestante(null);
+        setLatitude(null);
+        setLongitude(null);
         setDescricao("");
       }
     } catch (error) {
@@ -158,14 +161,16 @@ export default function EcopontoForm({ ecoponto, onNavigate, mapCoordinates }) {
           />
         </label>
       )}
-      <label>
-        Capacidade restante
-        <input
-          value={capacidadeRestante}
-          onChange={(e) => setCapacidadeRestante(e.target.value)}
-          placeholder="Capacidade Restante"
-        />
-      </label>
+      {isEditMode && (
+        <label>
+          Capacidade restante
+          <input
+            value={capacidadeRestante}
+            onChange={(e) => setCapacidadeRestante(e.target.value)}
+            placeholder="Capacidade Restante"
+          />
+        </label>
+      )}
       <label>
         Latitude
         <input

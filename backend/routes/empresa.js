@@ -3,11 +3,13 @@ const Empresa = require("../models/empresa")
 const { Op } = require("sequelize");
 const autenticarJWT = require("../middleware/autenticarJWT");
 const { autorizarAcessoBackoffice, carregarUtilizador } = require("../middleware/autorizarAcesso");
+const { createEmpresaSchema, updateEmpresaSchema } = require("../middleware/empresa");
+const {validarBody} = require("../middleware/validarBody")
 
 router.use(autenticarJWT);
 router.use(carregarUtilizador);
 
-router.post("/inserir", autorizarAcessoBackoffice, async (req, res) => {
+router.post("/inserir", autorizarAcessoBackoffice, validarBody(createEmpresaSchema), async (req, res) => {
     try {
         const dados = req.body;
         await Empresa.create(dados);
@@ -17,7 +19,7 @@ router.post("/inserir", autorizarAcessoBackoffice, async (req, res) => {
     }
 });
 
-router.put("/atualizar/:id", autorizarAcessoBackoffice, async (req, res) => {
+router.put("/atualizar/:id", autorizarAcessoBackoffice, validarBody(updateEmpresaSchema), async (req, res) => {
     try {
         const dados = req.body;
         const { id } = req.params;

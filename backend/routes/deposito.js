@@ -4,6 +4,8 @@ const { Op } = require("sequelize");
 const autenticarJWT = require("../middleware/autenticarJWT");
 const { autorizarAcessoBackoffice, carregarUtilizador } = require("../middleware/autorizarAcesso");
 const {whereEmpresa, setEmpresaId} = require("../functions/functions");
+const { createDepositoSchema, updateDepositoSchema } = require("../middleware/deposito");
+const {validarBody} = require("../middleware/validarBody")
 
 router.use(autenticarJWT);
 router.use(carregarUtilizador);
@@ -23,7 +25,7 @@ function whereDepositoEmpresa(req, extraWhere = {}) {
     };
 }
 
-router.post("/inserir", async (req, res) => {
+router.post("/inserir", validarBody(createDepositoSchema), async (req, res) => {
     try {
         const empresaId = setEmpresaId(req);
         const deposito = await Deposito.create({
@@ -36,7 +38,7 @@ router.post("/inserir", async (req, res) => {
     }
 });
 
-router.put("/atualizar/:id", async (req, res) => {
+router.put("/atualizar/:id", validarBody(updateDepositoSchema), async (req, res) => {
     try {
         const dados = req.body;
         const { id } = req.params;

@@ -3,12 +3,14 @@ const TipoEcoponto = require("../models/tipoEcoponto");
 const { Op } = require("sequelize");
 const autenticarJWT = require("../middleware/autenticarJWT");
 const { autorizarAcessoBackoffice, autorizarAcessoSuperAdmin, carregarUtilizador } = require("../middleware/autorizarAcesso");
+const { createTipoEcopontoSchema, updateTipoEcopontoSchema } = require("../middleware/tipoEcoponto");
+const {validarBody} = require("../middleware/validarBody")
 
 router.use(autenticarJWT);
 router.use(carregarUtilizador);
 router.use(autorizarAcessoBackoffice);
 
-router.post("/inserir", autorizarAcessoSuperAdmin,async (req, res) => {
+router.post("/inserir", autorizarAcessoSuperAdmin, validarBody(createTipoEcopontoSchema), async (req, res) => {
   try {
     const dados = req.body;
     await TipoEcoponto.create(dados);
@@ -18,7 +20,7 @@ router.post("/inserir", autorizarAcessoSuperAdmin,async (req, res) => {
   }
 });
 
-router.put("/atualizar/:id", autorizarAcessoSuperAdmin, async (req, res) => {
+router.put("/atualizar/:id", autorizarAcessoSuperAdmin, validarBody(updateTipoEcopontoSchema), async (req, res) => {
   try {
     const dados = req.body;
     const { id } = req.params;

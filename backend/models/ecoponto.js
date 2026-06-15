@@ -13,7 +13,7 @@ const Ecoponto = sequelize.define("Ecoponto", {
   descricao: DataTypes.TEXT,
 }, {
   tableName: "ecoponto",
-  timestamps: false
+  timestamps: true
 });
 
 

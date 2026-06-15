@@ -5,12 +5,14 @@ const bcrypt = require('bcrypt');
 const autenticarJWT = require("../middleware/autenticarJWT");
 const { autorizarAcessoBackoffice, carregarUtilizador } = require("../middleware/autorizarAcesso");
 const { whereEmpresa, setEmpresaId } = require("../functions/functions");
+const { createUtilizadorSchema, updateUtilizadorSchema } = require("../middleware/utilizador");
+const {validarBody} = require("../middleware/validarBody")
 
 router.use(autenticarJWT);
 router.use(carregarUtilizador);
 router.use(autorizarAcessoBackoffice);
 
-router.post("/inserir", async (req, res) => {
+router.post("/inserir", validarBody(createUtilizadorSchema), async (req, res) => {
     try {
         const dados = req.body;
         const isSuperAdmin = req.user.superAdmin;
@@ -30,7 +32,7 @@ router.post("/inserir", async (req, res) => {
     }
 });
 
-router.put("/atualizar/:id", async (req, res) => {
+router.put("/atualizar/:id", validarBody(updateUtilizadorSchema), async (req, res) => {
     try {
         const dados = req.body;
         const isSuperAdmin = req.user.superAdmin;

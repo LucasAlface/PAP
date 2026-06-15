@@ -4,12 +4,14 @@ const { Op } = require("sequelize");
 const autenticarJWT = require("../middleware/autenticarJWT");
 const { autorizarAcessoBackoffice, carregarUtilizador } = require("../middleware/autorizarAcesso");
 const {whereEmpresa, setEmpresaId} = require("../functions/functions");
+const { createEcopontoSchema, updateEcopontoSchema } = require("../middleware/ecoponto");
+const {validarBody} = require("../middleware/validarBody")
 
 router.use(autenticarJWT);
 router.use(carregarUtilizador);
 router.use(autorizarAcessoBackoffice);
 
-router.post("/inserir", async (req, res) => {
+router.post("/inserir", validarBody(createEcopontoSchema), async (req, res) => {
     try {
         const empresaId = setEmpresaId(req);            
         const ecoponto = await Ecoponto.create({
@@ -23,7 +25,7 @@ router.post("/inserir", async (req, res) => {
     }
 });
 
-router.put("/atualizar/:id", async (req, res) => {
+router.put("/atualizar/:id", validarBody(updateEcopontoSchema), async (req, res) => {
     try {
         const empresaId = setEmpresaId(req);
         const whereClause = whereEmpresa(req, { id: req.params.id });

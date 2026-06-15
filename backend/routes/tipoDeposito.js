@@ -3,12 +3,14 @@ const TipoDeposito = require('../models/tipoDeposito');
 const { Op } = require("sequelize");
 const autenticarJWT = require("../middleware/autenticarJWT");
 const { autorizarAcessoBackoffice, carregarUtilizador } = require("../middleware/autorizarAcesso");
+const { createTipoDepositoSchema, updateTipoDepositoSchema } = require("../middleware/tipoDeposito");
+const {validarBody} = require("../middleware/validarBody")
 
 router.use(autenticarJWT);
 router.use(carregarUtilizador);
 router.use(autorizarAcessoBackoffice);
 
-router.post('/inserir', async (req, res) => {
+router.post('/inserir', validarBody(createTipoDepositoSchema), async (req, res) => {
   try {
     const dados = req.body;
     await TipoDeposito.create(dados);
@@ -18,7 +20,7 @@ router.post('/inserir', async (req, res) => {
   }
 });
 
-router.put('/atualizar/:id', async (req, res) => {
+router.put('/atualizar/:id', validarBody(updateTipoDepositoSchema), async (req, res) => {
   try {
     const dados = req.body;
     const { id } = req.params;
