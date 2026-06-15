@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const {Equipamento, EcopontoEquipamento, Ecoponto, Deposito, TipoDeposito} = require("../models/models")
+const {Equipamento, EcopontoEquipamento, Ecoponto, Deposito, TipoDeposito, EcopontoLogs} = require("../models/models")
 const {whereEmpresa} = require("../functions/functions");
 const autenticarJWT = require("../middleware/autenticarJWT");
 const { carregarUtilizador } = require("../middleware/autorizarAcesso");
@@ -8,28 +8,46 @@ router.put("/capacidade", async (req, res) => {
   try {
     const { codigoEquipamento, profundidade } = req.body;
 
-    console.log("Código do equipamento:", codigoEquipamento);
-
     const equipamento = await Equipamento.findOne({ where: { codigo: codigoEquipamento } });
     if (!equipamento) {
-      return res.status(404).json({ erro: "Equipamento não encontrado" });
+      const erro = `O equipamento ${codigoEquipamento} não está registado`;
+      await EcopontoLogs.create({
+        codigoEquipamento: codigoEquipamento,
+        detalhes: erro,
+      })
+      return res.status(404).json({ erro: erro });
     }
     const equipamentoId = equipamento.id;
-    console.log("ID do equipamento:", equipamentoId);
 
     const ecopontoEquipamento = await EcopontoEquipamento.findOne({ where: { equipamentoId: equipamentoId, ativo: true } });
     if (!ecopontoEquipamento) {
-      return res.status(404).json({ erro: "Ecoponto associado ao equipamento não encontrado" });
+      const erro = `O equipamento ${codigoEquipamento} não tem um ecoponto associado`;
+      await EcopontoLogs.create({
+        codigoEquipamento: codigoEquipamento,
+        detalhes: erro,
+      })
+      return res.status(404).json({ erro: erro });
     }
     const ecopontoId = ecopontoEquipamento.ecopontoId;
 
     const ecoponto = await Ecoponto.findByPk(ecopontoId);
     if (!ecoponto) {
-      return res.status(404).json({ erro: "Ecoponto não encontrado" });
+      const erro = `O ecoponto que estava associado ao equipamento ${codigoEquipamento} já não existe`;
+      await EcopontoLogs.create({
+        codigoEquipamento: codigoEquipamento,
+        detalhes: erro,
+      })
+      return res.status(404).json({ erro: erro });
     }
 
     const deposito = await Deposito.findByPk(ecoponto.depositoId);
     if (!deposito) {
+      const erro = `O deposito associado ao ecoponto ${ecoponto.codigo} já não existe`;
+      await EcopontoLogs.create({
+        codigoEquipamento: codigoEquipamento,
+        codigoEcoponto: ecoponto.codigo,
+        detalhes: erro,
+      })
       return res.status(404).json({ erro: "Depósito associado ao ecoponto não encontrado" });
     }
 
@@ -39,15 +57,26 @@ router.put("/capacidade", async (req, res) => {
     const m = profundidade / 100;
     if (m > altura) {
       await ecoponto.update({ capacidadeAtual: 0 });
-      return res.status(404).json({erro: "Medição superior à capacidade do depósito;"})
+      const erro = "Medição superior à capacidade do depósito";
+      await EcopontoLogs.create({
+        codigoEquipamento: codigoEquipamento,
+        codigoEcoponto: ecoponto.codigo,
+        detalhes: erro,
+      })
+      return res.status(404).json({erro: erro})
     }
 
     const percentagem = m / altura;
     const capacidadeRestante = percentagem * capacidadeTotal;
     const capacidadeAtual = capacidadeTotal - capacidadeRestante.toPrecision(2);
 
-    await ecoponto.update({ capacidadeAtual: capacidadeAtual }); 
-
+    await ecoponto.update({ capacidadeAtual: capacidadeAtual, ultimaLeitura: new Date() }); 
+    const mensagem = `Equipamento: ${codigoEquipamento}\n Medição: ${profundidade}cm\n Ecoponto: ${ecoponto.codigo}\n Ocupação: ${capacidadeAtual}m3\n Percentagem: ${100-percentagem.toFixed(2)*100}%`;
+      await EcopontoLogs.create({
+        codigoEquipamento: codigoEquipamento,
+        codigoEcoponto: ecoponto.codigo,
+        detalhes: mensagem,
+      })
 
     res.json("simmmm", ecoponto);
   } catch (err) {

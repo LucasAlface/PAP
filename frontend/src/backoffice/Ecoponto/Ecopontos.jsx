@@ -147,6 +147,7 @@ export default function Ecopontos({ onNavigate }) {
           : "Loading..."
     },
     { key: "capacidadeAtual", label: "Capacidade ocupada" },
+    {key: "ultimaLeitura", label: "Última leitura"}
   ];
 
   return (

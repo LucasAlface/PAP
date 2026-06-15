@@ -6,6 +6,7 @@ import useDepositos from "../Deposito/useDepositos.js";
 import useEmpresas from "../Empresa/useEmpresas.js";
 import FormTemplate from "../FormTemplate.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
+import Mapa from "../../mapa.jsx";
 
 export default function EcopontoForm({ ecoponto, onNavigate, mapCoordinates }) {
   const { items: tipos = [] } = useTipoEcopontos();
@@ -60,6 +61,11 @@ export default function EcopontoForm({ ecoponto, onNavigate, mapCoordinates }) {
     setLongitude(String(mapCoordinates.longitude ?? ""));
   }, [mapCoordinates]);
 
+  const handleCoordinatesSelected = (coordinates) => {
+    setLatitude(String(coordinates.latitude ?? ""));
+    setLongitude(String(coordinates.longitude ?? ""));
+  };
+
   async function handleSubmit(event) {
     event.preventDefault();
     setStatus("Sending...");
@@ -98,6 +104,10 @@ export default function EcopontoForm({ ecoponto, onNavigate, mapCoordinates }) {
         if (onNavigate) onNavigate("ecopontos");
       } else {
         setStatus("Ecoponto added successfully.");
+        if (onNavigate) {
+          onNavigate("ecopontos");
+          return;
+        }
         setCodigo("");
         setTipoEcopontoId(null);
         setDepositoId(null);
@@ -129,7 +139,7 @@ export default function EcopontoForm({ ecoponto, onNavigate, mapCoordinates }) {
           placeholder="Ecoponto code"
         />
       </label>
-      <label>
+      <label className="select-field-over-map">
         Tipo Ecoponto
         <Select
           options={tipoOptions}
@@ -139,7 +149,7 @@ export default function EcopontoForm({ ecoponto, onNavigate, mapCoordinates }) {
           isClearable={false}
         />
       </label>
-      <label>
+      <label className="select-field-over-map">
         Depósito
         <Select
           options={depositoOptions}
@@ -150,7 +160,7 @@ export default function EcopontoForm({ ecoponto, onNavigate, mapCoordinates }) {
         />
       </label>
       {isAdmin && (
-        <label>
+        <label className="select-field-over-map">
           Empresa
           <Select
             options={empresaOptions}
@@ -171,22 +181,20 @@ export default function EcopontoForm({ ecoponto, onNavigate, mapCoordinates }) {
           />
         </label>
       )}
-      <label>
-        Latitude
-        <input
-          value={latitude}
-          onChange={(e) => setLatitude(e.target.value)}
-          placeholder="Latitude"
-        />
-      </label>
-      <label>
-        Longitude
-        <input
-          value={longitude}
-          onChange={(e) => setLongitude(e.target.value)}
-          placeholder="Longitude"
-        />
-      </label>
+      <div className="coordinate-map-field">
+        <div className="coordinate-map-preview">
+          <Mapa
+            canPickEcopontoCoordinates
+            onEcopontoCoordinatesSelected={handleCoordinatesSelected}
+            selectedCoordinates={{ latitude, longitude }}
+            showRouteControls={false}
+          />
+        </div>
+        <div className="coordinate-readout">
+          <span>Latitude: {latitude || "Sem seleção"}</span>
+          <span>Longitude: {longitude || "Sem seleção"}</span>
+        </div>
+      </div>
       <label>
         Descrição
         <textarea

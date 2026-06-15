@@ -17,6 +17,7 @@ import DeleteTipoEcoponto from "./TipoEcoponto/Delete.jsx";
 import EcopontoEquipamentos from "./EcopontoEquipamento/EcopontoEquipamentos.jsx";
 import EcopontoEquipamentoForm from "./EcopontoEquipamento/EcopontoEquipamentoForm.jsx";
 import DeleteEcopontoEquipamento from "./EcopontoEquipamento/Delete.jsx";
+import EcopontoLogs from "./EcopontoLog/EcopontoLogs.jsx";
 import Empresas from "./Empresa/Empresas.jsx";
 import EmpresasForm from "./Empresa/EmpresasForm.jsx";
 import DeleteEmpresa from "./Empresa/Delete.jsx";
@@ -94,6 +95,10 @@ const sections = [
     ),
   },
   {
+    base: "ecopontologs",
+    List: EcopontoLogs,
+  },
+  {
     base: "empresas",
     add: "add-empresa",
     edit: "edit-empresa",
@@ -134,6 +139,16 @@ export default function Backoffice({ page, selectedItem, onNavigate, ecopontoMap
 
   const section = getSection(page) || sections[0];
   const List = section.List;
+  const isActionPage = [section.add, section.edit, section.delete].includes(page);
+
+  if (!isActionPage) {
+    return (
+      <div className="backoffice backoffice-single">
+        <List onNavigate={onNavigate} />
+      </div>
+    );
+  }
+
   const action =
     page === section.edit
       ? section.renderEdit(selectedItem, onNavigate, ecopontoMapCoordinates, empresaMapCoordinates)

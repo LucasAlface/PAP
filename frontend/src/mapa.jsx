@@ -11,7 +11,7 @@ import {
   useMapEvents,
 } from "react-leaflet";
 import { renderToStaticMarkup } from "react-dom/server";
-import { Building2, Database, Recycle } from "lucide-react";
+import { Building2, Database, MapPin, Recycle } from "lucide-react";
 import Routing from "./routing.jsx";
 import { formatCoordinates, getDistance } from "./middleware/coordinatesHelper.js";
 import { apiRequest } from "./middleware/request.js";
@@ -58,6 +58,22 @@ const empresaUnselectedIcon = L.divIcon({
   popupAnchor: [0, -20],
 });
 
+const selectedEcopontoIcon = L.divIcon({
+  className: "map-selection-marker",
+  html: renderToStaticMarkup(<MapPin size={24} strokeWidth={2.6} />),
+  iconSize: [40, 40],
+  iconAnchor: [20, 36],
+  popupAnchor: [0, -34],
+});
+
+const selectedEmpresaIcon = L.divIcon({
+  className: "map-selection-marker map-selection-marker-empresa",
+  html: renderToStaticMarkup(<Building2 size={22} strokeWidth={2.5} />),
+  iconSize: [40, 40],
+  iconAnchor: [20, 20],
+  popupAnchor: [0, -22],
+});
+
 function getPointCoordinates(ponto) {
   const lat = Number(ponto.latitude ?? ponto.coords?.[0]);
   const lng = Number(ponto.longitude ?? ponto.coords?.[1]);
@@ -96,6 +112,28 @@ function formatMapCoordinate(value) {
   return Number(value).toFixed(7);
 }
 
+function getSelectedCoordinates(coordinates) {
+  if (!coordinates) return null;
+
+  if (
+    coordinates.latitude == null ||
+    coordinates.longitude == null ||
+    String(coordinates.latitude).trim() === "" ||
+    String(coordinates.longitude).trim() === ""
+  ) {
+    return null;
+  }
+
+  const lat = Number(coordinates.latitude);
+  const lng = Number(coordinates.longitude);
+
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+    return null;
+  }
+
+  return { lat, lng };
+}
+
 function MapClickPicker({ enabled, onPick }) {
   useMapEvents({
     click(event) {
@@ -121,7 +159,7 @@ function MapSearchControl() {
   };
 
   const handleSearch = async (event) => {
-    event.preventDefault();
+    event?.preventDefault();
     const trimmedQuery = query.trim();
 
     if (!trimmedQuery) return;
@@ -156,10 +194,16 @@ function MapSearchControl() {
     }
   };
 
+  const handleSearchKeyDown = (event) => {
+    if (event.key !== "Enter") return;
+    event.stopPropagation();
+    handleSearch(event);
+  };
+
   return (
-    <form
+    <div
       className="map-search-control leaflet-control"
-      onSubmit={handleSearch}
+      role="search"
       onClick={stopMapInteraction}
       onDoubleClick={stopMapInteraction}
       onMouseDown={stopMapInteraction}
@@ -168,13 +212,26 @@ function MapSearchControl() {
       <input
         value={query}
         onChange={(event) => setQuery(event.target.value)}
+        onKeyDown={handleSearchKeyDown}
         placeholder="Pesquisar no OpenStreetMap"
         aria-label="Pesquisar localização no OpenStreetMap"
       />
-      <button type="submit">Pesquisar</button>
+      <button type="button" onClick={handleSearch}>Pesquisar</button>
       {status && <span>{status}</span>}
-    </form>
+    </div>
   );
+}
+
+function MapSelectedCoordinateFocus({ coordinates, enabled }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!enabled || !coordinates) return;
+
+    map.panTo([coordinates.lat, coordinates.lng]);
+  }, [coordinates, enabled, map]);
+
+  return null;
 }
 
 function groupNearbyEcopontos(pontos, tolerance = ECOPONTO_GROUP_TOLERANCE_METERS) {
@@ -222,12 +279,23 @@ export default function Mapa({
   onEcopontoCoordinatesSelected,
   onEmpresaCoordinatesSelected,
   onAddEcopontoAt,
+  selectedCoordinates,
+  showRouteControls = true,
 }) {
   const [pontos, setPontos] = useState([]);
   const [selectedDepositoType, setSelectedDepositoType] = useState("superficie");
   const [selectedEmpresaId, setSelectedEmpresaId] = useState(null);
+  const [routeActive, setRouteActive] = useState(false);
+  const [routeRefreshKey, setRouteRefreshKey] = useState(0);
   const { authUser } = useAuth();
   const isSuperAdmin = authUser?.cargo === 1;
+  const canPickCoordinates = canPickEcopontoCoordinates || canPickEmpresaCoordinates;
+  const selectedLatitude = selectedCoordinates?.latitude;
+  const selectedLongitude = selectedCoordinates?.longitude;
+  const selectedMapCoordinates = useMemo(
+    () => getSelectedCoordinates({ latitude: selectedLatitude, longitude: selectedLongitude }),
+    [selectedLatitude, selectedLongitude]
+  );
   const ecopontoGroups = useMemo(() => groupNearbyEcopontos(pontos), [pontos]);
   const pontosCheios = useMemo(() =>
     ecopontoGroups
@@ -262,22 +330,26 @@ export default function Mapa({
 
   const sede = selectedEmpresa ? formatCoordinates([selectedEmpresa]) : "";
   const ecopontos = formatCoordinates(pontosCheios);
-  const pontosRota = selectedEmpresa
-    ? [...pontosCheios, selectedEmpresa]
-    : pontosCheios;
+  const pontosRota = useMemo(() =>
+    selectedEmpresa
+      ? [...pontosCheios, selectedEmpresa]
+      : pontosCheios,
+    [pontosCheios, selectedEmpresa]
+  );
 
   const fetchPontos = useCallback(() => {
     if (isSuperAdmin && !selectedEmpresaIdForRequest) {
       setPontos([]);
-      return;
+      return Promise.resolve([]);
     }
 
     const request = isSuperAdmin
       ? apiRequest("/rotas/coordenadas", "POST", { empresaId: selectedEmpresaIdForRequest })
       : apiRequest("/rotas/coordenadas");
 
-    request.then((data) => {
+    return request.then((data) => {
       setPontos(data);
+      return data;
     });
   }, [isSuperAdmin, selectedEmpresaIdForRequest]);
 
@@ -288,7 +360,11 @@ export default function Mapa({
   useEffect(() => {
     const handleModelChanged = (event) => {
       if (event.detail?.modelName === "ecoponto") {
-        fetchPontos();
+        fetchPontos().then(() => {
+          if (routeActive) {
+            setRouteRefreshKey((currentKey) => currentKey + 1);
+          }
+        });
       }
     };
 
@@ -297,7 +373,7 @@ export default function Mapa({
     return () => {
       window.removeEventListener("model:changed", handleModelChanged);
     };
-  }, [fetchPontos]);
+  }, [fetchPontos, routeActive]);
 
   useEffect(() => {
     if (empresasComCoordenadas.length === 0) {
@@ -319,47 +395,54 @@ export default function Mapa({
 
     window.open(`https://www.google.com/maps/dir/?api=1&destination=${sede}&waypoints=${ecopontos}`, "_blank");
   };
+
+  const handleRouteAction = () => {
+    if (routeActive) {
+      handleGoogleMapsRedirect();
+      return;
+    }
+
+    setRouteActive(true);
+    setRouteRefreshKey((currentKey) => currentKey + 1);
+  };
+
   return (
     <>
-      <div className="map-route-type-toggle" aria-label="Tipo de depósito para rota">
-        {DEPOSITO_ROUTE_OPTIONS.map((option) => (
+      {showRouteControls && (
+        <>
+          <div className="map-route-type-toggle" aria-label="Tipo de depósito para rota">
+            {DEPOSITO_ROUTE_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                className={selectedDepositoType === option.value ? "is-active" : ""}
+                onClick={() => setSelectedDepositoType(option.value)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
           <button
-            key={option.value}
             type="button"
-            className={selectedDepositoType === option.value ? "is-active" : ""}
-            onClick={() => setSelectedDepositoType(option.value)}
+            onClick={handleRouteAction}
+            className="map-route-action"
           >
-            {option.label}
+            {routeActive ? "Abrir Google Maps" : "Calcular rota"}
           </button>
-        ))}
-      </div>
-      <button 
-        onClick={handleGoogleMapsRedirect}
-        style={{
-          position: "absolute",
-          top: "10px",
-          right: "10px",
-          zIndex: 1000,
-          padding: "10px 15px",
-          backgroundColor: "#4285F4",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-          fontSize: "14px",
-          fontWeight: "bold"
-        }}
-      >
-        Abrir Google Maps
-      </button>
+        </>
+      )}
       <MapContainer
-      center={[40.6, -8.6]}
-      zoom={7}
+      center={selectedMapCoordinates ? [selectedMapCoordinates.lat, selectedMapCoordinates.lng] : [40.6, -8.6]}
+      zoom={selectedMapCoordinates ? 16 : 7}
       style={{ height: "100%", width: "100%" }}
     >
       <MapSearchControl />
+      <MapSelectedCoordinateFocus
+        coordinates={selectedMapCoordinates}
+        enabled={canPickCoordinates}
+      />
       <MapClickPicker
-        enabled={canPickEcopontoCoordinates || canPickEmpresaCoordinates}
+        enabled={canPickCoordinates}
         onPick={canPickEmpresaCoordinates ? onEmpresaCoordinatesSelected : onEcopontoCoordinatesSelected}
       />
       <TileLayer
@@ -431,7 +514,20 @@ export default function Mapa({
           </Popup>
         </Marker>
       ))}
-      <Routing pontos={pontosRota} />
+      {selectedMapCoordinates && (
+        <Marker
+          key="selected-map-coordinate"
+          position={[selectedMapCoordinates.lat, selectedMapCoordinates.lng]}
+          icon={canPickEmpresaCoordinates ? selectedEmpresaIcon : selectedEcopontoIcon}
+        >
+          <Popup>
+            <div>Local selecionado</div>
+          </Popup>
+        </Marker>
+      )}
+      {showRouteControls && routeActive && (
+        <Routing pontos={pontosRota} refreshKey={routeRefreshKey} />
+      )}
     </MapContainer>
     </>
   );

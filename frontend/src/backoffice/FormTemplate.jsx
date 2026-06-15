@@ -8,7 +8,7 @@ export default function FormTemplate({
   onCancel,
   onSubmit,
   submitLabel,
-  cancelLabel = "Cancel",
+  cancelLabel = "Cancelar",
   backLabel,
   status,
   children,
@@ -42,7 +42,7 @@ export default function FormTemplate({
           <span className="template-kicker">{isEditMode ? "Editar registo" : "Novo registo"}</span>
           <h2>{title}</h2>
         </div>
-        {isEditMode && (
+        {onCancel && (
           <button type="button" onClick={onCancel} className="bo-btn bo-btn-ghost">
             <X size={16} />
             {cancelLabel}

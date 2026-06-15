@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { apiRequest } from "../../middleware/request";
 import FormTemplate from "../FormTemplate.jsx";
+import Mapa from "../../mapa.jsx";
 
 export default function EmpresasForm({ empresa, onNavigate, mapCoordinates }) {
   const [nome, setNome] = useState("");
@@ -30,6 +31,11 @@ export default function EmpresasForm({ empresa, onNavigate, mapCoordinates }) {
     setLatitude(String(mapCoordinates.latitude ?? ""));
     setLongitude(String(mapCoordinates.longitude ?? ""));
   }, [mapCoordinates]);
+
+  const handleCoordinatesSelected = (coordinates) => {
+    setLatitude(String(coordinates.latitude ?? ""));
+    setLongitude(String(coordinates.longitude ?? ""));
+  };
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -64,6 +70,10 @@ export default function EmpresasForm({ empresa, onNavigate, mapCoordinates }) {
         if (onNavigate) onNavigate("empresas");
       } else {
         setStatus("Empresa added successfully.");
+        if (onNavigate) {
+          onNavigate("empresas");
+          return;
+        }
         setNome("");
         setNif("");
         setEmail("");
@@ -128,24 +138,20 @@ export default function EmpresasForm({ empresa, onNavigate, mapCoordinates }) {
           style={{ width: "100%", padding: 8, borderRadius: 4, border: "1px solid #d1d5db" }}
         />
       </label>
-      <label>
-        Latitude:
-        <input
-          type="number"
-          value={latitude}
-          onChange={e => setLatitude(e.target.value)}
-          style={{ width: "100%", padding: 8, borderRadius: 4, border: "1px solid #d1d5db" }}
-        />
-      </label>
-      <label>
-        Longitude:
-        <input
-          type="number"
-          value={longitude}
-          onChange={e => setLongitude(e.target.value)}
-          style={{ width: "100%", padding: 8, borderRadius: 4, border: "1px solid #d1d5db" }}
-        />
-      </label>
+      <div className="coordinate-map-field">
+        <div className="coordinate-map-preview">
+          <Mapa
+            canPickEmpresaCoordinates
+            onEmpresaCoordinatesSelected={handleCoordinatesSelected}
+            selectedCoordinates={{ latitude, longitude }}
+            showRouteControls={false}
+          />
+        </div>
+        <div className="coordinate-readout">
+          <span>Latitude: {latitude || "Sem seleção"}</span>
+          <span>Longitude: {longitude || "Sem seleção"}</span>
+        </div>
+      </div>
     </FormTemplate>
   );
 }

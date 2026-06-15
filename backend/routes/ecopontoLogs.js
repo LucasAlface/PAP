@@ -44,8 +44,8 @@ router.get("/listar", async (req, res) => {
 router.get("/listar/filtro", async (req, res) => {
     try {
         const {
-            ecopontoId,
-            equipamentoId,
+            codigoEcoponto,
+            codigoEquipamento,
             detalhes,
             dataInicio,
             dataFim
@@ -53,11 +53,11 @@ router.get("/listar/filtro", async (req, res) => {
 
         const filtros = {};
 
-        if (ecopontoId)
-            filtros.ecopontoId = ecopontoId;
+        if (codigoEcoponto)
+            filtros.codigoEcoponto = codigoEcoponto;
 
-        if (equipamentoId)
-            filtros.equipamentoId = equipamentoId;
+        if (codigoEquipamento)
+            filtros.codigoEquipamento = codigoEquipamento;
 
         if (detalhes) {
             filtros.detalhes = {
@@ -66,14 +66,16 @@ router.get("/listar/filtro", async (req, res) => {
         }
 
         if (dataInicio || dataFim) {
-            filtros.hora = {};
+            filtros.data = {};
 
             if (dataInicio) {
-                filtros.hora[Op.gte] = new Date(dataInicio);
+                filtros.data[Op.gte] = new Date(dataInicio);
             }
 
             if (dataFim) {
-                filtros.hora[Op.lte] = new Date(dataFim);
+                const dataFimCompleta = new Date(dataFim);
+                dataFimCompleta.setHours(23, 59, 59, 999);
+                filtros.data[Op.lte] = dataFimCompleta;
             }
         }
 

@@ -81,6 +81,10 @@ export default function EcopontoEquipamentoForm({ ecopontoEquipamento, onNavigat
         if (onNavigate) onNavigate("ecopontoequipamentos");
       } else {
         setStatus("Ecoponto Equipamento added successfully.");
+        if (onNavigate) {
+          onNavigate("ecopontoequipamentos");
+          return;
+        }
         setEcopontoId(null);
         setEquipamentoId(null);
         setAtivo(options[0]);

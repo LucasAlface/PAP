@@ -80,6 +80,10 @@ export default function UtilizadorForm({ utilizador, onNavigate }) {
         if (onNavigate) onNavigate("utilizadores");
       } else {
         setStatus("Utilizador added successfully.");
+        if (onNavigate) {
+          onNavigate("utilizadores");
+          return;
+        }
         setNome("");
         setEmail("");
         setPassword("");

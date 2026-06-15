@@ -78,6 +78,10 @@ export default function EquipamentoForm({ equipamento, onNavigate }) {
         if (onNavigate) onNavigate("equipamentos");
       } else {
         setStatus("Equipamento added successfully.");
+        if (onNavigate) {
+          onNavigate("equipamentos");
+          return;
+        }
         setCodigo("");
         setAtivo({ value: "true", label: "Sim" });
         setEmpresaId(null);

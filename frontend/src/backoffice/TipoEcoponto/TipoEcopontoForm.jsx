@@ -45,6 +45,10 @@ export default function TipoEcopontoForm({ tipoEcoponto, onNavigate }) {
         if (onNavigate) onNavigate("tipoecopontos");
       } else {
         setStatus("Tipo Ecoponto added successfully.");
+        if (onNavigate) {
+          onNavigate("tipoecopontos");
+          return;
+        }
         setTipo("");
         setDescricao("");
       }

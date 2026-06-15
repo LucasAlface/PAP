@@ -45,6 +45,10 @@ export default function TipoDepositoForm({ tipoDeposito, onNavigate }) {
         if (onNavigate) onNavigate("tipodepositos");
       } else {
         setStatus("Tipo Depósito added successfully.");
+        if (onNavigate) {
+          onNavigate("tipodepositos");
+          return;
+        }
         setTipo("");
         setDescricao("");
       }

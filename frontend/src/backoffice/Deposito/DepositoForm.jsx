@@ -77,6 +77,10 @@ export default function DepositoForm({ deposito, onNavigate }) {
         if (onNavigate) onNavigate("depositos");
       } else {
         setStatus("Depósito added successfully.");
+        if (onNavigate) {
+          onNavigate("depositos");
+          return;
+        }
         setCapacidadeTotal("");
         setAltura("");
         setTipoDepositoId(null);

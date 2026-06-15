@@ -11,6 +11,7 @@ const Ecoponto = sequelize.define("Ecoponto", {
   latitude: DataTypes.DECIMAL,
   longitude: DataTypes.DECIMAL,
   descricao: DataTypes.TEXT,
+  ultimaLeitura: DataTypes.DATE
 }, {
   tableName: "ecoponto",
   timestamps: true

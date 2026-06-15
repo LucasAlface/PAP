@@ -9,7 +9,8 @@ const createEcopontoSchema = Joi.object({
     depositoId: Joi.number().required(),
     empresaId: Joi.number().allow('', null).required(),
     capacidadeAtual: Joi.any().forbidden(),
-    descricao: Joi.string().allow('', null).optional()
+    descricao: Joi.string().allow('', null).optional(),
+    ultimaLeitura: Joi.any().forbidden(),
 
 })
 
@@ -22,6 +23,7 @@ const updateEcopontoSchema = Joi.object({
     depositoId: Joi.number().optional(),
     empresaId: Joi.number().allow('', null).optional(),
     descricao: Joi.string().allow('', null).optional(),
+    ultimaLeitura: Joi.date().allow('', null).optional()
 
 })
 
