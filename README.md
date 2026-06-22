@@ -40,13 +40,8 @@ As versões abaixo correspondem às versões instaladas no `package-lock.json` d
 | cors 2.8.6 | Configura acesso entre frontend e backend, incluindo cookies com `credentials`. |
 | dotenv 17.4.2 | Carrega variáveis de ambiente, como dados da base de dados e segredo JWT. |
 | Joi 18.2.1 | Valida corpos dos pedidos de criação e atualização antes de estes chegarem à base de dados. |
-| OpenAI 6.37.0 | Usado no ficheiro auxiliar `documentation.js` para gerar documentação/changelog, não no fluxo principal da aplicação. |
-| axios 1.17.0 | Dependência instalada no pacote raiz; no código principal atual não é a biblioteca usada para as chamadas da API. |
 | universal-cookie 8.1.2 | Dependência instalada no pacote raiz; a sessão atual é gerida por cookies HTTP-only no backend, não por leitura direta no frontend. |
-| lucide-react 1.18.0 | Dependência também presente no frontend; no backend não tem função operacional. |
-| tailwindcss 4.3.1 | Dependência instalada; o estilo atual é maioritariamente CSS manual em `frontend/src/index.css`. |
-| gulp 5.0.1 | Dependência de desenvolvimento instalada, sem papel direto no arranque atual da API. |
-| gulp-concat 2.6.1 | Dependência de desenvolvimento associada ao ecossistema Gulp. |
+
 
 ### 2.3 Frontend
 
@@ -64,7 +59,6 @@ As versões abaixo correspondem às versões instaladas no `frontend/package-loc
 | react-select 5.10.2 | Caixas de seleção pesquisáveis e limpas usadas nos filtros e formulários. |
 | lucide-react 1.18.0 | Iconografia da aplicação, incluindo botões, menu, mapa, dashboard e marcadores. |
 | react-icons 5.6.0 | Biblioteca instalada, sem utilização direta observada nos componentes atuais. |
-| bcrypt 6.0.0 | Dependência instalada no frontend, mas o hash real de palavras-passe é executado no backend. |
 | @tailwindcss/vite 4.3.0 | Plugin instalado, mas não configurado no `vite.config.js` atual. |
 | @tailwindcss/postcss 4.3.0 | Dependência de suporte Tailwind/PostCSS instalada. |
 | tailwindcss 4.3.1 | Instalado, embora o design atual esteja implementado com CSS customizado. |
