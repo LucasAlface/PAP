@@ -3,6 +3,7 @@ const EcopontoLogs = require("../models/ecopontoLogs");
 const { Op } = require("sequelize");
 const autenticarJWT = require("../middleware/autenticarJWT");
 const { autorizarAcessoBackoffice, carregarUtilizador } = require("../middleware/autorizarAcesso");
+const { whereEmpresaEcopontoLogs } = require("../functions/functions");
 
 router.use(autenticarJWT);
 router.use(carregarUtilizador);
@@ -34,7 +35,11 @@ router.delete("/apagar/:id", async (req, res) => {
 
 router.get("/listar", async (req, res) => {
     try {
-        const logs = await EcopontoLogs.findAll({ order: [["id", "DESC"]] });
+        const whereClause = await whereEmpresaEcopontoLogs(req);
+        const logs = await EcopontoLogs.findAll({
+            where: whereClause,
+            order: [["id", "DESC"]]
+        });
         res.json(logs);
     } catch (err) {
         res.status(500).json({ erro: err.message });
@@ -79,8 +84,9 @@ router.get("/listar/filtro", async (req, res) => {
             }
         }
 
+        const whereClause = await whereEmpresaEcopontoLogs(req, filtros);
         const logs = await EcopontoLogs.findAll({
-            where: filtros,
+            where: whereClause,
             order: [["id", "DESC"]]
         });
 
