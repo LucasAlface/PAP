@@ -38,8 +38,20 @@ async function autorizarAcessoBackoffice(req, res, next) {
 }
 
 
+async function autorizarAcessoSuperAdmin(req, res, next) {
+    try {
+        if (!req.user || !req.user.superAdmin) {
+            return res.status(403).json({ erro: "Acesso negado" });
+        }
+
+        next();
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+}
 
 module.exports = {
     autorizarAcessoBackoffice,
+    autorizarAcessoSuperAdmin,
     carregarUtilizador
 };
