@@ -86,7 +86,7 @@ router.put("/capacidade", async (req, res) => {
 
 async function enviarCoordenadas(req, res) {
   try {
-    const whereClause = (req);
+    const whereClause = whereEmpresa(req);
     const empresaId = req.body?.empresaId || req.query?.empresaId;
 
     if (req.user.superAdmin && empresaId) {
