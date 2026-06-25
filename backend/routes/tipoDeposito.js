@@ -3,52 +3,12 @@ const TipoDeposito = require('../models/tipoDeposito');
 const { Op } = require("sequelize");
 const autenticarJWT = require("../middleware/autenticarJWT");
 const { autorizarAcessoBackoffice, carregarUtilizador } = require("../middleware/autorizarAcesso");
-const { createTipoDepositoSchema, updateTipoDepositoSchema } = require("../middleware/tipoDeposito");
 const {validarBody} = require("../middleware/validarBody")
 
 router.use(autenticarJWT);
 router.use(carregarUtilizador);
 router.use(autorizarAcessoBackoffice);
 
-router.post('/inserir', validarBody(createTipoDepositoSchema), async (req, res) => {
-  try {
-    const dados = req.body;
-    await TipoDeposito.create(dados);
-    res.json('Registro criado com sucesso');
-  } catch (err) {
-    res.status(500).json({ erro: err.message });
-  }
-});
-
-router.put('/atualizar/:id', validarBody(updateTipoDepositoSchema), async (req, res) => {
-  try {
-    const dados = req.body;
-    const { id } = req.params;
-
-    const result = await TipoDeposito.update(dados, { where: { id: id } });
-
-    if (result[0] === 0) {
-      return res.status(404).json({ erro: 'Registro não encontrado' });
-    }
-    res.json('Registro atualizado com sucesso');
-  } catch (err) {
-    res.status(500).json({ erro: err.message });
-  }
-});
-
-router.delete('/apagar/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const result = await TipoDeposito.destroy({ where: { id: id } });
-
-    if (result === 0) {
-      return res.status(404).json({ erro: 'Registro não encontrado' });
-    }
-    res.json('Registro deletado com sucesso');
-  } catch (err) {
-    res.status(500).json({ erro: err.message });
-  }
-});
 
 router.get('/listar', async (req, res) => {
   try {

@@ -42,7 +42,7 @@ router.put("/atualizar/:id", validarBody(updateDepositoSchema), async (req, res)
     try {
         const dados = req.body;
         const { id } = req.params;
-        const whereClause = whereEmpresa(req, { id: id });
+        const whereClause = whereDepositoEmpresa(req, { id: id });
         const empresaId = setEmpresaId(req);
 
         const result = await Deposito.update({ ...dados, empresaId }, { where: whereClause });
@@ -59,7 +59,7 @@ router.put("/atualizar/:id", validarBody(updateDepositoSchema), async (req, res)
 router.delete("/apagar/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const whereClause = whereEmpresa(req, { id: id });
+        const whereClause = whereDepositoEmpresa(req, { id: id });
         const result = await Deposito.destroy({ where: whereClause });
 
         if (result === 0) {

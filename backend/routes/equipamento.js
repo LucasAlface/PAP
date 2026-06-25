@@ -96,13 +96,4 @@ router.get("/listar/filtro", async (req, res) => {
     }
 });
 
-router.get("/total", async (req, res) => {
-    try {
-        const total = await Equipamento.count({ where: { ativo: true } });
-        res.json({ total });
-    } catch (err) {
-        res.status(500).json({ erro: err.message });
-    }
-});
-
 module.exports = router;

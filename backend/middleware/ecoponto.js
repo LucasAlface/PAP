@@ -16,8 +16,8 @@ const createEcopontoSchema = Joi.object({
 
 const updateEcopontoSchema = Joi.object({
     codigo: Joi.string().uppercase().optional(),
-    latitude: Joi.number().precision(5).optional(),
-    longitude: Joi.number().precision(5).optional(),
+    latitude: Joi.number().optional(),
+    longitude: Joi.number().optional(),
     capacidadeAtual: Joi.number().allow('', null).positive().precision(2).optional(),
     tipoEcopontoId: Joi.number().optional(),
     depositoId: Joi.number().optional(),

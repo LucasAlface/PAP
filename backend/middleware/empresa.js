@@ -6,8 +6,8 @@ const createEmpresaSchema = Joi.object({
     nif: Joi.string().length(9).required(),
     email: Joi.string().required(),
     telefone: Joi.string().required(),
-    latitude: Joi.number().allow('', null).optional(),
-    longitude: Joi.number().allow('', null).optional()
+    latitude: Joi.number().required(),
+    longitude: Joi.number().required()
 })
 
 const updateEmpresaSchema = Joi.object({
@@ -15,8 +15,8 @@ const updateEmpresaSchema = Joi.object({
     nif: Joi.string().length(9).optional(),
     email: Joi.string().optional(),
     telefone: Joi.string().optional(),
-    latitude: Joi.number().allow('', null).optional(),
-    longitude: Joi.number().allow('', null).optional()
+    latitude: Joi.number().optional(),
+    longitude: Joi.number().optional()
 })
 
 module.exports = { createEmpresaSchema, updateEmpresaSchema }

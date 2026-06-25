@@ -19,19 +19,6 @@ router.post("/inserir", async (req, res) => {
     }
 });
 
-router.delete("/apagar/:id", async (req, res) => {
-    try {
-        const { id } = req.params;
-        const result = await EcopontoLogs.destroy({ where: { id: id } });
-
-        if (result === 0) {
-            return res.status(404).json({ erro: "Registro não encontrado" });
-        }
-        res.json("Registro deletado com sucesso");
-    } catch (err) {
-        res.status(500).json({ erro: err.message });
-    }
-});
 
 router.get("/listar", async (req, res) => {
     try {

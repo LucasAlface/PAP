@@ -2,53 +2,12 @@ const router = require("express").Router();
 const TipoEcoponto = require("../models/tipoEcoponto");
 const { Op } = require("sequelize");
 const autenticarJWT = require("../middleware/autenticarJWT");
-const { autorizarAcessoBackoffice, autorizarAcessoSuperAdmin, carregarUtilizador } = require("../middleware/autorizarAcesso");
-const { createTipoEcopontoSchema, updateTipoEcopontoSchema } = require("../middleware/tipoEcoponto");
+const { autorizarAcessoBackoffice, carregarUtilizador } = require("../middleware/autorizarAcesso");
 const {validarBody} = require("../middleware/validarBody")
 
 router.use(autenticarJWT);
 router.use(carregarUtilizador);
 router.use(autorizarAcessoBackoffice);
-
-router.post("/inserir", autorizarAcessoSuperAdmin, validarBody(createTipoEcopontoSchema), async (req, res) => {
-  try {
-    const dados = req.body;
-    await TipoEcoponto.create(dados);
-    res.json("Registro criado com sucesso");
-  } catch (err) {
-    res.status(500).json({ erro: err.message });
-  }
-});
-
-router.put("/atualizar/:id", autorizarAcessoSuperAdmin, validarBody(updateTipoEcopontoSchema), async (req, res) => {
-  try {
-    const dados = req.body;
-    const { id } = req.params;
-
-    const result = await TipoEcoponto.update(dados, { where: { id: id } });
-
-    if (result[0] === 0) {
-      return res.status(404).json({ erro: "Registro não encontrado" });
-    }
-    res.json("Registro atualizado com sucesso");
-  } catch (err) {
-    res.status(500).json({ erro: err.message });
-  }
-});
-
-router.delete("/apagar/:id", autorizarAcessoSuperAdmin, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const result = await TipoEcoponto.destroy({ where: { id: id } });
-
-    if (result === 0) {
-      return res.status(404).json({ erro: "Registro não encontrado" });
-    }
-    res.json("Registro deletado com sucesso");
-  } catch (err) {
-    res.status(500).json({ erro: err.message });
-  }
-});
 
 router.get("/listar", async (req, res) => {
   try {
@@ -59,38 +18,5 @@ router.get("/listar", async (req, res) => {
   }
 });
 
-router.get("/listar/filtro", async (req, res) => {
-  try {
-    const {
-      tipo,
-      descricao
-    } = req.query;
-
-    const filtros = {};
-
-    if (tipo) {
-      filtros.tipo = {
-        [Op.like]: `%${tipo}%`
-      };
-    }
-
-    if (descricao) {
-      filtros.descricao = {
-        [Op.like]: `%${descricao}%`
-      };
-    }
-
-    const tipos = await TipoEcoponto.findAll({
-      where: filtros
-    });
-
-    res.json(tipos);
-
-  } catch (err) {
-    res.status(500).json({
-      erro: err.message
-    });
-  }
-});
 
 module.exports = router;

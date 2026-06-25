@@ -44,7 +44,7 @@ router.post("/", async (req, res) => {
 
         res.cookie("accessToken", token, {
             httpOnly: true,
-            secure: false,
+            secure: process.env.NODE_ENV == "production",
             sameSite: "lax",
             maxAge: 60 * 60 * 1000 // 1 hora
         });
@@ -85,7 +85,7 @@ router.get("/me", autenticarJWT, async (req, res) => {
 router.post("/logout", (req, res) => {
     res.clearCookie("accessToken", {
         httpOnly: true,
-        secure: false,
+        secure: process.env.NODE_ENV == "production",
         sameSite: "lax"
     });
     res.sendStatus(200);

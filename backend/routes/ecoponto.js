@@ -81,7 +81,6 @@ router.get("/listar/filtro", async (req, res) => {
         const filtros = {};
         const filtrosDeposito = {};
 
-        // Igual
         if (codigo) filtros.codigo = codigo;
 
         if (tipoEcopontoId)
@@ -93,7 +92,6 @@ router.get("/listar/filtro", async (req, res) => {
         if (empresaId)
             filtros.empresaId = empresaId;
 
-        // Descrição contendo texto
         if (descricao) {
             filtros.descricao = {
                 [Op.like]: `%${descricao}%`
