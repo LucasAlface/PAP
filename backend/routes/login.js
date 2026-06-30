@@ -46,6 +46,7 @@ router.post("/", async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV == "production",
             sameSite: "lax",
+            path: "/",
             maxAge: 60 * 60 * 1000 // 1 hora
         });
 
@@ -86,7 +87,8 @@ router.post("/logout", (req, res) => {
     res.clearCookie("accessToken", {
         httpOnly: true,
         secure: process.env.NODE_ENV == "production",
-        sameSite: "lax"
+        sameSite: "lax",
+        path: "/"
     });
     res.sendStatus(200);
 });

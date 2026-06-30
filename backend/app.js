@@ -35,14 +35,20 @@ app.use(cors({
 }));
 
 
-app.get("/", async (req, res) => {
-  try {
-    await inserirDados();
-    res.json("online");
-  } catch (err) {
-    res.status(500).json({ erro: err.message });
-  }
+app.get("/", (req, res) => {
+  res.json("online");
 });
+
+if (process.env.ENABLE_DB_SEED === "true") {
+  app.post("/seed", async (req, res) => {
+    try {
+      await inserirDados();
+      res.json("Dados inseridos com sucesso");
+    } catch (err) {
+      res.status(500).json({ erro: err.message });
+    }
+  });
+}
 
 
 app.use("/tipoecoponto", tipo_ecoponto_router);
@@ -58,16 +64,21 @@ app.use("/cargo", cargo_router);
 app.use("/empresa", empresa_router);
 app.use("/login", login_router);
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log("Servidor online");
-});
-
-(async () => {
+async function startServer() {
   try {
     await sequelize.authenticate();
     console.log("Database connection established.");
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log("Servidor online");
+    });
   } catch (err) {
     console.error("Unable to connect to the database:", err.message || err);
     process.exit(1);
   }
-})();
+}
+
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = app;

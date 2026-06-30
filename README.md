@@ -92,7 +92,7 @@ Para que esse acesso funcione com a API, o backend também escuta em `0.0.0.0` e
 - `http://localhost:5173`
 - o valor definido em `FRONTEND_URL`
 
-No frontend, a variável `VITE_API_URL` define o endereço do backend. Se não existir, o frontend usa `http://localhost:3000`.
+No frontend, a variável `VITE_API_URL` define o endereço do backend. Se não existir, o frontend usa `http://localhost:3000` em desenvolvimento e `/api` no build de produção.
 
 ### 2.5 Variáveis de ambiente
 
@@ -102,11 +102,14 @@ O backend usa as seguintes variáveis:
 | --- | --- |
 | `PORT` | Porta do backend. Se não for definida, usa `3000`. |
 | `FRONTEND_URL` | Origem adicional permitida pelo CORS. |
+| `DATABASE_URL` | Connection string completa do PostgreSQL. Pode ser usada para Neon, por exemplo com `?sslmode=require`. |
 | `DB_NAME` | Nome da base de dados PostgreSQL. |
 | `DB_USER` | Utilizador da base de dados. |
 | `DB_PASSWORD` | Password da base de dados. |
 | `DB_HOST` | Host da base de dados. |
 | `DB_PORT` | Porta da base de dados. Se não for definida, usa `5432`. |
+| `DB_SSL` | Define `true` para ligações PostgreSQL que exigem SSL, como Neon. |
+| `ENABLE_DB_SEED` | Define `true` apenas em ambiente local para ativar `POST /seed`, que recria tabelas e dados iniciais. |
 | `JWT_SECRET` | Segredo usado para assinar e validar JWTs. |
 | `OPENAI_API_KEY` | Usada apenas no script auxiliar `documentation.js`. |
 
@@ -114,7 +117,23 @@ O frontend usa:
 
 | Variável | Função |
 | --- | --- |
-| `VITE_API_URL` | URL base da API, por exemplo `http://10.103.25.61:3000`. |
+| `VITE_API_URL` | URL base da API, por exemplo `http://10.103.25.61:3000`. No Vercel, pode ficar vazia se o backend estiver no mesmo projeto. |
+
+### 2.6 Deploy no Vercel
+
+O projeto inclui `vercel.json` para fazer deploy do frontend Vite e do backend Express no mesmo projeto.
+
+No Vercel, configura as variáveis de ambiente:
+
+| Variável | Valor recomendado |
+| --- | --- |
+| `DATABASE_URL` | Connection string da Neon com `sslmode=require`. |
+| `DB_SSL` | `true` |
+| `JWT_SECRET` | Uma chave secreta forte. |
+| `NODE_ENV` | `production` |
+| `ENABLE_DB_SEED` | Não definir em produção. |
+
+Não é necessário configurar `PORT` no Vercel. A API fica disponível em `/api`, por exemplo `/api/login`, e o frontend usa essa rota automaticamente no build de produção.
 
 ## 3. Fluxo de Informação
 
@@ -382,7 +401,8 @@ Isto impede que um administrador normal crie ou edite registos noutra empresa, m
 
 | Método e rota | Função | Observações |
 | --- | --- | --- |
-| `GET /` | Executa `inserirDados()` e responde `"online"`. | Endpoint de desenvolvimento. Usa `sequelize.sync({ force: true })`, logo recria tabelas e dados iniciais. |
+| `GET /` | Responde `"online"`. | Health check simples, sem alterar a base de dados. |
+| `POST /seed` | Executa `inserirDados()`. | Só existe com `ENABLE_DB_SEED=true`. Usa `sequelize.sync({ force: true })`, logo recria tabelas e dados iniciais. |
 | `PUT /rotas/capacidade` | Recebe `codigoEquipamento` e `profundidade`, atualiza capacidade do ecoponto e cria logs. | Usado para integração com Arduino/sensor externo. |
 | `GET /rotas/coordenadas` | Devolve ecopontos com coordenadas e percentagem para o mapa. | Autenticado; aplica empresa do utilizador. |
 | `POST /rotas/coordenadas` | Igual ao anterior, mas permite ao super administrador enviar `empresaId` no body. | Usado pelo mapa para escolher empresa. |
