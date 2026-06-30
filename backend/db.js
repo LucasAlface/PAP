@@ -1,6 +1,7 @@
 const path = require("path");
 require('dotenv').config({ path: path.resolve(__dirname, "../.env") });
 const { Sequelize } = require("sequelize");
+const pg = require("pg");
 
 const useSsl =
   process.env.DB_SSL === "true" ||
@@ -10,6 +11,7 @@ const useSsl =
 
 const options = {
   dialect: "postgres",
+  dialectModule: pg,
   logging: false,
   ...(useSsl && {
     dialectOptions: {
